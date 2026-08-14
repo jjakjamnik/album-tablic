@@ -1,0 +1,225 @@
+==================================================
+TABLICE REJESTRACYJNE PANINI
+EUROPA 2026
+==================================================
+
+STATUS PROJEKTU:
+v0.1 — pierwszy test systemu naklejek
+
+==================================================
+ZASADY KOLEKCJI
+==================================================
+
+1. NAKLEJKA
+Naklejką jest wyłącznie pełna tablica rejestracyjna,
+którą faktycznie udało się zobaczyć i zapisać w całości.
+
+2. NIEPEŁNA TABLICA
+Jeżeli znamy tylko kod/oznaczenie, wpisujemy go do
+kolekcji, ale NIE tworzymy naklejki.
+
+3. POLSKA
+Polskie tablice również zbieramy jako pełne naklejki.
+Nie robimy jednak osobnego polowania na wszystkie
+polskie miasta/powiaty.
+
+4. ZNALAZCA
+Każda naklejka ma informację, kto znalazł tablicę.
+
+5. KOLOR NAKLEJKI
+Kolor obramowania naklejki zależy od znalazcy:
+- Jakub = zielony
+- Dziewczyna = różowy
+- Tata = niebieski
+
+6. MIEJSCE ZNALEZIENIA
+Zapisujemy miejsce, w którym faktycznie zobaczyliśmy
+samochód.
+
+Jeżeli jesteśmy na autostradzie:
+- najbliższa znana miejscowość
+- albo okolice zjazdu
+- albo numer autostrady
+
+7. POCHODZENIE TABLICY
+Zapisujemy miasto/region, jeżeli system tablic pozwala
+go ustalić.
+
+8. ODLEGŁOŚĆ
+Liczymy odległość pomiędzy:
+MIEJSCEM ZNALEZIENIA
+a
+MIEJSCEM POCHODZENIA TABLICY.
+
+9. TRUDNOŚĆ
+Skala 1–5 gwiazdek.
+Podstawą jest przede wszystkim odległość od miejsca
+znalezienia do miejsca pochodzenia.
+
+Dokładne progi ustalimy później.
+
+10. TABLICA W CSS
+Na początku robimy uproszczony wygląd tablic:
+- prostokąt
+- odpowiednie tło kraju
+- czarne napisy
+- oznaczenie kraju
+- jeden wspólny font testowy
+
+Później każdy kraj dostanie własny styl CSS.
+
+==================================================
+STRUKTURA NAKLEJKI
+==================================================
+
+Każda pełna naklejka posiada:
+
+- numer naklejki
+- kraj
+- pełną tablicę
+- kod/region
+- miejsce pochodzenia
+- miejsce znalezienia
+- odległość
+- trudność ⭐
+- znalazca
+- kolor znalazcy
+
+==================================================
+NAKLEJKI — 01.08.2026
+==================================================
+
+#001
+Kraj: Niemcy
+Tablica: GI WE5050
+Kod: GI
+Pochodzenie: Gießen
+Miejsce znalezienia: Świnoujście
+Odległość: DO USTALENIA
+Trudność: DO USTALENIA
+Znalazł: Jakub
+Kolor: zielony
+
+#002
+Kraj: Niemcy
+Tablica: GW EN14
+Kod: GW
+Pochodzenie: Greifswald
+Miejsce znalezienia: Świnoujście
+Odległość: DO USTALENIA
+Trudność: DO USTALENIA
+Znalazł: Jakub
+Kolor: zielony
+
+#003
+Kraj: Holandia
+Tablica: V-72-HZS
+Kod: V
+Pochodzenie: NIEUSTALONE
+Miejsce znalezienia: Świnoujście
+Odległość: NIEUSTALONA
+Trudność: DO USTALENIA
+Znalazł: Jakub
+Kolor: zielony
+
+#004
+Kraj: Białoruś
+Tablica: 6555-PH-5
+Kod: NIEUSTALONY
+Pochodzenie: obwód miński
+Miejsce znalezienia: Świnoujście
+Odległość: DO USTALENIA
+Trudność: DO USTALENIA
+Znalazł: Jakub
+Kolor: zielony
+
+#005
+Kraj: Czechy
+Tablica: 6L6 3754
+Kod: 6
+Pochodzenie: DO USTALENIA
+Miejsce znalezienia: Świnoujście
+Odległość: DO USTALENIA
+Trudność: DO USTALENIA
+Znalazł: Jakub
+Kolor: zielony
+
+==================================================
+NIEPEŁNE / ROZPOZNANE
+==================================================
+
+NMS
+Kraj: Niemcy
+Pochodzenie: Neumünster
+Pełna tablica: NIEZNANA
+Naklejka: NIE
+
+==================================================
+NAKLEJKI SPECJALNE
+==================================================
+
+SPECIAL #001
+Polska
+Nasze auto
+Miasto: DO UZUPEŁNIENIA
+Pełna tablica: DO UZUPEŁNIENIA
+
+SPECIAL #002
+Polska
+Auto taty
+Miasto: DO UZUPEŁNIENIA
+Pełna tablica: DO UZUPEŁNIENIA
+
+==================================================
+STYLE KRAJÓW — v0.1
+==================================================
+
+Niemcy:
+- tło: białe
+- napisy: czarne
+- oznaczenie: DE
+
+Polska:
+- tło: białe
+- napisy: czarne
+- oznaczenie: PL
+
+Holandia:
+- tło: żółte
+- napisy: czarne
+- oznaczenie: NL
+
+Białoruś:
+- tło: białe
+- napisy: czarne
+- oznaczenie: BY
+
+Czechy:
+- tło: białe
+- napisy: czarne
+- oznaczenie: CZ
+
+==================================================
+PLAN PROGRAMU
+==================================================
+
+1. OKŁADKA
+2. ALBUM EUROPY
+3. WYBÓR KRAJU
+4. LISTA ZDOBYTYCH TABLIC
+5. NAKLEJKI
+6. NIEPEŁNE OZNACZENIA
+7. NAKLEJKI SPECJALNE
+8. KOLORY ZNALAZCÓW
+9. ODLEGŁOŚĆ
+10. TRUDNOŚĆ ⭐⭐⭐⭐⭐
+
+==================================================
+KOD
+==================================================
+
+[W TYM MIEJSCU BĘDZIE KOD HTML/CSS/JS]
+
+==================================================
+KONIEC MAPY
+==================================================
