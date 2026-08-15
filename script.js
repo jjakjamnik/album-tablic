@@ -1,8 +1,13 @@
 /* =========================================================
    ALBUM TABLIC REJESTRACYJNYCH
    script.js
-   WERSJA 7.0
+   WERSJA 8.0
 
+   SUPABASE — WSPÓLNA BAZA DANYCH
+
+   - SUPABASE JAKO GŁÓWNE ŹRÓDŁO DANYCH
+   - KOMPUTER + TELEFON = JEDEN ALBUM
+   - JEDNORAZOWA MIGRACJA LOCALSTORAGE -> SUPABASE
    - ODLEGŁOŚĆ DROGOWA OSRM
    - STAŁA RZADKOŚĆ DLA KRAJÓW
    - FRANCJA — WYBÓR DEPARTAMENTU
@@ -10,7 +15,7 @@
    - FRANCJA — KOD DEPARTAMENTU Z PRAWEJ STRONY TABLICY
    - SŁOWACJA — ROZPOZNANE KODY / FALLBACK ★★
    - IRLANDIA — SPECJALNE ROZPOZNAWANIE KODU HRABSTWA
-   - IRLANDIA — ODLEGŁOŚĆ DROGOWA ZAMIAST STAŁEJ RZADKOŚCI
+   - IRLANDIA — ODLEGŁOŚĆ DROGOWA
    - AUTOMATYCZNA AKTUALIZACJA STARYCH KART
    - KOLOR KARTY WYNIKA Z GWIAZDEK
    - SPECIAL = ZŁOTA KARTA
@@ -20,7 +25,26 @@
 
 
 /* =========================================================
-   KONFIGURACJA
+   SUPABASE
+   ========================================================= */
+
+const SUPABASE_URL =
+    "https://ddlwmtbtsaikbkorkwaa.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_i9lPlpSiRH5wLzI8QJ_gcA_-n0IZNL2";
+
+const SUPABASE_TABLE =
+    "stickers";
+
+const SUPABASE_ENDPOINT =
+    SUPABASE_URL +
+    "/rest/v1/" +
+    SUPABASE_TABLE;
+
+
+/* =========================================================
+   LOCAL STORAGE — STARE DANE / MIGRACJA
    ========================================================= */
 
 const STORAGE_KEY =
@@ -30,15 +54,23 @@ const STORAGE_VERSION_KEY =
     "albumStorageVersion";
 
 const STORAGE_VERSION =
-    "7";
+    "8";
+
+const MIGRATION_KEY =
+    "albumMigrationV8";
 
 
 /* =========================================================
-   ID MIGRACJI
+   CACHE NAKLEJEK
+   =========================================================
+
+   Supabase jest bazą główną.
+
+   Cache istnieje tylko po to, żeby pozostała obecna
+   synchroniczna logika renderowania albumu.
    ========================================================= */
 
-const MIGRATION_KEY =
-    "albumMigrationV7";
+let stickersCache = [];
 
 
 /* =========================================================
@@ -101,10 +133,70 @@ document.addEventListener(
 
 
         /* =================================================
-           MIGRACJA
+           POBRANIE DANYCH Z SUPABASE
            ================================================= */
 
-        await migrateOldStickers();
+        try {
+
+            await loadStickersFromSupabase();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Nie udało się pobrać albumu z Supabase:",
+                error
+            );
+
+            alert(
+                "Nie udało się połączyć z bazą albumu.\n\n" +
+                "Sprawdź połączenie z internetem i odśwież stronę."
+            );
+
+            return;
+
+        }
+
+
+        /* =================================================
+           MIGRACJA STARYCH KART
+           ================================================= */
+
+        try {
+
+            await migrateOldStickers();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Błąd migracji:",
+                error
+            );
+
+        }
+
+
+        /* =================================================
+           PONOWNE POBRANIE PO MIGRACJI
+           ================================================= */
+
+        try {
+
+            await loadStickersFromSupabase();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Nie udało się odświeżyć danych:",
+                error
+            );
+
+        }
 
 
         /* =================================================
@@ -677,7 +769,7 @@ document.addEventListener(
                                 stickers[index];
 
 
-                            stickers[index] = {
+                            const updatedSticker = {
 
                                 ...oldSticker,
 
@@ -715,12 +807,34 @@ document.addEventListener(
                             };
 
 
-                            localStorage.setItem(
-                                STORAGE_KEY,
-                                JSON.stringify(
-                                    stickers
-                                )
-                            );
+                            try {
+
+                                await updateStickerInSupabase(
+                                    updatedSticker
+                                );
+
+
+                                stickersCache[index] =
+                                    updatedSticker;
+
+
+                            }
+
+                            catch (error) {
+
+                                console.error(
+                                    "Błąd aktualizacji naklejki:",
+                                    error
+                                );
+
+                                alert(
+                                    "Nie udało się zapisać zmian w bazie.\n\n" +
+                                    "Sprawdź połączenie z internetem."
+                                );
+
+                                return;
+
+                            }
 
                         }
 
@@ -853,9 +967,29 @@ document.addEventListener(
                         };
 
 
-                        saveSticker(
-                            sticker
-                        );
+                        try {
+
+                            await saveSticker(
+                                sticker
+                            );
+
+                        }
+
+                        catch (error) {
+
+                            console.error(
+                                "Błąd zapisu naklejki:",
+                                error
+                            );
+
+                            alert(
+                                "Nie udało się zapisać tablicy w bazie.\n\n" +
+                                "Sprawdź połączenie z internetem."
+                            );
+
+                            return;
+
+                        }
 
 
                         /* -----------------------------------------
@@ -1316,6 +1450,340 @@ function initializeAlbum() {
 
 
 /* =========================================================
+   SUPABASE — NAGŁÓWKI
+   ========================================================= */
+
+function getSupabaseHeaders() {
+
+    return {
+
+        "apikey":
+            SUPABASE_KEY,
+
+        "Authorization":
+            "Bearer " +
+            SUPABASE_KEY,
+
+        "Content-Type":
+            "application/json"
+
+    };
+
+}
+
+
+/* =========================================================
+   SUPABASE — POBIERANIE
+   ========================================================= */
+
+async function loadStickersFromSupabase() {
+
+    const response =
+        await fetch(
+            SUPABASE_ENDPOINT +
+            "?select=*",
+            {
+                method:
+                    "GET",
+
+                headers:
+                    getSupabaseHeaders()
+            }
+        );
+
+
+    if (!response.ok) {
+
+        const errorText =
+            await response.text();
+
+
+        throw new Error(
+            "Supabase SELECT HTTP " +
+            response.status +
+            ": " +
+            errorText
+        );
+
+    }
+
+
+    const data =
+        await response.json();
+
+
+    if (
+        !Array.isArray(data)
+    ) {
+
+        throw new Error(
+            "Supabase zwrócił nieprawidłowe dane."
+        );
+
+    }
+
+
+    stickersCache =
+        data;
+
+
+    return stickersCache;
+
+}
+
+
+/* =========================================================
+   SUPABASE — ZAPIS NOWEJ KARTY
+   ========================================================= */
+
+async function saveSticker(
+    sticker
+) {
+
+    const response =
+        await fetch(
+            SUPABASE_ENDPOINT,
+            {
+                method:
+                    "POST",
+
+                headers: {
+
+                    ...getSupabaseHeaders(),
+
+                    "Prefer":
+                        "return=representation"
+
+                },
+
+                body:
+                    JSON.stringify(
+                        sticker
+                    )
+
+            }
+        );
+
+
+    if (!response.ok) {
+
+        const errorText =
+            await response.text();
+
+
+        throw new Error(
+            "Supabase INSERT HTTP " +
+            response.status +
+            ": " +
+            errorText
+        );
+
+    }
+
+
+    const data =
+        await response.json();
+
+
+    if (
+        Array.isArray(data) &&
+        data.length
+    ) {
+
+        stickersCache.push(
+            data[0]
+        );
+
+    }
+
+    else {
+
+        stickersCache.push(
+            sticker
+        );
+
+    }
+
+
+    return (
+        Array.isArray(data) &&
+        data.length
+            ? data[0]
+            : sticker
+    );
+
+}
+
+
+/* =========================================================
+   SUPABASE — AKTUALIZACJA
+   ========================================================= */
+
+async function updateStickerInSupabase(
+    sticker
+) {
+
+    const url =
+        SUPABASE_ENDPOINT +
+        "?id=eq." +
+        encodeURIComponent(
+            sticker.id
+        );
+
+
+    const response =
+        await fetch(
+            url,
+            {
+                method:
+                    "PATCH",
+
+                headers: {
+
+                    ...getSupabaseHeaders(),
+
+                    "Prefer":
+                        "return=representation"
+
+                },
+
+                body:
+                    JSON.stringify({
+
+                        country:
+                            sticker.country,
+
+                        plate:
+                            sticker.plate,
+
+                        location:
+                            sticker.location,
+
+                        origin:
+                            sticker.origin,
+
+                        department:
+                            sticker.department,
+
+                        owner:
+                            sticker.owner,
+
+                        date:
+                            sticker.date,
+
+                        kilometers:
+                            sticker.kilometers,
+
+                        stars:
+                            sticker.stars
+
+                    })
+
+            }
+        );
+
+
+    if (!response.ok) {
+
+        const errorText =
+            await response.text();
+
+
+        throw new Error(
+            "Supabase UPDATE HTTP " +
+            response.status +
+            ": " +
+            errorText
+        );
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   SUPABASE — USUWANIE
+   ========================================================= */
+
+async function deleteStickerFromSupabase(
+    sticker
+) {
+
+    if (!sticker.id) {
+
+        throw new Error(
+            "Brak ID naklejki."
+        );
+
+    }
+
+
+    const url =
+        SUPABASE_ENDPOINT +
+        "?id=eq." +
+        encodeURIComponent(
+            sticker.id
+        );
+
+
+    const response =
+        await fetch(
+            url,
+            {
+                method:
+                    "DELETE",
+
+                headers: {
+
+                    ...getSupabaseHeaders(),
+
+                    "Prefer":
+                        "return=minimal"
+
+                }
+
+            }
+        );
+
+
+    if (!response.ok) {
+
+        const errorText =
+            await response.text();
+
+
+        throw new Error(
+            "Supabase DELETE HTTP " +
+            response.status +
+            ": " +
+            errorText
+        );
+
+    }
+
+
+    stickersCache =
+        stickersCache.filter(
+            function (stickerItem) {
+
+                return (
+                    stickerItem.id !==
+                    sticker.id
+                );
+
+            }
+        );
+
+
+    return true;
+
+}
+
+
+/* =========================================================
    STAŁA RZADKOŚĆ KRAJU
    ========================================================= */
 
@@ -1589,11 +2057,6 @@ function findCity(
         country === "FR"
     ) {
 
-        /* -----------------------------------------------
-           NOWY SYSTEM:
-           DEPARTAMENT WYBRANY W FORMULARZU
-           ----------------------------------------------- */
-
         if (
             frenchDepartment
         ) {
@@ -1619,11 +2082,6 @@ function findCity(
 
         }
 
-
-        /* -----------------------------------------------
-           STARY SYSTEM:
-           KOD NA KOŃCU NUMERU
-           ----------------------------------------------- */
 
         const frenchCodes =
             Object.keys(database)
@@ -1674,26 +2132,6 @@ function findCity(
 
     /* =====================================================
        IRLANDIA
-       =====================================================
-
-       Irlandzkie tablice mają format np.:
-
-       08-D-12345
-       161-D-12345
-       241-G-12345
-
-       Po usunięciu spacji i myślników:
-
-       08D12345
-       161D12345
-       241G12345
-
-       Nie możemy użyć zwykłego findCodeInDatabase(),
-       ponieważ wtedy kod szukany jest od pierwszego znaku
-       i system może potraktować "08" albo "161" jako kod.
-
-       Najpierw pomijamy 2 lub 3 cyfry roku,
-       a dopiero potem szukamy kodu hrabstwa.
        ===================================================== */
 
     if (
@@ -1796,22 +2234,6 @@ function findIrishCounty(
         return null;
 
     }
-
-
-    /*
-       Szukamy:
-
-       2 lub 3 cyfry roku
-       +
-       1 lub 2 litery kodu hrabstwa
-
-       Przykłady:
-
-       08D12345
-       08C12345
-       161D12345
-       241G12345
-    */
 
 
     const match =
@@ -1972,10 +2394,6 @@ async function calculateStickerDistance(
         "";
 
 
-    /* =====================================================
-       GEOCODING
-       ===================================================== */
-
     async function geocode(
         query
     ) {
@@ -2041,10 +2459,6 @@ async function calculateStickerDistance(
     }
 
 
-    /* =====================================================
-       MIEJSCE ZNALEZIENIA
-       ===================================================== */
-
     const foundCoordinates =
         await geocode(
             foundLocation
@@ -2060,10 +2474,6 @@ async function calculateStickerDistance(
 
     }
 
-
-    /* =====================================================
-       MIASTO POCHODZENIA
-       ===================================================== */
 
     let originQuery =
         originCity;
@@ -2093,10 +2503,6 @@ async function calculateStickerDistance(
 
     }
 
-
-    /* =====================================================
-       OSRM
-       ===================================================== */
 
     const osrmUrl =
         "https://router.project-osrm.org/route/v1/driving/" +
@@ -2141,10 +2547,6 @@ async function calculateStickerDistance(
 
     }
 
-
-    /* =====================================================
-       KILOMETRY
-       ===================================================== */
 
     const kilometers =
         Math.round(
@@ -2300,10 +2702,6 @@ function editSticker(
     }
 
 
-    /* -----------------------------------------
-       FRANCJA
-       ----------------------------------------- */
-
     createFrenchDepartmentSelect();
 
 
@@ -2430,12 +2828,55 @@ async function migrateOldStickers() {
     }
 
 
-    const stickers =
-        getStickers();
+    const localData =
+        localStorage.getItem(
+            STORAGE_KEY
+        );
 
+
+    let localStickers =
+        [];
+
+
+    if (localData) {
+
+        try {
+
+            const parsed =
+                JSON.parse(
+                    localData
+                );
+
+
+            if (
+                Array.isArray(parsed)
+            ) {
+
+                localStickers =
+                    parsed;
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "Nie udało się odczytać starych danych localStorage:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =================================================
+       BRAK STARYCH DANYCH
+       ================================================= */
 
     if (
-        !stickers.length
+        !localStickers.length
     ) {
 
         localStorage.setItem(
@@ -2448,12 +2889,23 @@ async function migrateOldStickers() {
     }
 
 
-    let changed =
-        false;
+    console.log(
+        "Rozpoczynam migrację " +
+        localStickers.length +
+        " starych naklejek do Supabase..."
+    );
 
+
+    let migrated =
+        0;
+
+
+    /* =================================================
+       MIGRACJA KAŻDEJ KARTY
+       ================================================= */
 
     for (
-        const sticker of stickers
+        const sticker of localStickers
     ) {
 
         /* =================================================
@@ -2467,11 +2919,6 @@ async function migrateOldStickers() {
 
             sticker.stars =
                 5;
-
-            changed =
-                true;
-
-            continue;
 
         }
 
@@ -2495,11 +2942,6 @@ async function migrateOldStickers() {
 
             sticker.stars =
                 fixedStars;
-
-            changed =
-                true;
-
-            continue;
 
         }
 
@@ -2539,11 +2981,6 @@ async function migrateOldStickers() {
                 sticker.stars =
                     fallbackStars;
 
-                changed =
-                    true;
-
-                continue;
-
             }
 
         }
@@ -2551,12 +2988,6 @@ async function migrateOldStickers() {
 
         /* =================================================
            IRLANDIA
-           
-           Ważne:
-           Irlandia nie ma stałej rzadkości.
-
-           Każda karta jest przeliczana z odległości
-           drogowej, jeżeli mamy miejsce znalezienia.
            ================================================= */
 
         if (
@@ -2582,64 +3013,47 @@ async function migrateOldStickers() {
 
 
             if (
-                !irishCity
+                irishCity &&
+                sticker.location
             ) {
 
-                continue;
+                try {
 
-            }
-
-
-            if (
-                !sticker.location
-            ) {
-
-                continue;
-
-            }
+                    const result =
+                        await calculateStickerDistance(
+                            "IE",
+                            irishCity,
+                            sticker.location
+                        );
 
 
-            try {
+                    if (result) {
 
-                const result =
-                    await calculateStickerDistance(
-                        "IE",
-                        irishCity,
-                        sticker.location
+                        sticker.origin =
+                            irishCity;
+
+                        sticker.kilometers =
+                            result.kilometers;
+
+                        sticker.stars =
+                            result.stars;
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.warn(
+                        "Nie udało się zaktualizować irlandzkiej karty:",
+                        sticker.country,
+                        sticker.plate,
+                        error
                     );
-
-
-                if (result) {
-
-                    sticker.origin =
-                        irishCity;
-
-                    sticker.kilometers =
-                        result.kilometers;
-
-                    sticker.stars =
-                        result.stars;
-
-                    changed =
-                        true;
 
                 }
 
             }
-
-            catch (error) {
-
-                console.warn(
-                    "Nie udało się zaktualizować irlandzkiej karty:",
-                    sticker.country,
-                    sticker.plate,
-                    error
-                );
-
-            }
-
-
-            continue;
 
         }
 
@@ -2674,101 +3088,170 @@ async function migrateOldStickers() {
 
 
         /* =================================================
-           PRÓBA ROZPOZNANIA MIASTA
-           ================================================= */
-
-        const detectedCity =
-            findCity(
-                sticker.country,
-                sticker.plate,
-                sticker.department || ""
-            );
-
-
-        if (!detectedCity) {
-
-            continue;
-
-        }
-
-
-        /* =================================================
-           MAMY JUŻ MIASTO + KM
+           NORMALNE KRAJE
            ================================================= */
 
         if (
-            sticker.origin ===
-                detectedCity &&
-
-            typeof sticker.kilometers ===
-                "number" &&
-
-            Number.isFinite(
-                sticker.kilometers
-            ) &&
-
-            sticker.kilometers >= 0
+            sticker.country !== "IE"
         ) {
 
-            sticker.stars =
-                calculateStarsFromKilometers(
-                    sticker.kilometers
-                );
-
-            changed =
-                true;
-
-            continue;
-
-        }
-
-
-        /* =================================================
-           BRAK MIEJSCA
-           ================================================= */
-
-        if (
-            !sticker.location
-        ) {
-
-            sticker.origin =
-                detectedCity;
-
-            changed =
-                true;
-
-            continue;
-
-        }
-
-
-        /* =================================================
-           PRZELICZENIE OSRM
-           ================================================= */
-
-        try {
-
-            const result =
-                await calculateStickerDistance(
+            const detectedCity =
+                findCity(
                     sticker.country,
-                    detectedCity,
-                    sticker.location
+                    sticker.plate,
+                    sticker.department || ""
                 );
 
 
-            if (result) {
+            if (
+                detectedCity
+            ) {
 
                 sticker.origin =
                     detectedCity;
 
-                sticker.kilometers =
-                    result.kilometers;
 
-                sticker.stars =
-                    result.stars;
+                if (
+                    !fixedStars &&
+                    sticker.location
+                ) {
 
-                changed =
-                    true;
+                    try {
+
+                        const result =
+                            await calculateStickerDistance(
+                                sticker.country,
+                                detectedCity,
+                                sticker.location
+                            );
+
+
+                        if (result) {
+
+                            sticker.kilometers =
+                                result.kilometers;
+
+                            sticker.stars =
+                                result.stars;
+
+                        }
+
+                    }
+
+                    catch (error) {
+
+                        console.warn(
+                            "Nie udało się przeliczyć starej karty:",
+                            sticker.country,
+                            sticker.plate
+                        );
+
+                    }
+
+                }
+
+            }
+
+        }
+
+
+        /* =================================================
+           USUNIĘCIE NIEPOTRZEBNYCH PÓL
+           ================================================= */
+
+        const cleanSticker = {
+
+            id:
+                sticker.id ||
+                generateStickerId(),
+
+            country:
+                sticker.country ||
+                "",
+
+            plate:
+                sticker.plate ||
+                "",
+
+            location:
+                sticker.location ||
+                "",
+
+            origin:
+                sticker.origin ||
+                "",
+
+            department:
+                sticker.department ||
+                "",
+
+            owner:
+                sticker.owner ||
+                "green",
+
+            date:
+                sticker.date ||
+                new Date().toISOString(),
+
+            kilometers:
+                typeof sticker.kilometers === "number"
+                    ? sticker.kilometers
+                    : null,
+
+            stars:
+                typeof sticker.stars === "number"
+                    ? sticker.stars
+                    : 0
+
+        };
+
+
+        try {
+
+            const response =
+                await fetch(
+                    SUPABASE_ENDPOINT,
+                    {
+                        method:
+                            "POST",
+
+                        headers: {
+
+                            ...getSupabaseHeaders(),
+
+                            "Prefer":
+                                "resolution=ignore-duplicates"
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                                cleanSticker
+                            )
+
+                    }
+                );
+
+
+            if (
+                response.ok
+            ) {
+
+                migrated++;
+
+            }
+
+            else {
+
+                const errorText =
+                    await response.text();
+
+
+                console.warn(
+                    "Nie udało się przenieść naklejki:",
+                    cleanSticker,
+                    errorText
+                );
 
             }
 
@@ -2777,9 +3260,8 @@ async function migrateOldStickers() {
         catch (error) {
 
             console.warn(
-                "Nie udało się zaktualizować karty:",
-                sticker.country,
-                sticker.plate,
+                "Błąd migracji naklejki:",
+                cleanSticker,
                 error
             );
 
@@ -2789,24 +3271,20 @@ async function migrateOldStickers() {
 
 
     /* =================================================
-       ZAPIS
+       KONIEC MIGRACJI
        ================================================= */
-
-    if (changed) {
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(
-                stickers
-            )
-        );
-
-    }
-
 
     localStorage.setItem(
         MIGRATION_KEY,
         "done"
+    );
+
+
+    console.log(
+        "Migracja zakończona. Przeniesiono: " +
+        migrated +
+        "/" +
+        localStickers.length
     );
 
 }
@@ -3253,7 +3731,7 @@ function createStickerCard(
 
     deleteButton.addEventListener(
         "click",
-        function () {
+        async function () {
 
             const confirmed =
                 confirm(
@@ -3270,16 +3748,41 @@ function createStickerCard(
             }
 
 
-            deleteSticker(
-                sticker
-            );
+            deleteButton.disabled =
+                true;
 
 
-            renderCurrentCountry();
+            try {
 
-            updateCountryCounters();
+                await deleteSticker(
+                    sticker
+                );
 
-            updateCountryCardStates();
+
+                renderCurrentCountry();
+
+                updateCountryCounters();
+
+                updateCountryCardStates();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Błąd usuwania:",
+                    error
+                );
+
+                deleteButton.disabled =
+                    false;
+
+                alert(
+                    "Nie udało się usunąć tablicy z bazy.\n\n" +
+                    "Sprawdź połączenie z internetem."
+                );
+
+            }
 
         }
     );
@@ -3703,136 +4206,26 @@ function findDuplicateSticker(
 
 
 /* =========================================================
-   LOCAL STORAGE — POBIERANIE
+   POBIERANIE NAKLEJEK Z CACHE
    ========================================================= */
 
 function getStickers() {
 
-    const data =
-        localStorage.getItem(
-            STORAGE_KEY
-        );
-
-
-    if (!data) {
-        return [];
-    }
-
-
-    try {
-
-        const stickers =
-            JSON.parse(
-                data
-            );
-
-
-        if (
-            !Array.isArray(
-                stickers
-            )
-        ) {
-
-            return [];
-
-        }
-
-
-        return stickers;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Błąd odczytu naklejek:",
-            error
-        );
-
-
-        return [];
-
-    }
+    return stickersCache;
 
 }
 
 
 /* =========================================================
-   LOCAL STORAGE — ZAPIS
+   USUWANIE NAKLEJKI
    ========================================================= */
 
-function saveSticker(
-    sticker
-) {
-
-    const stickers =
-        getStickers();
-
-
-    stickers.push(
-        sticker
-    );
-
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(
-            stickers
-        )
-    );
-
-}
-
-
-/* =========================================================
-   LOCAL STORAGE — USUWANIE
-   ========================================================= */
-
-function deleteSticker(
+async function deleteSticker(
     stickerToDelete
 ) {
 
-    const stickers =
-        getStickers();
-
-
-    const filtered =
-        stickers.filter(
-            function (sticker) {
-
-                if (
-                    stickerToDelete.id &&
-                    sticker.id
-                ) {
-
-                    return (
-                        sticker.id !==
-                        stickerToDelete.id
-                    );
-
-                }
-
-
-                return !(
-                    sticker.country ===
-                    stickerToDelete.country &&
-
-                    sticker.plate ===
-                    stickerToDelete.plate &&
-
-                    sticker.date ===
-                    stickerToDelete.date
-                );
-
-            }
-        );
-
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(
-            filtered
-        )
+    await deleteStickerFromSupabase(
+        stickerToDelete
     );
 
 }
