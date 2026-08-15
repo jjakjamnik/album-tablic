@@ -10,20 +10,72 @@
         content="width=device-width, initial-scale=1.0"
     >
 
+    <meta name="theme-color" content="#0b1f3a">
+
     <title>Album tablic rejestracyjnych</title>
+
+    <link rel="manifest" href="manifest.json">
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="stickers.css">
     <link rel="stylesheet" href="plates.css">
-
-    <!-- PWA -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0b1f3a">
+    <link rel="stylesheet" href="mobile/splash.css">
 
 </head>
 
 
 <body>
+
+
+<!-- ==================================================
+     EKRAN STARTOWY APLIKACJI
+     ================================================== -->
+
+<div id="album-splash">
+
+    <div class="album-splash-content">
+
+        <img
+            src="icons/icon-512.png"
+            alt="Album Tablic"
+            class="album-splash-logo"
+        >
+
+        <div class="album-splash-title">
+            ALBUM TABLIC
+        </div>
+
+        <div class="album-splash-subtitle">
+            EUROPEJSKA KOLEKCJA
+        </div>
+
+        <div class="album-splash-progress">
+
+            <div
+                id="album-splash-progress-bar"
+                class="album-splash-progress-bar">
+            </div>
+
+        </div>
+
+        <div
+            id="album-splash-loading"
+            class="album-splash-loading">
+
+            URUCHAMIANIE...
+
+        </div>
+
+        <div class="album-splash-author">
+
+            BY JJAKJAMNIK
+
+        </div>
+
+    </div>
+
+</div>
+
 
 
 <div class="album">
@@ -1541,6 +1593,10 @@
 <script src="wielkabrytania.js"></script>
 <script src="distance.js"></script>
 <script src="cards.js"></script>
+
+<!-- EKRAN STARTOWY — MUSI BYĆ PRZED SCRIPT.JS -->
+<script src="mobile/splash.js"></script>
+
 <script src="script.js"></script>
 
 
