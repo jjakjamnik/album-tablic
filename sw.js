@@ -1,21 +1,27 @@
 /* =========================================================
    ALBUM TABLIC REJESTRACYJNYCH
    SERVICE WORKER
-   PWA — WERSJA 1.0
+   PWA — WERSJA 1.1
    ========================================================= */
 
-const CACHE_NAME = "album-tablic-v1";
+const CACHE_NAME = "album-tablic-v1.1";
 
 const FILES_TO_CACHE = [
+
     "./",
     "./index.html",
+
     "./style.css",
     "./stickers.css",
     "./plates.css",
 
+    "./mobile/splash.css",
+
     "./script.js",
     "./cards.js",
     "./distance.js",
+
+    "./mobile/splash.js",
 
     "./austria.js",
     "./bialorus.js",
@@ -34,6 +40,7 @@ const FILES_TO_CACHE = [
     "./icons/favicon.png",
     "./icons/icon-192.png",
     "./icons/icon-512.png"
+
 ];
 
 
@@ -48,7 +55,9 @@ self.addEventListener("install", event => {
         caches.open(CACHE_NAME)
             .then(cache => {
 
-                console.log("PWA: zapisywanie plików aplikacji.");
+                console.log(
+                    "PWA: zapisywanie plików aplikacji."
+                );
 
                 return cache.addAll(FILES_TO_CACHE);
 
@@ -105,7 +114,9 @@ self.addEventListener("fetch", event => {
         event.request.url.includes("supabase.co") ||
         event.request.method !== "GET"
     ) {
+
         return;
+
     }
 
 
@@ -115,16 +126,14 @@ self.addEventListener("fetch", event => {
             .then(cachedResponse => {
 
                 if (cachedResponse) {
+
                     return cachedResponse;
+
                 }
 
 
                 return fetch(event.request)
                     .then(networkResponse => {
-
-                        /*
-                           Zapisujemy lokalnie pliki aplikacji.
-                        */
 
                         if (
                             networkResponse &&
@@ -134,6 +143,7 @@ self.addEventListener("fetch", event => {
 
                             const responseClone =
                                 networkResponse.clone();
+
 
                             caches.open(CACHE_NAME)
                                 .then(cache => {
@@ -146,6 +156,7 @@ self.addEventListener("fetch", event => {
                                 });
 
                         }
+
 
                         return networkResponse;
 
