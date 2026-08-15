@@ -7,25 +7,34 @@
     "use strict";
 
 
-    let progress = 0;
+    /*
+     * Splash ma pojawić się tylko przy pierwszym
+     * uruchomieniu aplikacji w danej sesji.
+     */
 
-    let progressTimer = null;
+    const SPLASH_SESSION_KEY = "albumSplashShown";
 
 
     function setProgress(value) {
 
-        progress = Math.max(0, Math.min(100, value));
+        const progress =
+            Math.max(0, Math.min(100, value));
 
         const bar =
-            document.getElementById("album-splash-progress-bar");
+            document.getElementById(
+                "album-splash-progress-bar"
+            );
 
         const text =
-            document.getElementById("album-splash-loading");
+            document.getElementById(
+                "album-splash-loading"
+            );
 
 
         if (bar) {
 
-            bar.style.width = progress + "%";
+            bar.style.width =
+                progress + "%";
 
         }
 
@@ -34,23 +43,28 @@
 
             if (progress < 30) {
 
-                text.textContent = "URUCHAMIANIE...";
+                text.textContent =
+                    "URUCHAMIANIE...";
 
             } else if (progress < 60) {
 
-                text.textContent = "ŁĄCZENIE Z BAZĄ...";
+                text.textContent =
+                    "ŁĄCZENIE Z BAZĄ...";
 
             } else if (progress < 90) {
 
-                text.textContent = "WCZYTYWANIE KOLEKCJI...";
+                text.textContent =
+                    "WCZYTYWANIE KOLEKCJI...";
 
             } else if (progress < 100) {
 
-                text.textContent = "PRZYGOTOWYWANIE ALBUMU...";
+                text.textContent =
+                    "PRZYGOTOWYWANIE ALBUMU...";
 
             } else {
 
-                text.textContent = "GOTOWE";
+                text.textContent =
+                    "GOTOWE";
 
             }
 
@@ -59,14 +73,11 @@
     }
 
 
+    let progress = 0;
+    let progressTimer = null;
+
+
     function startProgress() {
-
-        if (progressTimer) {
-
-            return;
-
-        }
-
 
         setProgress(5);
 
@@ -93,7 +104,9 @@
                 }
 
 
-                setProgress(progress + step);
+                progress += step;
+
+                setProgress(progress);
 
             }
 
@@ -119,12 +132,38 @@
         setTimeout(function () {
 
             const splash =
-                document.getElementById("album-splash");
+                document.getElementById(
+                    "album-splash"
+                );
 
 
             if (splash) {
 
-                splash.classList.add("splash-hidden");
+                splash.classList.add(
+                    "splash-hidden"
+                );
+
+            }
+
+
+            /*
+             * Zapamiętujemy, że splash został
+             * już pokazany w tej sesji.
+             */
+
+            try {
+
+                sessionStorage.setItem(
+                    SPLASH_SESSION_KEY,
+                    "true"
+                );
+
+            } catch (error) {
+
+                console.warn(
+                    "Nie można zapisać sesji splash.",
+                    error
+                );
 
             }
 
@@ -133,21 +172,62 @@
     }
 
 
-    /*
-     * Funkcja dostępna dla script.js
-     */
-
-    window.albumSplashReady = finishSplash;
+    window.albumSplashReady =
+        finishSplash;
 
 
-    /*
-     * splash.js znajduje się na końcu index.html,
-     * więc elementy splash już istnieją.
-     *
-     * Uruchamiamy pasek natychmiast.
-     */
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
 
-    startProgress();
+            let alreadyShown = false;
 
+
+            try {
+
+                alreadyShown =
+                    sessionStorage.getItem(
+                        SPLASH_SESSION_KEY
+                    ) === "true";
+
+            } catch (error) {
+
+                alreadyShown = false;
+
+            }
+
+
+            /*
+             * Jeśli splash był już pokazany,
+             * chowamy go natychmiast.
+             */
+
+            if (alreadyShown) {
+
+                const splash =
+                    document.getElementById(
+                        "album-splash"
+                    );
+
+
+                if (splash) {
+
+                    splash.classList.add(
+                        "splash-hidden"
+                    );
+
+                }
+
+
+                return;
+
+            }
+
+
+            startProgress();
+
+        }
+
+    );
 
 })();
