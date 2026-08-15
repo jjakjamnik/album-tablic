@@ -12,6 +12,24 @@
 
     <title>Album tablic rejestracyjnych</title>
 
+    <!-- IKONA -->
+    <link rel="icon" type="image/png" href="icons/favicon.png">
+
+    <!-- PWA / APLIKACJA MOBILNA -->
+    <link rel="manifest" href="manifest.json">
+
+    <meta name="theme-color" content="#111827">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Album Tablic"
+    >
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="stickers.css">
     <link rel="stylesheet" href="plates.css">
@@ -1256,6 +1274,7 @@
                     <span class="country-card-code">
                         CH
                     </span>
+
                 </div>
 
                 <div class="country-card-background">
@@ -1283,9 +1302,7 @@
 
 
 
-            <!-- ==================================================
-                 SZWECJA — PUSTA
-                 ================================================== -->
+            <!-- SZWECJA -->
 
             <a href="countries/se.html"
                class="country-card country-se country-empty">
@@ -1540,6 +1557,36 @@
 <script src="distance.js"></script>
 <script src="cards.js"></script>
 <script src="script.js"></script>
+
+
+<!-- ==================================================
+     SERVICE WORKER
+     ================================================== -->
+
+<script>
+
+if ("serviceWorker" in navigator) {
+
+    navigator.serviceWorker.register("service-worker.js")
+        .then(() => {
+
+            console.log(
+                "Service Worker: OK"
+            );
+
+        })
+        .catch(error => {
+
+            console.error(
+                "Service Worker:",
+                error
+            );
+
+        });
+
+}
+
+</script>
 
 
 </body>
