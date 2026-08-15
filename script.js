@@ -1,7 +1,7 @@
 /* =========================================================
    ALBUM TABLIC REJESTRACYJNYCH
    script.js
-   WERSJA 8.0 — SUPABASE
+   WERSJA 8.1 — SUPABASE + EKRAN STARTOWY
 
    - SUPABASE JAKO GŁÓWNA BAZA DANYCH
    - KOMPUTER + TELEFON = TA SAMA KOLEKCJA
@@ -18,6 +18,7 @@
    - SPECIAL = ZŁOTA KARTA
    - EDYCJA KART
    - DUPLIKATY NIE SĄ DODAWANE
+   - EKRAN STARTOWY KOŃCZY SIĘ PO ZAŁADOWANIU ALBUMU
    ========================================================= */
 
 
@@ -30,7 +31,6 @@ const SUPABASE_URL =
 
 const SUPABASE_KEY =
     "sb_publishable_i9lPlpSiRH5wLzI8QJ_gcA_-n0IZNL2";
-
 
 const SUPABASE_TABLE =
     "stickers";
@@ -143,6 +143,20 @@ document.addEventListener(
                 "Nie udało się połączyć z bazą albumu.\n\n" +
                 "Sprawdź połączenie z internetem."
             );
+
+            /*
+             * Nie zostawiamy ekranu startowego
+             * wiszącego w nieskończoność.
+             */
+
+            if (
+                typeof window.albumSplashReady ===
+                "function"
+            ) {
+
+                window.albumSplashReady();
+
+            }
 
             return;
 
@@ -794,10 +808,6 @@ document.addEventListener(
                             null;
 
 
-                        /* -----------------------------------------
-                           KOMUNIKAT
-                           ----------------------------------------- */
-
                         let message =
                             "Tablica została zaktualizowana!\n\n" +
                             country +
@@ -942,10 +952,6 @@ document.addEventListener(
 
                         }
 
-
-                        /* -----------------------------------------
-                           KOMUNIKAT
-                           ----------------------------------------- */
 
                         let message =
                             "Tablica została dodana do kolekcji!\n\n" +
@@ -1105,6 +1111,20 @@ document.addEventListener(
         updateCountryCardStates();
 
         renderCurrentCountry();
+
+
+        /* =================================================
+           EKRAN STARTOWY — ALBUM GOTOWY
+           ================================================= */
+
+        if (
+            typeof window.albumSplashReady ===
+            "function"
+        ) {
+
+            window.albumSplashReady();
+
+        }
 
     }
 );
@@ -2727,17 +2747,6 @@ async function migrateOldStickers() {
     }
 
 
-    /*
-       WAŻNE:
-
-       Migrację wykonujemy tylko wtedy,
-       kiedy Supabase jest puste.
-
-       Dzięki temu wejście na telefonie,
-       który nie ma starego localStorage,
-       NIE nadpisze ani nie zmieni kolekcji.
-    */
-
     if (
         stickersCache.length > 0
     ) {
@@ -2851,12 +2860,6 @@ async function migrateOldStickers() {
 
     }
 
-
-    /*
-       Po migracji ponownie pobieramy bazę,
-       żeby cache był dokładnie taki sam
-       jak dane w Supabase.
-    */
 
     await loadStickersFromSupabase();
 
@@ -3612,9 +3615,21 @@ function updateCountryCounters() {
             }
 
 
+            /*
+             * STRONA GŁÓWNA:
+             *
+             * countries/pl.html
+             * ./countries/pl.html
+             * /countries/pl.html
+             *
+             * Wszystkie są poprawne.
+             *
+             * Katalog countries ZOSTAJE.
+             */
+
             const match =
                 href.match(
-                    /countries\/([a-z]{2})\.html/i
+                    /(?:^|\/)countries\/([a-z]{2})\.html(?:[?#].*)?$/i
                 );
 
 
@@ -3704,9 +3719,14 @@ function updateCountryCardStates() {
             }
 
 
+            /*
+             * countries/xx.html pozostaje właściwą
+             * strukturą albumu.
+             */
+
             const match =
                 href.match(
-                    /countries\/([a-z]{2})\.html/i
+                    /(?:^|\/)countries\/([a-z]{2})\.html(?:[?#].*)?$/i
                 );
 
 
@@ -3730,6 +3750,36 @@ function updateCountryCardStates() {
 
                     }
                 ).length;
+
+
+            const countElement =
+                card.querySelector(
+                    ".country-card-count"
+                );
+
+
+            if (
+                countElement
+            ) {
+
+                if (
+                    count === 1
+                ) {
+
+                    countElement.textContent =
+                        "1 naklejka";
+
+                }
+
+                else {
+
+                    countElement.textContent =
+                        count +
+                        " naklejek";
+
+                }
+
+            }
 
 
             card.classList.remove(
