@@ -12,27 +12,31 @@
 
     <title>Album tablic rejestracyjnych</title>
 
-    <!-- IKONA -->
-    <link rel="icon" type="image/png" href="icons/favicon.png">
-
-    <!-- PWA / APLIKACJA MOBILNA -->
-    <link rel="manifest" href="manifest.json">
-
-    <meta name="theme-color" content="#111827">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta
-        name="apple-mobile-web-app-status-bar-style"
-        content="black-translucent"
-    >
-    <meta
-        name="apple-mobile-web-app-title"
-        content="Album Tablic"
-    >
-
+    <!-- STYLE -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="stickers.css">
     <link rel="stylesheet" href="plates.css">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- IKONA APLIKACJI -->
+    <link
+        rel="icon"
+        type="image/png"
+        href="icons/favicon.png"
+    >
+
+    <!-- IKONA iOS -->
+    <link
+        rel="apple-touch-icon"
+        href="icons/icon-192.png"
+    >
+
+    <meta
+        name="theme-color"
+        content="#111827"
+    >
 
 </head>
 
@@ -1274,7 +1278,6 @@
                     <span class="country-card-code">
                         CH
                     </span>
-
                 </div>
 
                 <div class="country-card-background">
@@ -1560,29 +1563,35 @@
 
 
 <!-- ==================================================
-     SERVICE WORKER
+     PWA — REJESTRACJA SERVICE WORKERA
      ================================================== -->
 
 <script>
 
 if ("serviceWorker" in navigator) {
 
-    navigator.serviceWorker.register("service-worker.js")
-        .then(() => {
+    window.addEventListener("load", function () {
 
-            console.log(
-                "Service Worker: OK"
-            );
+        navigator.serviceWorker
+            .register("sw.js")
+            .then(function (registration) {
 
-        })
-        .catch(error => {
+                console.log(
+                    "PWA: Service Worker zarejestrowany.",
+                    registration.scope
+                );
 
-            console.error(
-                "Service Worker:",
-                error
-            );
+            })
+            .catch(function (error) {
 
-        });
+                console.error(
+                    "PWA: Błąd rejestracji Service Workera:",
+                    error
+                );
+
+            });
+
+    });
 
 }
 
