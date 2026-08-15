@@ -22,11 +22,13 @@
         const text =
             document.getElementById("album-splash-loading");
 
+
         if (bar) {
 
             bar.style.width = progress + "%";
 
         }
+
 
         if (text) {
 
@@ -59,20 +61,22 @@
 
     function startProgress() {
 
+        if (progressTimer) {
+
+            return;
+
+        }
+
+
         setProgress(5);
 
 
         progressTimer = setInterval(function () {
 
-            /*
-             * Pasek dochodzi tylko do 90%.
-             * Ostatnie 10% zostawiamy na faktyczne
-             * zakończenie ładowania albumu.
-             */
-
             if (progress < 90) {
 
                 let step;
+
 
                 if (progress < 30) {
 
@@ -87,6 +91,7 @@
                     step = 1;
 
                 }
+
 
                 setProgress(progress + step);
 
@@ -116,6 +121,7 @@
             const splash =
                 document.getElementById("album-splash");
 
+
             if (splash) {
 
                 splash.classList.add("splash-hidden");
@@ -128,23 +134,20 @@
 
 
     /*
-     * Udostępniamy funkcję globalnie.
-     *
-     * script.js wywoła:
-     *
-     * window.albumSplashReady();
-     *
-     * kiedy album zostanie już załadowany.
+     * Funkcja dostępna dla script.js
      */
 
     window.albumSplashReady = finishSplash;
 
 
-    document.addEventListener("DOMContentLoaded", function () {
+    /*
+     * splash.js znajduje się na końcu index.html,
+     * więc elementy splash już istnieją.
+     *
+     * Uruchamiamy pasek natychmiast.
+     */
 
-        startProgress();
-
-    });
+    startProgress();
 
 
 })();
