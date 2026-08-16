@@ -3,6 +3,19 @@
    auth.js
 
    AUTORYZACJA UŻYTKOWNIKÓW — SUPABASE
+
+   STRUKTURA:
+   index.html    = główny album
+   login.html    = logowanie
+   register.html = rejestracja
+
+   Jeden plik obsługuje:
+   - rejestrację
+   - logowanie
+   - wylogowanie
+   - sprawdzanie użytkownika
+   - ochronę index.html
+   - przekierowanie zalogowanego użytkownika
    ========================================================= */
 
 
@@ -34,6 +47,16 @@ const supabaseClient =
 
 function getMessageBox() {
 
+    /*
+     * Twój login.html używa:
+     *
+     * id="auth-message"
+     *
+     * Rejestracja może używać:
+     *
+     * id="register-message"
+     */
+
     return (
         document.getElementById("auth-message") ||
         document.getElementById("login-message") ||
@@ -42,9 +65,13 @@ function getMessageBox() {
 }
 
 
-function showMessage(message, type = "error") {
+function showMessage(
+    message,
+    type = "error"
+) {
 
     const box = getMessageBox();
+
 
     if (!box) {
 
@@ -52,6 +79,7 @@ function showMessage(message, type = "error") {
 
         return;
     }
+
 
     box.textContent = message;
 
@@ -68,7 +96,9 @@ function hideMessage() {
 
     const box = getMessageBox();
 
+
     if (!box) return;
+
 
     box.hidden = true;
 
@@ -92,7 +122,9 @@ function setLoading(
 
     if (!button) return;
 
+
     button.disabled = loading;
+
 
     if (loading) {
 
@@ -121,6 +153,7 @@ async function registerUser(
 ) {
 
     hideMessage();
+
 
     email =
         String(email || "").trim();
@@ -160,9 +193,14 @@ async function registerUser(
 
                 options: {
 
+                    /*
+                     * Po potwierdzeniu adresu
+                     * użytkownik wraca do albumu.
+                     */
+
                     emailRedirectTo:
                         window.location.origin +
-                        "/home.html"
+                        "/index.html"
                 }
 
             });
@@ -175,9 +213,11 @@ async function registerUser(
                 error
             );
 
+
             showMessage(
                 getAuthErrorMessage(error)
             );
+
 
             return false;
         }
@@ -199,13 +239,14 @@ async function registerUser(
                 "success"
             );
 
+
             return true;
         }
 
 
         /*
-         * Jeżeli potwierdzanie e-maila
-         * jest wyłączone.
+         * Potwierdzanie e-maila wyłączone.
+         * Supabase zalogował użytkownika od razu.
          */
 
         if (
@@ -214,7 +255,7 @@ async function registerUser(
         ) {
 
             window.location.href =
-                "home.html";
+                "index.html";
 
             return true;
         }
@@ -230,9 +271,11 @@ async function registerUser(
             error
         );
 
+
         showMessage(
             "Wystąpił nieoczekiwany błąd."
         );
+
 
         return false;
     }
@@ -249,6 +292,7 @@ async function loginUser(
 ) {
 
     hideMessage();
+
 
     email =
         String(email || "").trim();
@@ -286,9 +330,11 @@ async function loginUser(
                 error
             );
 
+
             showMessage(
                 getAuthErrorMessage(error)
             );
+
 
             return false;
         }
@@ -299,8 +345,12 @@ async function loginUser(
             data.session
         ) {
 
+            /*
+             * GŁÓWNY ALBUM = index.html
+             */
+
             window.location.href =
-                "home.html";
+                "index.html";
 
             return true;
         }
@@ -309,6 +359,7 @@ async function loginUser(
         showMessage(
             "Nie udało się utworzyć sesji."
         );
+
 
         return false;
 
@@ -320,9 +371,11 @@ async function loginUser(
             error
         );
 
+
         showMessage(
             "Wystąpił nieoczekiwany błąd."
         );
+
 
         return false;
     }
@@ -350,6 +403,7 @@ async function logoutUser() {
                 error
             );
 
+
             return false;
         }
 
@@ -367,6 +421,7 @@ async function logoutUser() {
             "Nieoczekiwany błąd wylogowania:",
             error
         );
+
 
         return false;
     }
@@ -395,6 +450,7 @@ async function getCurrentUser() {
                 error
             );
 
+
             return null;
         }
 
@@ -408,6 +464,7 @@ async function getCurrentUser() {
             "Błąd getCurrentUser:",
             error
         );
+
 
         return null;
     }
@@ -429,6 +486,7 @@ async function requireAuth() {
         window.location.href =
             "login.html";
 
+
         return null;
     }
 
@@ -438,7 +496,7 @@ async function requireAuth() {
 
 
 /* =========================================================
-   PRZEKIEROWANIE Z LOGIN / REGISTER
+   PRZEKIEROWANIE JEŚLI JUŻ ZALOGOWANY
    ========================================================= */
 
 async function redirectIfLoggedIn() {
@@ -450,7 +508,8 @@ async function redirectIfLoggedIn() {
     if (user) {
 
         window.location.href =
-            "home.html";
+            "index.html";
+
 
         return true;
     }
@@ -461,7 +520,7 @@ async function redirectIfLoggedIn() {
 
 
 /* =========================================================
-   OBSŁUGA LOGIN
+   OBSŁUGA LOGIN.HTML
    ========================================================= */
 
 function initLoginForm() {
@@ -488,7 +547,7 @@ function initLoginForm() {
 
 
     /*
-     * LOGIN.HTML:
+     * TWÓJ LOGIN.HTML:
      *
      * id="login-btn"
      */
@@ -504,9 +563,6 @@ function initLoginForm() {
         async function(event) {
 
             event.preventDefault();
-
-
-            hideMessage();
 
 
             const email =
@@ -528,21 +584,25 @@ function initLoginForm() {
             );
 
 
-            try {
+            await loginUser(
+                email,
+                password
+            );
 
-                await loginUser(
-                    email,
-                    password
-                );
 
-            } finally {
+            /*
+             * Jeżeli logowanie się udało,
+             * nastąpi przekierowanie.
+             *
+             * Jeżeli nie — przycisk wraca
+             * do normalnego stanu.
+             */
 
-                setLoading(
-                    button,
-                    false,
-                    "ZALOGUJ SIĘ"
-                );
-            }
+            setLoading(
+                button,
+                false,
+                "ZALOGUJ SIĘ"
+            );
 
         }
     );
@@ -550,7 +610,7 @@ function initLoginForm() {
 
 
 /* =========================================================
-   OBSŁUGA REJESTRACJI
+   OBSŁUGA REGISTER.HTML
    ========================================================= */
 
 function initRegisterForm() {
@@ -582,24 +642,9 @@ function initRegisterForm() {
         );
 
 
-    /*
-     * Dla bezpieczeństwa obsługujemy
-     * również alternatywną nazwę.
-     */
-
-    const passwordRepeat =
-        passwordRepeatInput ||
-        document.getElementById(
-            "register-password-repeat"
-        );
-
-
     const button =
         document.getElementById(
             "register-button"
-        ) ||
-        document.getElementById(
-            "register-btn"
         );
 
 
@@ -625,20 +670,21 @@ function initRegisterForm() {
                     : "";
 
 
-            const passwordConfirmation =
-                passwordRepeat
-                    ? passwordRepeat.value
+            const passwordRepeat =
+                passwordRepeatInput
+                    ? passwordRepeatInput.value
                     : "";
 
 
             if (
                 password !==
-                passwordConfirmation
+                passwordRepeat
             ) {
 
                 showMessage(
                     "Hasła nie są takie same."
                 );
+
 
                 return;
             }
@@ -651,51 +697,16 @@ function initRegisterForm() {
             );
 
 
-            try {
-
-                await registerUser(
-                    email,
-                    password
-                );
-
-            } finally {
-
-                setLoading(
-                    button,
-                    false,
-                    "UTWÓRZ KONTO"
-                );
-            }
-
-        }
-    );
-}
+            await registerUser(
+                email,
+                password
+            );
 
 
-/* =========================================================
-   OBSŁUGA LOGOUT
-   ========================================================= */
-
-function initLogoutButtons() {
-
-    const buttons =
-        document.querySelectorAll(
-            "[data-logout]"
-        );
-
-
-    buttons.forEach(
-        function(button) {
-
-            button.addEventListener(
-                "click",
-                async function(event) {
-
-                    event.preventDefault();
-
-                    await logoutUser();
-
-                }
+            setLoading(
+                button,
+                false,
+                "UTWÓRZ KONTO"
             );
 
         }
@@ -807,22 +818,37 @@ function getAuthErrorMessage(error) {
     }
 
 
-    if (
-        message.includes(
-            "too many requests"
-        )
-    ) {
-
-        return (
-            "Zbyt wiele prób. Spróbuj ponownie później."
-        );
-    }
-
-
     return (
         error.message ||
         "Wystąpił błąd autoryzacji."
     );
+}
+
+
+/* =========================================================
+   ROZPOZNANIE STRONY
+   ========================================================= */
+
+function getCurrentPage() {
+
+    const path =
+        window.location.pathname
+            .split("/")
+            .pop()
+            .toLowerCase();
+
+
+    /*
+     * Pusta ścieżka = również index.html
+     */
+
+    if (!path) {
+
+        return "index.html";
+    }
+
+
+    return path;
 }
 
 
@@ -834,69 +860,89 @@ document.addEventListener(
     "DOMContentLoaded",
     async function() {
 
-        /*
-         * Sprawdzamy stronę.
-         */
+
+        const currentPage =
+            getCurrentPage();
+
 
         const isLoginPage =
-            !!document.getElementById(
-                "login-form"
-            );
+            currentPage === "login.html";
 
 
         const isRegisterPage =
-            !!document.getElementById(
-                "register-form"
-            );
+            currentPage === "register.html";
 
 
         const isHomePage =
-            document.body.dataset.page === "home" ||
-            window.location.pathname
-                .toLowerCase()
-                .endsWith("/home.html");
+            currentPage === "index.html";
 
 
-        /*
-         * Formularze.
-         */
-
-        initLoginForm();
-
-        initRegisterForm();
-
-        initLogoutButtons();
-
-
-        /*
-         * LOGIN / REGISTER
-         *
-         * Jeżeli użytkownik już jest
-         * zalogowany — nie ma sensu
-         * pokazywać formularza.
-         */
+        /* =================================================
+           LOGIN / REGISTER
+           ================================================= */
 
         if (
             isLoginPage ||
             isRegisterPage
         ) {
 
+            /*
+             * Inicjalizujemy odpowiedni formularz.
+             */
+
+            initLoginForm();
+
+            initRegisterForm();
+
+
+            /*
+             * Jeżeli użytkownik już jest zalogowany,
+             * nie ma po co pokazywać mu logowania.
+             */
+
             await redirectIfLoggedIn();
+
 
             return;
         }
 
 
-        /*
-         * HOME
-         *
-         * Jeżeli home.html korzysta
-         * z auth.js, zabezpieczamy stronę.
-         */
+        /* =================================================
+           GŁÓWNY ALBUM — INDEX.HTML
+           ================================================= */
 
         if (isHomePage) {
 
-            await requireAuth();
+            /*
+             * INDEX.HTML jest chroniony.
+             *
+             * Bez sesji → login.html
+             * Z sesją → album działa normalnie.
+             */
+
+            const user =
+                await requireAuth();
+
+
+            if (!user) {
+
+                return;
+            }
+
+
+            console.log(
+                "Zalogowany użytkownik:",
+                user.email
+            );
+
+
+            /*
+             * Tutaj NIE przekierowujemy dalej.
+             *
+             * Album może normalnie uruchomić
+             * swój istniejący script.js.
+             */
+
         }
 
     }
