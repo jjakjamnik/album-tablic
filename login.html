@@ -16,6 +16,7 @@
 
     <link rel="stylesheet" href="style.css">
 
+
     <style>
 
         /* ==================================================
@@ -365,7 +366,7 @@
 
 
         <!-- ==================================================
-             FORMULARZ
+             FORMULARZ LOGOWANIA
              ================================================== -->
 
         <form
@@ -412,16 +413,21 @@
 
 
 
+            <!-- KOMUNIKAT -->
+
             <div
-                id="login-message"
-                class="auth-message">
+                id="auth-message"
+                class="auth-message"
+                hidden>
             </div>
 
 
 
+            <!-- PRZYCISK -->
+
             <button
                 type="submit"
-                id="login-button"
+                id="login-btn"
                 class="auth-button"
             >
                 ZALOGUJ SIĘ
@@ -469,7 +475,14 @@
 
 
 <!-- ==================================================
-     JAVASCRIPT
+     SUPABASE
+     ================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<!-- ==================================================
+     NASZ SYSTEM AUTORYZACJI
      ================================================== -->
 
 <script src="auth.js"></script>
