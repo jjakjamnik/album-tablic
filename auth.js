@@ -2,14 +2,16 @@
    ALBUM TABLIC
    auth.js
 
-   WERSJA 9.0
+   WERSJA 9.1
 
    - SUPABASE AUTH
    - LOGOWANIE E-MAIL + HASŁO
-   - SESJA ZAPISYWANA W PRZEGLĄDARCE
-   - AUTOMATYCZNE ODNAWIANIE SESJI
-   - getCurrentUser() DOSTĘPNE DLA script.js
-   - OCHRONA STRON ALBUMU
+   - PERSIST SESSION
+   - AUTO REFRESH
+   - JEDEN KLIENT SUPABASE
+   - getCurrentUser() DLA script.js
+   - STABILNE ODCZYTYWANIE SESJI PO REDIRECT
+   - OCHRONA ALBUMU
    - BRAK login.js
    ========================================================= */
 
@@ -26,7 +28,7 @@ const AUTH_SUPABASE_KEY =
 
 
 /* =========================================================
-   SUPABASE CLIENT
+   SPRAWDZENIE BIBLIOTEKI
    ========================================================= */
 
 if (
@@ -34,27 +36,15 @@ if (
 ) {
 
     console.error(
-        "Supabase JS nie został załadowany."
+        "ALBUM AUTH 9.1 — Supabase JS nie został załadowany."
     );
 
 }
 
 
-/*
- * Tworzymy JEDEN klient Supabase.
- *
- * Najważniejsze:
- *
- * persistSession: true
- * → sesja zostaje w przeglądarce
- *
- * autoRefreshToken: true
- * → token jest automatycznie odnawiany
- *
- * detectSessionInUrl: true
- * → Supabase może obsłużyć sesję przekazaną
- *   przez URL
- */
+/* =========================================================
+   KLIENT SUPABASE
+   ========================================================= */
 
 const albumSupabase =
     window.supabase.createClient(
@@ -71,7 +61,10 @@ const albumSupabase =
                     true,
 
                 detectSessionInUrl:
-                    true
+                    true,
+
+                storage:
+                    window.localStorage
 
             }
 
@@ -81,9 +74,6 @@ const albumSupabase =
 
 /*
  * Udostępniamy klienta globalnie.
- *
- * Dzięki temu inne pliki mogą korzystać
- * z tego samego klienta, jeżeli będzie potrzeba.
  */
 
 window.albumSupabase =
@@ -91,7 +81,7 @@ window.albumSupabase =
 
 
 /* =========================================================
-   AKTUALNY UŻYTKOWNIK
+   CACHE UŻYTKOWNIKA
    ========================================================= */
 
 let albumCurrentUser =
@@ -99,92 +89,55 @@ let albumCurrentUser =
 
 
 /* =========================================================
-   INICJALIZACJA AUTORYZACJI
+   GOTOWOŚĆ AUTH
    ========================================================= */
 
-let authReadyPromise =
+let authInitialized =
+    false;
+
+let authInitializationPromise =
     null;
 
 
-/*
- * Supabase potrzebuje chwili na odczytanie
- * zapisanej sesji z localStorage.
- *
- * Dlatego nie robimy zwykłego:
- *
- * getSession() → od razu redirect
- *
- * tylko czekamy na zakończenie inicjalizacji.
- */
+/* =========================================================
+   INICJALIZACJA
+   ========================================================= */
 
 function initializeAuth() {
 
-    if (authReadyPromise) {
+    if (
+        authInitializationPromise
+    ) {
 
-        return authReadyPromise;
+        return authInitializationPromise;
 
     }
 
 
-    authReadyPromise =
-        new Promise(
-            async function (resolve) {
+    authInitializationPromise =
+        (async function () {
 
-                try {
+            try {
 
-                    const result =
-                        await albumSupabase.auth.getSession();
+                /*
+                 * Najważniejsze:
+                 *
+                 * czekamy na prawdziwą sesję Supabase.
+                 */
 
-
-                    if (
-                        result.error
-                    ) {
-
-                        console.error(
-                            "Supabase getSession:",
-                            result.error
-                        );
-
-                        albumCurrentUser =
-                            null;
-
-                    }
-
-                    else if (
-                        result.data &&
-                        result.data.session &&
-                        result.data.session.user
-                    ) {
-
-                        albumCurrentUser =
-                            result.data.session.user;
+                const {
+                    data,
+                    error
+                } =
+                    await albumSupabase.auth.getSession();
 
 
-                        console.log(
-                            "AUTH 9.0 — znaleziono aktywną sesję:",
-                            albumCurrentUser.id
-                        );
-
-                    }
-
-                    else {
-
-                        albumCurrentUser =
-                            null;
-
-
-                        console.log(
-                            "AUTH 9.0 — brak aktywnej sesji."
-                        );
-
-                    }
-
-                }
-
-                catch (error) {
+                if (
+                    error
+                ) {
 
                     console.error(
-                        "AUTH 9.0 — błąd inicjalizacji:",
+                        "ALBUM AUTH 9.1 — getSession:",
                         error
                     );
 
@@ -193,180 +146,111 @@ function initializeAuth() {
 
                 }
 
+                else if (
+                    data &&
+                    data.session &&
+                    data.session.user
+                ) {
 
-                /*
-                 * Nasłuchujemy zmian sesji.
-                 */
-
-                albumSupabase.auth.onAuthStateChange(
-                    function (
-                        event,
-                        session
-                    ) {
-
-                        if (
-                            session &&
-                            session.user
-                        ) {
-
-                            albumCurrentUser =
-                                session.user;
+                    albumCurrentUser =
+                        data.session.user;
 
 
-                            console.log(
-                                "AUTH 9.0 — zmiana sesji:",
-                                event,
-                                albumCurrentUser.id
-                            );
+                    console.log(
+                        "ALBUM AUTH 9.1 — sesja OK:",
+                        albumCurrentUser.id
+                    );
 
-                        }
+                }
 
-                        else {
+                else {
 
-                            albumCurrentUser =
-                                null;
-
-
-                            console.log(
-                                "AUTH 9.0 — użytkownik wylogowany."
-                            );
-
-                        }
-
-                    }
-                );
+                    albumCurrentUser =
+                        null;
 
 
-                resolve(
-                    albumCurrentUser
-                );
+                    console.log(
+                        "ALBUM AUTH 9.1 — brak sesji."
+                    );
+
+                }
 
             }
-        );
+
+            catch (error) {
+
+                console.error(
+                    "ALBUM AUTH 9.1 — błąd inicjalizacji:",
+                    error
+                );
+
+                albumCurrentUser =
+                    null;
+
+            }
 
 
-    return authReadyPromise;
-
-}
-
-
-/* =========================================================
-   GET CURRENT USER
-   ========================================================= */
-
-/*
- * TA FUNKCJA JEST UŻYWANA PRZEZ script.js
- *
- * script.js robi:
- *
- * currentUser = await getCurrentUser();
- *
- * więc musi ona istnieć globalnie.
- */
-
-async function getCurrentUser() {
-
-    /*
-     * Najpierw czekamy aż Supabase skończy
-     * odtwarzać sesję.
-     */
-
-    await initializeAuth();
-
-
-    /*
-     * Jeżeli mamy użytkownika w pamięci,
-     * możemy go zwrócić.
-     */
-
-    if (
-        albumCurrentUser
-    ) {
-
-        return albumCurrentUser;
-
-    }
-
-
-    /*
-     * Dodatkowa próba pobrania aktualnego
-     * użytkownika bezpośrednio z Supabase.
-     *
-     * To jest celowo getUser(), a nie samo
-     * localStorage.
-     */
-
-    try {
-
-        const result =
-            await albumSupabase.auth.getUser();
-
-
-        if (
-            result.error
-        ) {
-
-            console.warn(
-                "AUTH 9.0 — getUser:",
-                result.error.message
-            );
-
-
-            albumCurrentUser =
-                null;
-
-
-            return null;
-
-        }
-
-
-        if (
-            result.data &&
-            result.data.user
-        ) {
-
-            albumCurrentUser =
-                result.data.user;
+            authInitialized =
+                true;
 
 
             return albumCurrentUser;
 
+        })();
+
+
+    /*
+     * Listener zmian sesji.
+     *
+     * Rejestrujemy go tylko raz.
+     */
+
+    albumSupabase.auth.onAuthStateChange(
+        function (
+            event,
+            session
+        ) {
+
+            console.log(
+                "ALBUM AUTH 9.1 — AUTH EVENT:",
+                event
+            );
+
+
+            if (
+                session &&
+                session.user
+            ) {
+
+                albumCurrentUser =
+                    session.user;
+
+
+                console.log(
+                    "ALBUM AUTH 9.1 — użytkownik:",
+                    albumCurrentUser.id
+                );
+
+            }
+
+            else {
+
+                albumCurrentUser =
+                    null;
+
+            }
+
         }
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "AUTH 9.0 — getUser exception:",
-            error
-        );
-
-    }
+    );
 
 
-    albumCurrentUser =
-        null;
-
-
-    return null;
+    return authInitializationPromise;
 
 }
 
 
-/*
- * Ważne:
- *
- * funkcja musi być dostępna dla script.js.
- */
-
-window.getCurrentUser =
-    getCurrentUser;
-
-
 /* =========================================================
-   GET SESSION
+   GET CURRENT SESSION
    ========================================================= */
 
 async function getCurrentSession() {
@@ -376,41 +260,61 @@ async function getCurrentSession() {
 
     try {
 
-        const result =
+        const {
+            data,
+            error
+        } =
             await albumSupabase.auth.getSession();
 
 
         if (
-            result.error
+            error
         ) {
 
             console.error(
-                "AUTH 9.0 — getSession:",
-                result.error
+                "ALBUM AUTH 9.1 — getSession error:",
+                error
             );
-
 
             return null;
 
         }
 
 
-        return (
-            result.data &&
-            result.data.session
-                ? result.data.session
-                : null
-        );
+        if (
+            data &&
+            data.session
+        ) {
+
+            /*
+             * Aktualizujemy cache.
+             */
+
+            if (
+                data.session.user
+            ) {
+
+                albumCurrentUser =
+                    data.session.user;
+
+            }
+
+
+            return data.session;
+
+        }
+
+
+        return null;
 
     }
 
     catch (error) {
 
         console.error(
-            "AUTH 9.0 — getSession exception:",
+            "ALBUM AUTH 9.1 — getSession exception:",
             error
         );
-
 
         return null;
 
@@ -424,6 +328,208 @@ window.getCurrentSession =
 
 
 /* =========================================================
+   GET CURRENT USER
+   ========================================================= */
+
+async function getCurrentUser() {
+
+    /*
+     * Najpierw inicjalizacja.
+     */
+
+    await initializeAuth();
+
+
+    /*
+     * ZA KAŻDYM RAZEM pobieramy aktualną sesję
+     * z Supabase.
+     *
+     * Nie polegamy wyłącznie na zmiennej
+     * albumCurrentUser.
+     */
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await albumSupabase.auth.getSession();
+
+
+        if (
+            error
+        ) {
+
+            console.error(
+                "ALBUM AUTH 9.1 — getSession:",
+                error
+            );
+
+            albumCurrentUser =
+                null;
+
+            return null;
+
+        }
+
+
+        if (
+            data &&
+            data.session &&
+            data.session.user
+        ) {
+
+            albumCurrentUser =
+                data.session.user;
+
+
+            console.log(
+                "ALBUM AUTH 9.1 — CURRENT USER:",
+                albumCurrentUser.id
+            );
+
+
+            return albumCurrentUser;
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ALBUM AUTH 9.1 — session exception:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Jeżeli sesja nie została jeszcze
+     * poprawnie odczytana, próbujemy getUser().
+     */
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await albumSupabase.auth.getUser();
+
+
+        if (
+            !error &&
+            data &&
+            data.user
+        ) {
+
+            albumCurrentUser =
+                data.user;
+
+
+            console.log(
+                "ALBUM AUTH 9.1 — GET USER:",
+                albumCurrentUser.id
+            );
+
+
+            return albumCurrentUser;
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ALBUM AUTH 9.1 — getUser exception:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Ostatnia próba.
+     *
+     * Czasami przeglądarka potrzebuje chwili
+     * po przejściu login → index.
+     */
+
+    await new Promise(
+        function (resolve) {
+
+            setTimeout(
+                resolve,
+                150
+            );
+
+        }
+    );
+
+
+    try {
+
+        const {
+            data
+        } =
+            await albumSupabase.auth.getSession();
+
+
+        if (
+            data &&
+            data.session &&
+            data.session.user
+        ) {
+
+            albumCurrentUser =
+                data.session.user;
+
+
+            console.log(
+                "ALBUM AUTH 9.1 — SESJA ODNALEZIONA PO RETRY:",
+                albumCurrentUser.id
+            );
+
+
+            return albumCurrentUser;
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ALBUM AUTH 9.1 — retry error:",
+            error
+        );
+
+    }
+
+
+    albumCurrentUser =
+        null;
+
+
+    console.log(
+        "ALBUM AUTH 9.1 — BRAK ZALOGOWANEGO UŻYTKOWNIKA."
+    );
+
+
+    return null;
+
+}
+
+
+window.getCurrentUser =
+    getCurrentUser;
+
+
+/* =========================================================
    LOGOWANIE
    ========================================================= */
 
@@ -434,8 +540,7 @@ async function loginUser(
 
     const cleanEmail =
         String(
-            email ||
-            ""
+            email || ""
         )
             .trim()
             .toLowerCase();
@@ -460,12 +565,15 @@ async function loginUser(
 
 
     console.log(
-        "AUTH 9.0 — próba logowania:",
+        "ALBUM AUTH 9.1 — LOGOWANIE:",
         cleanEmail
     );
 
 
-    const result =
+    const {
+        data,
+        error
+    } =
         await albumSupabase.auth.signInWithPassword(
             {
                 email:
@@ -478,44 +586,69 @@ async function loginUser(
 
 
     if (
-        result.error
+        error
     ) {
 
         console.error(
-            "AUTH 9.0 — błąd logowania:",
-            result.error
+            "ALBUM AUTH 9.1 — BŁĄD LOGOWANIA:",
+            error
         );
 
-
-        throw result.error;
+        throw error;
 
     }
 
 
     if (
-        !result.data ||
-        !result.data.user
+        !data ||
+        !data.session ||
+        !data.user
     ) {
 
         throw new Error(
-            "Supabase zalogował użytkownika, ale nie zwrócił danych konta."
+            "Logowanie nie zwróciło aktywnej sesji."
         );
 
     }
 
 
     /*
-     * Zapisujemy użytkownika w pamięci.
+     * Natychmiast zapisujemy użytkownika.
      */
 
     albumCurrentUser =
-        result.data.user;
+        data.user;
 
 
     console.log(
-        "AUTH 9.0 — LOGOWANIE OK:",
+        "ALBUM AUTH 9.1 — LOGOWANIE OK:",
         albumCurrentUser.id
     );
+
+
+    /*
+     * Sprawdzamy jeszcze raz sesję,
+     * zanim pozwolimy stronie zrobić redirect.
+     */
+
+    const session =
+        await getCurrentSession();
+
+
+    if (
+        !session ||
+        !session.user
+    ) {
+
+        throw new Error(
+            "Logowanie zakończone, ale nie udało się odczytać sesji."
+        );
+
+    }
+
+
+    albumCurrentUser =
+        session.user;
 
 
     return albumCurrentUser;
@@ -533,45 +666,41 @@ window.loginUser =
 
 async function logoutUser() {
 
-    try {
-
-        const result =
-            await albumSupabase.auth.signOut();
-
-
-        if (
-            result.error
-        ) {
-
-            throw result.error;
-
-        }
-
-
-        albumCurrentUser =
-            null;
-
-
-        console.log(
-            "AUTH 9.0 — wylogowano."
+    const {
+        error
+    } =
+        await albumSupabase.auth.signOut(
+            {
+                scope:
+                    "local"
+            }
         );
 
 
-        return true;
-
-    }
-
-    catch (error) {
+    if (
+        error
+    ) {
 
         console.error(
-            "AUTH 9.0 — błąd wylogowania:",
+            "ALBUM AUTH 9.1 — BŁĄD WYLOGOWANIA:",
             error
         );
-
 
         throw error;
 
     }
+
+
+    albumCurrentUser =
+        null;
+
+
+    console.log(
+        "ALBUM AUTH 9.1 — WYLOGOWANO."
+    );
+
+
+    return true;
 
 }
 
@@ -581,7 +710,7 @@ window.logoutUser =
 
 
 /* =========================================================
-   OBSŁUGA LOGIN.HTML
+   LOGIN.HTML
    ========================================================= */
 
 document.addEventListener(
@@ -589,7 +718,7 @@ document.addEventListener(
     async function () {
 
         /*
-         * Najpierw uruchamiamy system Auth.
+         * Uruchamiamy Auth.
          */
 
         await initializeAuth();
@@ -599,6 +728,20 @@ document.addEventListener(
             document.getElementById(
                 "login-form"
             );
+
+
+        /*
+         * Jeżeli to nie login.html,
+         * kończymy.
+         */
+
+        if (
+            !loginForm
+        ) {
+
+            return;
+
+        }
 
 
         const loginButton =
@@ -614,22 +757,8 @@ document.addEventListener(
 
 
         /*
-         * Jeżeli nie jesteśmy na login.html,
-         * nie robimy nic więcej.
-         */
-
-        if (
-            !loginForm
-        ) {
-
-            return;
-
-        }
-
-
-        /*
-         * Jeżeli użytkownik już jest zalogowany,
-         * nie ma sensu pokazywać mu logowania.
+         * Jeżeli użytkownik już ma sesję,
+         * nie pokazujemy mu logowania.
          */
 
         const existingUser =
@@ -641,7 +770,8 @@ document.addEventListener(
         ) {
 
             console.log(
-                "AUTH 9.0 — użytkownik już zalogowany."
+                "ALBUM AUTH 9.1 — JUŻ ZALOGOWANY:",
+                existingUser.id
             );
 
 
@@ -655,9 +785,9 @@ document.addEventListener(
         }
 
 
-        /*
-         * Obsługa formularza.
-         */
+        /* =================================================
+           FORMULARZ
+           ================================================= */
 
         loginForm.addEventListener(
             "submit",
@@ -691,7 +821,7 @@ document.addEventListener(
 
 
                 /*
-                 * Czyścimy komunikat.
+                 * Czyszczenie komunikatu.
                  */
 
                 if (
@@ -711,7 +841,7 @@ document.addEventListener(
 
 
                 /*
-                 * Blokujemy przycisk.
+                 * Blokada przycisku.
                  */
 
                 if (
@@ -729,15 +859,20 @@ document.addEventListener(
 
                 try {
 
+                    /*
+                     * LOGOWANIE
+                     */
+
                     await loginUser(
                         email,
                         password
                     );
 
 
-                    /*
-                     * Sukces.
-                     */
+                    console.log(
+                        "ALBUM AUTH 9.1 — REDIRECT DO INDEX"
+                    );
+
 
                     if (
                         message
@@ -756,10 +891,8 @@ document.addEventListener(
 
 
                     /*
-                     * Krótkie opóźnienie nie jest
-                     * potrzebne do działania Auth,
-                     * ale pozwala użytkownikowi
-                     * zobaczyć komunikat.
+                     * Redirect dopiero po potwierdzeniu
+                     * aktywnej sesji.
                      */
 
                     window.location.replace(
@@ -771,7 +904,7 @@ document.addEventListener(
                 catch (error) {
 
                     console.error(
-                        "AUTH 9.0 — logowanie nieudane:",
+                        "ALBUM AUTH 9.1 — LOGOWANIE NIEUDANE:",
                         error
                     );
 
@@ -790,11 +923,6 @@ document.addEventListener(
 
                     }
 
-
-                    /*
-                     * Typowe komunikaty Supabase
-                     * tłumaczymy na polski.
-                     */
 
                     const lowerError =
                         errorText.toLowerCase();
@@ -864,19 +992,8 @@ document.addEventListener(
 
 
 /* =========================================================
-   OCHRONA STRON ALBUMU
+   OCHRONA ALBUMU
    ========================================================= */
-
-/*
- * Ta funkcja NIE robi automatycznego redirectu
- * na każdej stronie.
- *
- * script.js samo wykonuje:
- *
- * const currentUser = await getCurrentUser();
- *
- * dzięki czemu mamy jeden punkt kontroli.
- */
 
 async function requireAlbumLogin() {
 
@@ -912,5 +1029,5 @@ window.requireAlbumLogin =
    ========================================================= */
 
 console.log(
-    "AUTH 9.0 — system autoryzacji załadowany."
+    "ALBUM AUTH 9.1 — SYSTEM AUTORYZACJI ZAŁADOWANY."
 );
