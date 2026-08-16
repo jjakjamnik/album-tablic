@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#111518"
+    >
+
+    <title>Album Tablic</title>
+
+</head>
+
+
+<body>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="auth.js"></script>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        const user =
+            await getCurrentUser();
+
+
+        if (user) {
+
+            window.location.replace(
+                "home.html"
+            );
+
+        } else {
+
+            window.location.replace(
+                "login.html"
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>
