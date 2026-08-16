@@ -34,23 +34,18 @@ const supabaseClient =
 
 function getMessageBox() {
 
-    const loginMessage =
-        document.getElementById("login-message");
+    /*
+     * Login:
+     * #login-message
+     *
+     * Rejestracja:
+     * #register-message
+     */
 
-    if (loginMessage) {
-        return loginMessage;
-    }
-
-
-    const registerMessage =
-        document.getElementById("register-message");
-
-    if (registerMessage) {
-        return registerMessage;
-    }
-
-
-    return null;
+    return (
+        document.getElementById("login-message") ||
+        document.getElementById("register-message")
+    );
 }
 
 
@@ -81,7 +76,6 @@ function hideMessage() {
 
     if (!box) return;
 
-
     box.hidden = true;
 
     box.textContent = "";
@@ -91,7 +85,7 @@ function hideMessage() {
 
 
 /* =========================================================
-   PRZYCISK — LOADING
+   POMOCNICZE — PRZYCISK
    ========================================================= */
 
 function setLoading(
@@ -135,6 +129,9 @@ async function registerUser(
     hideMessage();
 
 
+    email = String(email || "").trim();
+
+
     if (!email || !password) {
 
         showMessage(
@@ -163,9 +160,24 @@ async function registerUser(
         } =
             await supabaseClient.auth.signUp({
 
-                email: email.trim(),
+                email: email,
 
-                password: password
+                password: password,
+
+                options: {
+
+                    /*
+                     * Po kliknięciu CONFIRM w mailu
+                     * Supabase wróci tutaj.
+                     *
+                     * Ponieważ pracujemy teraz lokalnie,
+                     * używamy aktualnego adresu strony.
+                     */
+
+                    emailRedirectTo:
+                        window.location.origin +
+                        "/home.html"
+                }
 
             });
 
@@ -177,20 +189,23 @@ async function registerUser(
                 error
             );
 
+
             showMessage(
                 getAuthErrorMessage(error)
             );
+
 
             return false;
         }
 
 
         /*
-         * Supabase może wymagać
-         * potwierdzenia adresu e-mail.
+         * Supabase zwraca user bez session,
+         * kiedy wymagane jest potwierdzenie e-maila.
          */
 
         if (
+            data &&
             data.user &&
             !data.session
         ) {
@@ -200,16 +215,21 @@ async function registerUser(
                 "success"
             );
 
+
             return true;
         }
 
 
         /*
          * Jeżeli potwierdzanie e-maila
-         * jest wyłączone — logujemy od razu.
+         * jest wyłączone — użytkownik
+         * może zostać zalogowany od razu.
          */
 
-        if (data.session) {
+        if (
+            data &&
+            data.session
+        ) {
 
             window.location.href =
                 "home.html";
@@ -220,6 +240,7 @@ async function registerUser(
 
         return true;
 
+
     } catch (error) {
 
         console.error(
@@ -227,9 +248,11 @@ async function registerUser(
             error
         );
 
+
         showMessage(
             "Wystąpił nieoczekiwany błąd."
         );
+
 
         return false;
     }
@@ -246,6 +269,10 @@ async function loginUser(
 ) {
 
     hideMessage();
+
+
+    email =
+        String(email || "").trim();
 
 
     if (!email || !password) {
@@ -266,7 +293,7 @@ async function loginUser(
         } =
             await supabaseClient.auth.signInWithPassword({
 
-                email: email.trim(),
+                email: email,
 
                 password: password
 
@@ -280,15 +307,20 @@ async function loginUser(
                 error
             );
 
+
             showMessage(
                 getAuthErrorMessage(error)
             );
+
 
             return false;
         }
 
 
-        if (data.session) {
+        if (
+            data &&
+            data.session
+        ) {
 
             window.location.href =
                 "home.html";
@@ -297,7 +329,13 @@ async function loginUser(
         }
 
 
+        showMessage(
+            "Nie udało się utworzyć sesji."
+        );
+
+
         return false;
+
 
     } catch (error) {
 
@@ -306,9 +344,11 @@ async function loginUser(
             error
         );
 
+
         showMessage(
             "Wystąpił nieoczekiwany błąd."
         );
+
 
         return false;
     }
@@ -336,6 +376,7 @@ async function logoutUser() {
                 error
             );
 
+
             return false;
         }
 
@@ -343,7 +384,9 @@ async function logoutUser() {
         window.location.href =
             "login.html";
 
+
         return true;
+
 
     } catch (error) {
 
@@ -352,36 +395,52 @@ async function logoutUser() {
             error
         );
 
+
         return false;
     }
 }
 
 
 /* =========================================================
-   POBIERANIE AKTUALNEGO UŻYTKOWNIKA
+   POBRANIE AKTUALNEGO UŻYTKOWNIKA
    ========================================================= */
 
 async function getCurrentUser() {
 
-    const {
-        data,
-        error
-    } =
-        await supabaseClient.auth.getUser();
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.getUser();
 
 
-    if (error) {
+        if (error) {
+
+            console.error(
+                "Błąd pobierania użytkownika:",
+                error
+            );
+
+
+            return null;
+        }
+
+
+        return data.user || null;
+
+
+    } catch (error) {
 
         console.error(
-            "Błąd pobierania użytkownika:",
+            "Błąd getCurrentUser:",
             error
         );
 
+
         return null;
     }
-
-
-    return data.user || null;
 }
 
 
@@ -400,6 +459,7 @@ async function requireAuth() {
         window.location.href =
             "login.html";
 
+
         return null;
     }
 
@@ -409,7 +469,7 @@ async function requireAuth() {
 
 
 /* =========================================================
-   JEŻELI JUŻ ZALOGOWANY
+   PRZEKIEROWANIE Z LOGIN / REGISTER
    ========================================================= */
 
 async function redirectIfLoggedIn() {
@@ -423,6 +483,7 @@ async function redirectIfLoggedIn() {
         window.location.href =
             "home.html";
 
+
         return true;
     }
 
@@ -432,7 +493,7 @@ async function redirectIfLoggedIn() {
 
 
 /* =========================================================
-   FORMULARZ LOGOWANIA
+   OBSŁUGA LOGIN
    ========================================================= */
 
 function initLoginForm() {
@@ -457,6 +518,14 @@ function initLoginForm() {
             "login-password"
         );
 
+
+    /*
+     * NASZ HTML MA:
+     *
+     * id="login-button"
+     *
+     * a nie login-btn.
+     */
 
     const button =
         document.getElementById(
@@ -508,7 +577,7 @@ function initLoginForm() {
 
 
 /* =========================================================
-   FORMULARZ REJESTRACJI
+   OBSŁUGA REJESTRACJI
    ========================================================= */
 
 function initRegisterForm() {
@@ -534,11 +603,27 @@ function initRegisterForm() {
         );
 
 
+    /*
+     * NASZ REGISTER.HTML MA:
+     *
+     * register-password-confirm
+     *
+     * a nie:
+     *
+     * register-password-repeat
+     */
+
     const passwordRepeatInput =
         document.getElementById(
             "register-password-confirm"
         );
 
+
+    /*
+     * NASZ REGISTER.HTML MA:
+     *
+     * register-button
+     */
 
     const button =
         document.getElementById(
@@ -583,6 +668,7 @@ function initRegisterForm() {
                     "Hasła nie są takie same."
                 );
 
+
                 return;
             }
 
@@ -612,14 +698,16 @@ function initRegisterForm() {
 
 
 /* =========================================================
-   KOMUNIKATY BŁĘDÓW SUPABASE
+   BŁĘDY SUPABASE
    ========================================================= */
 
 function getAuthErrorMessage(error) {
 
     if (!error) {
 
-        return "Wystąpił nieznany błąd.";
+        return (
+            "Wystąpił nieznany błąd."
+        );
     }
 
 
@@ -635,7 +723,9 @@ function getAuthErrorMessage(error) {
         )
     ) {
 
-        return "Nieprawidłowy e-mail lub hasło.";
+        return (
+            "Nieprawidłowy e-mail lub hasło."
+        );
     }
 
 
@@ -645,7 +735,9 @@ function getAuthErrorMessage(error) {
         )
     ) {
 
-        return "Najpierw potwierdź swój adres e-mail.";
+        return (
+            "Najpierw potwierdź swój adres e-mail."
+        );
     }
 
 
@@ -655,7 +747,9 @@ function getAuthErrorMessage(error) {
         )
     ) {
 
-        return "Konto z tym adresem e-mail już istnieje.";
+        return (
+            "Konto z tym adresem e-mail już istnieje."
+        );
     }
 
 
@@ -665,7 +759,9 @@ function getAuthErrorMessage(error) {
         )
     ) {
 
-        return "Hasło jest za krótkie.";
+        return (
+            "Hasło jest za krótkie."
+        );
     }
 
 
@@ -675,7 +771,9 @@ function getAuthErrorMessage(error) {
         )
     ) {
 
-        return "Podany adres e-mail jest nieprawidłowy.";
+        return (
+            "Podany adres e-mail jest nieprawidłowy."
+        );
     }
 
 
@@ -685,7 +783,21 @@ function getAuthErrorMessage(error) {
         )
     ) {
 
-        return "Zbyt wiele prób. Spróbuj ponownie za chwilę.";
+        return (
+            "Zbyt wiele prób. Spróbuj ponownie za chwilę."
+        );
+    }
+
+
+    if (
+        message.includes(
+            "email rate limit exceeded"
+        )
+    ) {
+
+        return (
+            "Limit wysyłania wiadomości e-mail został przekroczony. Spróbuj ponownie później."
+        );
     }
 
 
@@ -697,16 +809,53 @@ function getAuthErrorMessage(error) {
 
 
 /* =========================================================
-   START
+   AUTOMATYCZNA INICJALIZACJA
    ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
+    async function() {
+
+        /*
+         * Najpierw sprawdzamy, na jakiej
+         * stronie jesteśmy.
+         */
+
+        const isLoginPage =
+            document.getElementById(
+                "login-form"
+            );
+
+
+        const isRegisterPage =
+            document.getElementById(
+                "register-form"
+            );
+
+
+        /*
+         * Inicjalizacja formularzy.
+         */
 
         initLoginForm();
 
         initRegisterForm();
+
+
+        /*
+         * Jeżeli jesteśmy na login.html
+         * lub register.html i użytkownik
+         * już ma sesję — przenosimy go
+         * automatycznie do home.html.
+         */
+
+        if (
+            isLoginPage ||
+            isRegisterPage
+        ) {
+
+            await redirectIfLoggedIn();
+        }
 
     }
 );
