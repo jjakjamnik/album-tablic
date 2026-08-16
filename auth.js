@@ -2,14 +2,20 @@
    ALBUM TABLIC REJESTRACYJNYCH
    auth.js
 
+   AUTORYZACJA UŻYTKOWNIKÓW — SUPABASE
+
    STRUKTURA:
+   home.html     = główny album
+   login.html    = logowanie
+   register.html = rejestracja
 
-   index.html      = STRONA GŁÓWNA / LANDING
-   login.html      = LOGOWANIE
-   register.html   = REJESTRACJA
-   home.html       = WŁAŚCIWY ALBUM
-
-   SUPABASE AUTH
+   Jeden plik obsługuje:
+   - rejestrację
+   - logowanie
+   - wylogowanie
+   - sprawdzanie użytkownika
+   - ochronę home.html
+   - przekierowanie zalogowanego użytkownika
    ========================================================= */
 
 
@@ -36,7 +42,7 @@ const supabaseClient =
 
 
 /* =========================================================
-   KOMUNIKATY
+   POMOCNICZE — KOMUNIKATY
    ========================================================= */
 
 function getMessageBox() {
@@ -95,7 +101,7 @@ function hideMessage() {
 
 
 /* =========================================================
-   PRZYCISK — LOADING
+   POMOCNICZE — PRZYCISK
    ========================================================= */
 
 function setLoading(
@@ -178,8 +184,8 @@ async function registerUser(
                 options: {
 
                     /*
-                     * Po potwierdzeniu adresu
-                     * użytkownik wraca do właściwego albumu.
+                     * Po potwierdzeniu e-maila
+                     * użytkownik wraca do głównego albumu.
                      */
 
                     emailRedirectTo:
@@ -209,7 +215,7 @@ async function registerUser(
 
         /*
          * Konto utworzone,
-         * ale Supabase wymaga potwierdzenia e-mail.
+         * ale wymagane potwierdzenie e-mail.
          */
 
         if (
@@ -229,9 +235,8 @@ async function registerUser(
 
 
         /*
-         * Jeżeli potwierdzanie e-maila
-         * jest wyłączone, użytkownik
-         * zostaje zalogowany od razu.
+         * Potwierdzanie e-maila wyłączone.
+         * Supabase zalogował użytkownika od razu.
          */
 
         if (
@@ -331,8 +336,7 @@ async function loginUser(
         ) {
 
             /*
-             * POPRAWNE LOGOWANIE
-             * → WŁAŚCIWY ALBUM
+             * GŁÓWNY ALBUM = home.html
              */
 
             window.location.href =
@@ -394,12 +398,8 @@ async function logoutUser() {
         }
 
 
-        /*
-         * PO WYLOGOWANIU → LANDING
-         */
-
         window.location.href =
-            "index.html";
+            "login.html";
 
 
         return true;
@@ -419,7 +419,7 @@ async function logoutUser() {
 
 
 /* =========================================================
-   AKTUALNY UŻYTKOWNIK
+   POBRANIE AKTUALNEGO UŻYTKOWNIKA
    ========================================================= */
 
 async function getCurrentUser() {
@@ -462,7 +462,7 @@ async function getCurrentUser() {
 
 
 /* =========================================================
-   OCHRONA HOME.HTML
+   OCHRONA STRONY
    ========================================================= */
 
 async function requireAuth() {
@@ -472,11 +472,6 @@ async function requireAuth() {
 
 
     if (!user) {
-
-        /*
-         * Próba wejścia do albumu
-         * bez zalogowania.
-         */
 
         window.location.href =
             "login.html";
@@ -491,7 +486,7 @@ async function requireAuth() {
 
 
 /* =========================================================
-   PRZEKIEROWANIE Z LOGIN / REGISTER
+   PRZEKIEROWANIE JEŚLI JUŻ ZALOGOWANY
    ========================================================= */
 
 async function redirectIfLoggedIn() {
@@ -501,12 +496,6 @@ async function redirectIfLoggedIn() {
 
 
     if (user) {
-
-        /*
-         * Użytkownik jest już zalogowany.
-         * Nie pokazujemy mu ponownie
-         * formularza logowania/rejestracji.
-         */
 
         window.location.href =
             "home.html";
@@ -579,29 +568,17 @@ function initLoginForm() {
             );
 
 
-            const success =
-                await loginUser(
-                    email,
-                    password
-                );
+            await loginUser(
+                email,
+                password
+            );
 
 
-            /*
-             * Przy błędzie przywracamy przycisk.
-             *
-             * Przy sukcesie nastąpi
-             * przekierowanie do home.html.
-             */
-
-            if (!success) {
-
-                setLoading(
-                    button,
-                    false,
-                    "ZALOGUJ SIĘ"
-                );
-
-            }
+            setLoading(
+                button,
+                false,
+                "ZALOGUJ SIĘ"
+            );
 
         }
     );
@@ -696,47 +673,17 @@ function initRegisterForm() {
             );
 
 
-            const success =
-                await registerUser(
-                    email,
-                    password
-                );
+            await registerUser(
+                email,
+                password
+            );
 
 
-            /*
-             * Jeżeli wystąpił błąd,
-             * przywracamy przycisk.
-             */
-
-            if (!success) {
-
-                setLoading(
-                    button,
-                    false,
-                    "UTWÓRZ KONTO"
-                );
-
-            } else {
-
-                /*
-                 * Jeśli wymagane jest potwierdzenie
-                 * e-mail, pozostajemy na register.html.
-                 */
-
-                setTimeout(
-                    function() {
-
-                        setLoading(
-                            button,
-                            false,
-                            "UTWÓRZ KONTO"
-                        );
-
-                    },
-                    300
-                );
-
-            }
+            setLoading(
+                button,
+                false,
+                "UTWÓRZ KONTO"
+            );
 
         }
     );
@@ -867,9 +814,13 @@ function getCurrentPage() {
             .toLowerCase();
 
 
+    /*
+     * Pusta ścieżka traktujemy jako home.html.
+     */
+
     if (!path) {
 
-        return "index.html";
+        return "home.html";
     }
 
 
@@ -902,27 +853,6 @@ document.addEventListener(
             currentPage === "home.html";
 
 
-        const isLandingPage =
-            currentPage === "index.html";
-
-
-        /* =================================================
-           INDEX.HTML — LANDING
-           ================================================= */
-
-        if (isLandingPage) {
-
-            /*
-             * Landing jest publiczny.
-             *
-             * Nie sprawdzamy tutaj sesji.
-             * Nie przekierowujemy automatycznie.
-             */
-
-            return;
-        }
-
-
         /* =================================================
            LOGIN / REGISTER
            ================================================= */
@@ -938,8 +868,8 @@ document.addEventListener(
 
 
             /*
-             * Jeżeli użytkownik jest już zalogowany,
-             * → home.html
+             * Zalogowany użytkownik nie powinien
+             * oglądać ponownie logowania/rejestracji.
              */
 
             await redirectIfLoggedIn();
@@ -950,19 +880,16 @@ document.addEventListener(
 
 
         /* =================================================
-           HOME.HTML — WŁAŚCIWY ALBUM
+           GŁÓWNY ALBUM — HOME.HTML
            ================================================= */
 
         if (isHomePage) {
 
             /*
-             * HOME jest chronione.
+             * HOME.HTML jest chroniony.
              *
-             * Brak sesji:
-             * → login.html
-             *
-             * Jest sesja:
-             * → album działa.
+             * Bez sesji → login.html
+             * Z sesją → album działa normalnie.
              */
 
             const user =
@@ -981,7 +908,12 @@ document.addEventListener(
             );
 
 
-            return;
+            /*
+             * Tutaj NIE przekierowujemy dalej.
+             *
+             * Album działa normalnie.
+             */
+
         }
 
     }
