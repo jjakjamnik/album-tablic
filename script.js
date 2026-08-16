@@ -1,9 +1,10 @@
 /* =========================================================
    ALBUM TABLIC REJESTRACYJNYCH
    script.js
-   WERSJA 8.1 — SUPABASE + EKRAN STARTOWY
+   WERSJA 8.2 — SUPABASE + UŻYTKOWNICY
 
    - SUPABASE JAKO GŁÓWNA BAZA DANYCH
+   - KAŻDY UŻYTKOWNIK MA WŁASNĄ KOLEKCJĘ
    - KOMPUTER + TELEFON = TA SAMA KOLEKCJA
    - AUTOMATYCZNA MIGRACJA STAREGO LOCALSTORAGE
    - ODLEGŁOŚĆ DROGOWA OSRM
@@ -18,7 +19,8 @@
    - SPECIAL = ZŁOTA KARTA
    - EDYCJA KART
    - DUPLIKATY NIE SĄ DODAWANE
-   - EKRAN STARTOWY KOŃCZY SIĘ PO ZAŁADOWANIU ALBUMU
+   - KAŻDY UŻYTKOWNIK WIDZI TYLKO SWOJE KARTY
+   - NOWY UŻYTKOWNIK STARTUJE Z 0 NAKLEJEK
    ========================================================= */
 
 
@@ -48,10 +50,10 @@ const STORAGE_VERSION_KEY =
     "albumStorageVersion";
 
 const STORAGE_VERSION =
-    "8";
+    "8.2";
 
 const MIGRATION_KEY =
-    "albumMigrationV8";
+    "albumMigrationV8_2";
 
 
 /* =========================================================
@@ -61,6 +63,13 @@ const MIGRATION_KEY =
 let stickersCache = [];
 
 let stickersLoaded = false;
+
+
+/* =========================================================
+   AKTUALNY UŻYTKOWNIK
+   ========================================================= */
+
+let currentUser = null;
 
 
 /* =========================================================
@@ -123,6 +132,48 @@ document.addEventListener(
 
 
         /* =================================================
+           SPRAWDZENIE ZALOGOWANEGO UŻYTKOWNIKA
+           ================================================= */
+
+        try {
+
+            currentUser =
+                await getCurrentUserForAlbum();
+
+
+            if (!currentUser) {
+
+                window.location.href =
+                    "login.html";
+
+                return;
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Błąd sprawdzania użytkownika:",
+                error
+            );
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        console.log(
+            "Zalogowany użytkownik:",
+            currentUser.id
+        );
+
+
+        /* =================================================
            WCZYTANIE BAZY SUPABASE
            ================================================= */
 
@@ -143,11 +194,6 @@ document.addEventListener(
                 "Nie udało się połączyć z bazą albumu.\n\n" +
                 "Sprawdź połączenie z internetem."
             );
-
-            /*
-             * Nie zostawiamy ekranu startowego
-             * wiszącego w nieskończoność.
-             */
 
             if (
                 typeof window.albumSplashReady ===
@@ -740,6 +786,9 @@ document.addEventListener(
 
                                 ...oldSticker,
 
+                                user_id:
+                                    currentUser.id,
+
                                 country:
                                     country,
 
@@ -889,6 +938,9 @@ document.addEventListener(
 
                             id:
                                 generateStickerId(),
+
+                            user_id:
+                                currentUser.id,
 
                             country:
                                 country,
@@ -1131,6 +1183,77 @@ document.addEventListener(
 
 
 /* =========================================================
+   AKTUALNY UŻYTKOWNIK — SUPABASE AUTH
+   ========================================================= */
+
+async function getCurrentUserForAlbum() {
+
+    const response =
+        await fetch(
+            "https://ddlwmtbtsaikbkorkwaa.supabase.co/auth/v1/user",
+            {
+                method:
+                    "GET",
+
+                headers: {
+
+                    "apikey":
+                        SUPABASE_KEY,
+
+                    "Authorization":
+                        "Bearer " +
+                        SUPABASE_KEY
+
+                }
+
+            }
+        );
+
+
+    /*
+     * Powyższe REST API nie posiada
+     * sesji użytkownika zapisanej
+     * automatycznie w tym fetchu.
+     *
+     * Dlatego korzystamy z Supabase
+     * clienta z auth.js.
+     */
+
+    if (
+        typeof supabaseClient !==
+        "undefined"
+    ) {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.getUser();
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return data.user || null;
+
+    }
+
+
+    /*
+     * Jeżeli auth.js nie jest załadowany,
+     * nie wpuszczamy do albumu.
+     */
+
+    return null;
+
+}
+
+
+/* =========================================================
    SUPABASE — NAGŁÓWKI
    ========================================================= */
 
@@ -1158,16 +1281,29 @@ function supabaseHeaders(
 
 
 /* =========================================================
-   SUPABASE — POBIERANIE WSZYSTKICH NAKLEJEK
+   SUPABASE — POBIERANIE NAKLEJEK AKTUALNEGO UŻYTKOWNIKA
    ========================================================= */
 
 async function loadStickersFromSupabase() {
+
+    if (!currentUser) {
+
+        throw new Error(
+            "Brak zalogowanego użytkownika."
+        );
+
+    }
+
 
     const url =
         SUPABASE_URL +
         "/" +
         SUPABASE_TABLE +
-        "?select=*";
+        "?select=*" +
+        "&user_id=eq." +
+        encodeURIComponent(
+            currentUser.id
+        );
 
 
     const response =
@@ -1225,7 +1361,7 @@ async function loadStickersFromSupabase() {
     console.log(
         "Supabase: wczytano",
         stickersCache.length,
-        "naklejek."
+        "naklejek użytkownika."
     );
 
 }
@@ -1238,6 +1374,19 @@ async function loadStickersFromSupabase() {
 async function saveSticker(
     sticker
 ) {
+
+    if (!currentUser) {
+
+        throw new Error(
+            "Brak zalogowanego użytkownika."
+        );
+
+    }
+
+
+    sticker.user_id =
+        currentUser.id;
+
 
     const url =
         SUPABASE_URL +
@@ -1325,6 +1474,15 @@ async function updateStickerInSupabase(
     sticker
 ) {
 
+    if (!currentUser) {
+
+        throw new Error(
+            "Brak zalogowanego użytkownika."
+        );
+
+    }
+
+
     const url =
         SUPABASE_URL +
         "/" +
@@ -1332,6 +1490,10 @@ async function updateStickerInSupabase(
         "?id=eq." +
         encodeURIComponent(
             sticker.id
+        ) +
+        "&user_id=eq." +
+        encodeURIComponent(
+            currentUser.id
         );
 
 
@@ -1353,6 +1515,9 @@ async function updateStickerInSupabase(
                 body:
                     JSON.stringify(
                         {
+                            user_id:
+                                currentUser.id,
+
                             country:
                                 sticker.country,
 
@@ -1418,6 +1583,15 @@ async function deleteStickerFromSupabase(
     sticker
 ) {
 
+    if (!currentUser) {
+
+        throw new Error(
+            "Brak zalogowanego użytkownika."
+        );
+
+    }
+
+
     const url =
         SUPABASE_URL +
         "/" +
@@ -1425,6 +1599,10 @@ async function deleteStickerFromSupabase(
         "?id=eq." +
         encodeURIComponent(
             sticker.id
+        ) +
+        "&user_id=eq." +
+        encodeURIComponent(
+            currentUser.id
         );
 
 
@@ -2736,6 +2914,11 @@ function resetEditMode() {
 
 async function migrateOldStickers() {
 
+    if (!currentUser) {
+        return;
+    }
+
+
     if (
         localStorage.getItem(
             MIGRATION_KEY
@@ -2746,6 +2929,12 @@ async function migrateOldStickers() {
 
     }
 
+
+    /*
+     * Jeżeli użytkownik już ma kolekcję
+     * w Supabase, nie próbujemy importować
+     * starego localStorage.
+     */
 
     if (
         stickersCache.length > 0
@@ -2826,7 +3015,7 @@ async function migrateOldStickers() {
     console.log(
         "Rozpoczynam migrację",
         oldStickers.length,
-        "starych naklejek do Supabase..."
+        "starych naklejek do konta..."
     );
 
 
@@ -2839,6 +3028,10 @@ async function migrateOldStickers() {
     ) {
 
         try {
+
+            sticker.user_id =
+                currentUser.id;
+
 
             await saveStickerToSupabaseOnly(
                 sticker
@@ -2882,11 +3075,10 @@ async function migrateOldStickers() {
     ) {
 
         alert(
-            "Kolekcja została przeniesiona do wspólnej bazy.\n\n" +
+            "Twoja stara kolekcja została przeniesiona do Twojego konta.\n\n" +
             "Przeniesiono: " +
             migrated +
-            " naklejek.\n\n" +
-            "Od teraz komputer i telefon będą korzystać z tej samej kolekcji."
+            " naklejek."
         );
 
     }
@@ -2901,6 +3093,19 @@ async function migrateOldStickers() {
 async function saveStickerToSupabaseOnly(
     sticker
 ) {
+
+    if (!currentUser) {
+
+        throw new Error(
+            "Brak zalogowanego użytkownika."
+        );
+
+    }
+
+
+    sticker.user_id =
+        currentUser.id;
+
 
     const url =
         SUPABASE_URL +
@@ -2923,6 +3128,9 @@ async function saveStickerToSupabaseOnly(
                         {
                             id:
                                 sticker.id,
+
+                            user_id:
+                                currentUser.id,
 
                             country:
                                 sticker.country,
@@ -3615,18 +3823,6 @@ function updateCountryCounters() {
             }
 
 
-            /*
-             * STRONA GŁÓWNA:
-             *
-             * countries/pl.html
-             * ./countries/pl.html
-             * /countries/pl.html
-             *
-             * Wszystkie są poprawne.
-             *
-             * Katalog countries ZOSTAJE.
-             */
-
             const match =
                 href.match(
                     /(?:^|\/)countries\/([a-z]{2})\.html(?:[?#].*)?$/i
@@ -3718,11 +3914,6 @@ function updateCountryCardStates() {
                 return;
             }
 
-
-            /*
-             * countries/xx.html pozostaje właściwą
-             * strukturą albumu.
-             */
 
             const match =
                 href.match(
