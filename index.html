@@ -12,10 +12,1125 @@
 
     <meta
         name="theme-color"
-        content="#111518"
+        content="#0b1f3a"
     >
 
-    <title>Album Tablic</title>
+    <meta
+        name="description"
+        content="Album Tablic — zbieraj, odkrywaj i kompletuj tablice rejestracyjne Europy."
+    >
+
+    <title>Album Tablic — Europejska Kolekcja</title>
+
+
+    <style>
+
+        /* ==================================================
+           RESET
+           ================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            background: #f4f1e8;
+
+            color: #0b1f3a;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+        }
+
+
+        button,
+        a {
+            font-family: inherit;
+        }
+
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* ==================================================
+           GŁÓWNY KONTENER
+           ================================================== */
+
+        .landing-page {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            flex-direction: column;
+
+        }
+
+
+        /* ==================================================
+           HEADER
+           ================================================== */
+
+        .landing-header {
+
+            width: 100%;
+
+            background: #0b1f3a;
+
+            border-bottom:
+                1px solid
+                rgba(197, 164, 90, 0.35);
+
+        }
+
+
+        .landing-header-inner {
+
+            width: 100%;
+
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            padding:
+                22px 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 30px;
+
+        }
+
+
+        .landing-logo {
+
+            display: flex;
+
+            flex-direction: column;
+
+        }
+
+
+        .landing-logo-title {
+
+            color: #ffffff;
+
+            font-size: 21px;
+
+            font-weight: 800;
+
+            letter-spacing: 3px;
+
+        }
+
+
+        .landing-logo-subtitle {
+
+            margin-top: 5px;
+
+            color: #c5a45a;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            letter-spacing: 2px;
+
+        }
+
+
+        .landing-nav {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+        }
+
+
+        .landing-nav-login {
+
+            padding:
+                10px 16px;
+
+            color: #ffffff;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.3);
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            letter-spacing: 1px;
+
+            transition:
+                0.2s ease;
+
+        }
+
+
+        .landing-nav-login:hover {
+
+            border-color: #c5a45a;
+
+            color: #c5a45a;
+
+        }
+
+
+        .landing-nav-register {
+
+            padding:
+                11px 17px;
+
+            background: #c5a45a;
+
+            color: #0b1f3a;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            transition:
+                0.2s ease;
+
+        }
+
+
+        .landing-nav-register:hover {
+
+            background: #dfc477;
+
+        }
+
+
+        /* ==================================================
+           HERO
+           ================================================== */
+
+        .hero {
+
+            position: relative;
+
+            overflow: hidden;
+
+            background: #0b1f3a;
+
+            color: #ffffff;
+
+        }
+
+
+        .hero::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 500px;
+
+            height: 500px;
+
+            right: -180px;
+
+            top: -220px;
+
+            border:
+                1px solid
+                rgba(197, 164, 90, 0.12);
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 0 60px rgba(197, 164, 90, 0.025),
+                0 0 0 120px rgba(197, 164, 90, 0.02);
+
+        }
+
+
+        .hero-inner {
+
+            position: relative;
+
+            z-index: 1;
+
+            width: 100%;
+
+            max-width: 1200px;
+
+            min-height: 570px;
+
+            margin: 0 auto;
+
+            padding:
+                80px 30px;
+
+            display: flex;
+
+            align-items: center;
+
+        }
+
+
+        .hero-content {
+
+            width: 650px;
+
+            max-width: 100%;
+
+        }
+
+
+        .hero-label {
+
+            display: inline-block;
+
+            margin-bottom: 20px;
+
+            color: #c5a45a;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            letter-spacing: 3px;
+
+        }
+
+
+        .hero-title {
+
+            margin: 0;
+
+            color: #ffffff;
+
+            font-size: clamp(
+                42px,
+                6vw,
+                72px
+            );
+
+            line-height: 0.98;
+
+            font-weight: 900;
+
+            letter-spacing: -2px;
+
+        }
+
+
+        .hero-title span {
+
+            color: #c5a45a;
+
+        }
+
+
+        .hero-text {
+
+            max-width: 570px;
+
+            margin:
+                25px 0 0;
+
+            color: #cbd2dc;
+
+            font-size: 17px;
+
+            line-height: 1.7;
+
+        }
+
+
+        .hero-buttons {
+
+            margin-top: 35px;
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 12px;
+
+        }
+
+
+        .hero-button-primary {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-width: 180px;
+
+            padding:
+                15px 22px;
+
+            background: #c5a45a;
+
+            color: #0b1f3a;
+
+            font-size: 12px;
+
+            font-weight: 900;
+
+            letter-spacing: 1.5px;
+
+            transition:
+                0.2s ease;
+
+        }
+
+
+        .hero-button-primary:hover {
+
+            background: #dfc477;
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        .hero-button-secondary {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-width: 150px;
+
+            padding:
+                14px 22px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.35);
+
+            color: #ffffff;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.5px;
+
+            transition:
+                0.2s ease;
+
+        }
+
+
+        .hero-button-secondary:hover {
+
+            border-color: #c5a45a;
+
+            color: #c5a45a;
+
+        }
+
+
+        /* ==================================================
+           WIZUALNA TABLICA
+           ================================================== */
+
+        .hero-plate {
+
+            position: absolute;
+
+            right: 40px;
+
+            top: 50%;
+
+            width: 400px;
+
+            height: 120px;
+
+            transform:
+                translateY(-50%)
+                rotate(3deg);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff,
+                    #e8e8e8
+                );
+
+            border:
+                5px solid
+                #d5d5d5;
+
+            border-radius: 7px;
+
+            box-shadow:
+                0 25px 60px
+                rgba(0, 0, 0, 0.35);
+
+        }
+
+
+        .hero-plate-country {
+
+            position: absolute;
+
+            left: 0;
+
+            top: 0;
+
+            bottom: 0;
+
+            width: 48px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #16477c;
+
+            color: #ffffff;
+
+            font-size: 18px;
+
+            font-weight: 800;
+
+        }
+
+
+        .hero-plate-number {
+
+            height: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding-left: 48px;
+
+            color: #111111;
+
+            font-size: 43px;
+
+            font-weight: 800;
+
+            letter-spacing: 4px;
+
+        }
+
+
+        /* ==================================================
+           FEATURES
+           ================================================== */
+
+        .features {
+
+            width: 100%;
+
+            background: #f4f1e8;
+
+            padding:
+                75px 30px;
+
+        }
+
+
+        .features-inner {
+
+            width: 100%;
+
+            max-width: 1100px;
+
+            margin: 0 auto;
+
+        }
+
+
+        .section-heading {
+
+            margin-bottom: 40px;
+
+            text-align: center;
+
+        }
+
+
+        .section-label {
+
+            margin-bottom: 10px;
+
+            color: #b08a3c;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            letter-spacing: 2px;
+
+        }
+
+
+        .section-title {
+
+            margin: 0;
+
+            color: #0b1f3a;
+
+            font-size: 32px;
+
+            font-weight: 900;
+
+        }
+
+
+        .section-text {
+
+            max-width: 650px;
+
+            margin:
+                12px auto 0;
+
+            color: #777;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+        }
+
+
+        .feature-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+        }
+
+
+        .feature-card {
+
+            padding: 30px;
+
+            background: #ffffff;
+
+            border:
+                1px solid
+                rgba(11, 31, 58, 0.1);
+
+            box-shadow:
+                0 10px 30px
+                rgba(0, 0, 0, 0.05);
+
+        }
+
+
+        .feature-icon {
+
+            margin-bottom: 20px;
+
+            color: #c5a45a;
+
+            font-size: 28px;
+
+        }
+
+
+        .feature-title {
+
+            margin: 0 0 10px;
+
+            color: #0b1f3a;
+
+            font-size: 17px;
+
+            font-weight: 800;
+
+        }
+
+
+        .feature-text {
+
+            margin: 0;
+
+            color: #777;
+
+            font-size: 13px;
+
+            line-height: 1.65;
+
+        }
+
+
+        /* ==================================================
+           GRA — JAK TO DZIAŁA
+           ================================================== */
+
+        .how {
+
+            background: #ffffff;
+
+            padding:
+                75px 30px;
+
+        }
+
+
+        .how-inner {
+
+            width: 100%;
+
+            max-width: 1100px;
+
+            margin: 0 auto;
+
+        }
+
+
+        .steps {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 25px;
+
+        }
+
+
+        .step {
+
+            position: relative;
+
+            padding: 30px;
+
+            border-top:
+                3px solid
+                #c5a45a;
+
+        }
+
+
+        .step-number {
+
+            margin-bottom: 18px;
+
+            color: #c5a45a;
+
+            font-size: 12px;
+
+            font-weight: 900;
+
+            letter-spacing: 2px;
+
+        }
+
+
+        .step-title {
+
+            margin: 0 0 10px;
+
+            color: #0b1f3a;
+
+            font-size: 18px;
+
+            font-weight: 800;
+
+        }
+
+
+        .step-text {
+
+            margin: 0;
+
+            color: #777;
+
+            font-size: 13px;
+
+            line-height: 1.65;
+
+        }
+
+
+        /* ==================================================
+           APLIKACJA
+           ================================================== */
+
+        .app-section {
+
+            background: #0b1f3a;
+
+            color: #ffffff;
+
+            padding:
+                70px 30px;
+
+        }
+
+
+        .app-inner {
+
+            width: 100%;
+
+            max-width: 1000px;
+
+            margin: 0 auto;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 50px;
+
+        }
+
+
+        .app-content {
+
+            max-width: 620px;
+
+        }
+
+
+        .app-label {
+
+            color: #c5a45a;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            letter-spacing: 2px;
+
+        }
+
+
+        .app-title {
+
+            margin:
+                12px 0;
+
+            color: #ffffff;
+
+            font-size: 30px;
+
+            font-weight: 900;
+
+        }
+
+
+        .app-text {
+
+            margin: 0;
+
+            color: #cbd2dc;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+
+        }
+
+
+        .app-button {
+
+            flex-shrink: 0;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding:
+                15px 22px;
+
+            border:
+                1px solid
+                #c5a45a;
+
+            color: #c5a45a;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.5px;
+
+        }
+
+
+        .app-button:hover {
+
+            background: #c5a45a;
+
+            color: #0b1f3a;
+
+        }
+
+
+        /* ==================================================
+           CTA
+           ================================================== */
+
+        .cta {
+
+            padding:
+                80px 30px;
+
+            background: #f4f1e8;
+
+            text-align: center;
+
+        }
+
+
+        .cta-inner {
+
+            max-width: 700px;
+
+            margin: 0 auto;
+
+        }
+
+
+        .cta-title {
+
+            margin: 0;
+
+            color: #0b1f3a;
+
+            font-size: 34px;
+
+            font-weight: 900;
+
+        }
+
+
+        .cta-text {
+
+            margin:
+                15px 0 30px;
+
+            color: #777;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+        }
+
+
+        .cta-button {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding:
+                16px 28px;
+
+            background: #0b1f3a;
+
+            color: #ffffff;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.5px;
+
+        }
+
+
+        .cta-button:hover {
+
+            background: #17365f;
+
+        }
+
+
+        /* ==================================================
+           FOOTER
+           ================================================== */
+
+        .landing-footer {
+
+            padding:
+                25px 30px;
+
+            background: #08182d;
+
+            color: #8e98a6;
+
+            text-align: center;
+
+            font-size: 10px;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .landing-footer span {
+
+            margin:
+                0 8px;
+
+            color: #c5a45a;
+
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+           ================================================== */
+
+        @media (max-width: 900px) {
+
+            .hero-plate {
+
+                display: none;
+
+            }
+
+
+            .hero-inner {
+
+                min-height: 500px;
+
+            }
+
+
+            .feature-grid,
+            .steps {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .app-inner {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .landing-header-inner {
+
+                padding:
+                    18px 20px;
+
+            }
+
+
+            .landing-nav-login {
+
+                display: none;
+
+            }
+
+
+            .hero-inner {
+
+                min-height: 500px;
+
+                padding:
+                    65px 20px;
+
+            }
+
+
+            .hero-title {
+
+                font-size: 44px;
+
+            }
+
+
+            .hero-text {
+
+                font-size: 15px;
+
+            }
+
+
+            .features,
+            .how,
+            .app-section,
+            .cta {
+
+                padding-left: 20px;
+
+                padding-right: 20px;
+
+            }
+
+
+            .section-title,
+            .cta-title {
+
+                font-size: 27px;
+
+            }
+
+
+            .feature-card {
+
+                padding: 25px;
+
+            }
+
+        }
+
+    </style>
 
 </head>
 
@@ -23,31 +1138,532 @@
 <body>
 
 
+<div class="landing-page">
+
+
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
+
+    <header class="landing-header">
+
+        <div class="landing-header-inner">
+
+
+            <a
+                href="index.html"
+                class="landing-logo"
+            >
+
+                <div class="landing-logo-title">
+                    ALBUM TABLIC
+                </div>
+
+                <div class="landing-logo-subtitle">
+                    EUROPEJSKA KOLEKCJA
+                </div>
+
+            </a>
+
+
+            <nav class="landing-nav">
+
+                <a
+                    href="login.html"
+                    class="landing-nav-login"
+                >
+                    ZALOGUJ SIĘ
+                </a>
+
+
+                <a
+                    href="login.html"
+                    class="landing-nav-register"
+                >
+                    ZAGRAJ TERAZ
+                </a>
+
+            </nav>
+
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ==================================================
+         HERO
+         ================================================== -->
+
+    <section class="hero">
+
+
+        <div class="hero-inner">
+
+
+            <div class="hero-content">
+
+
+                <div class="hero-label">
+                    ALBUM TABLIC • 2026
+                </div>
+
+
+                <h1 class="hero-title">
+
+                    ZBIERAJ.<br>
+
+                    ODKRYWAJ.<br>
+
+                    <span>KOMPLETUJ.</span>
+
+                </h1>
+
+
+                <p class="hero-text">
+
+                    Europejska kolekcja tablic
+                    rejestracyjnych, w której każda
+                    znaleziona tablica staje się
+                    częścią Twojego własnego albumu.
+
+                </p>
+
+
+                <div class="hero-buttons">
+
+                    <a
+                        href="login.html"
+                        class="hero-button-primary"
+                    >
+                        ZACZNIJ KOLEKCJĘ
+                    </a>
+
+
+                    <a
+                        href="#jak-dziala"
+                        class="hero-button-secondary"
+                    >
+                        JAK TO DZIAŁA?
+                    </a>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- WIZUALNA TABLICA -->
+
+            <div class="hero-plate">
+
+                <div class="hero-plate-country">
+                    PL
+                </div>
+
+                <div class="hero-plate-number">
+                    ZS 2026X
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         FUNKCJE
+         ================================================== -->
+
+    <section class="features">
+
+
+        <div class="features-inner">
+
+
+            <div class="section-heading">
+
+                <div class="section-label">
+                    TWOJA KOLEKCJA
+                </div>
+
+                <h2 class="section-title">
+                    Więcej niż zwykła lista
+                </h2>
+
+                <p class="section-text">
+                    Każda tablica ma swoje miejsce,
+                    historię i poziom rzadkości.
+                    Buduj kolekcję i sprawdzaj,
+                    jak daleko udało Ci się dotrzeć.
+                </p>
+
+            </div>
+
+
+
+            <div class="feature-grid">
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        ★
+                    </div>
+
+                    <h3 class="feature-title">
+                        System rzadkości
+                    </h3>
+
+                    <p class="feature-text">
+                        Im dalej od miejsca pochodzenia
+                        znalazłeś tablicę, tym więcej
+                        otrzymuje gwiazdek.
+                    </p>
+
+                </article>
+
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        ◈
+                    </div>
+
+                    <h3 class="feature-title">
+                        Europa na jednej mapie
+                    </h3>
+
+                    <p class="feature-text">
+                        Zbieraj tablice z kolejnych
+                        państw i odkrywaj różnorodność
+                        europejskich systemów rejestracyjnych.
+                    </p>
+
+                </article>
+
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        ♢
+                    </div>
+
+                    <h3 class="feature-title">
+                        Twoja kolekcja online
+                    </h3>
+
+                    <p class="feature-text">
+                        Kolekcja jest zapisywana online,
+                        dzięki czemu możesz korzystać
+                        z niej na komputerze i telefonie.
+                    </p>
+
+                </article>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         JAK TO DZIAŁA
+         ================================================== -->
+
+    <section
+        id="jak-dziala"
+        class="how"
+    >
+
+
+        <div class="how-inner">
+
+
+            <div class="section-heading">
+
+                <div class="section-label">
+                    ZASADY GRY
+                </div>
+
+                <h2 class="section-title">
+                    Jak działa Album Tablic?
+                </h2>
+
+            </div>
+
+
+
+            <div class="steps">
+
+
+                <article class="step">
+
+                    <div class="step-number">
+                        01 / ZNAJDŹ
+                    </div>
+
+                    <h3 class="step-title">
+                        Znajdź prawdziwą tablicę
+                    </h3>
+
+                    <p class="step-text">
+                        Podróżujesz po Polsce lub Europie?
+                        Wypatrz ciekawą tablicę i zapisz,
+                        gdzie ją znalazłeś.
+                    </p>
+
+                </article>
+
+
+
+                <article class="step">
+
+                    <div class="step-number">
+                        02 / DODAJ
+                    </div>
+
+                    <h3 class="step-title">
+                        Dodaj ją do albumu
+                    </h3>
+
+                    <p class="step-text">
+                        Wybierz kraj, wpisz numer,
+                        miejsce znalezienia i właściciela
+                        karty.
+                    </p>
+
+                </article>
+
+
+
+                <article class="step">
+
+                    <div class="step-number">
+                        03 / KOLEKCJONUJ
+                    </div>
+
+                    <h3 class="step-title">
+                        Kompletuj kolekcję
+                    </h3>
+
+                    <p class="step-text">
+                        Zdobywaj kolejne tablice,
+                        odkrywaj rzadkie okazy i próbuj
+                        skompletować całą Europę.
+                    </p>
+
+                </article>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         APLIKACJA
+         ================================================== -->
+
+    <section class="app-section">
+
+
+        <div class="app-inner">
+
+
+            <div class="app-content">
+
+                <div class="app-label">
+                    ZAWSZE PRZY TOBIE
+                </div>
+
+                <h2 class="app-title">
+                    Zabierz swój album w drogę.
+                </h2>
+
+                <p class="app-text">
+                    Album działa na komputerze,
+                    telefonie i innych urządzeniach.
+                    Możesz więc dodać nową zdobycz
+                    od razu wtedy, gdy ją znajdziesz.
+                </p>
+
+            </div>
+
+
+            <a
+                href="#"
+                class="app-button"
+                onclick="return false;"
+            >
+                APLIKACJA WKRÓTCE
+            </a>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         CTA
+         ================================================== -->
+
+    <section class="cta">
+
+
+        <div class="cta-inner">
+
+            <h2 class="cta-title">
+                Gotowy rozpocząć kolekcję?
+            </h2>
+
+
+            <p class="cta-text">
+                Załóż konto i zacznij tworzyć
+                swój własny album tablic
+                rejestracyjnych.
+            </p>
+
+
+            <a
+                href="login.html"
+                class="cta-button"
+            >
+                ZACZNIJ TERAZ
+            </a>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ==================================================
+         FOOTER
+         ================================================== -->
+
+    <footer class="landing-footer">
+
+        ALBUM TABLIC REJESTRACYJNYCH
+
+        <span>·</span>
+
+        KOLEKCJA 2026
+
+        <span>·</span>
+
+        EUROPA
+
+    </footer>
+
+
+</div>
+
+
+
+<!-- ==================================================
+     SUPABASE + AUTH
+     ================================================== -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="auth.js"></script>
 
 
+<!-- ==================================================
+     SPRAWDZENIE SESJI
+     ================================================== -->
+
 <script>
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function() {
+    async function () {
 
-        const user =
-            await getCurrentUser();
+        try {
+
+            const user =
+                await getCurrentUser();
 
 
-        if (user) {
+            if (user) {
 
-            window.location.replace(
-                "home.html"
-            );
+                const buttons =
+                    document.querySelectorAll(
+                        'a[href="login.html"]'
+                    );
 
-        } else {
 
-            window.location.replace(
-                "login.html"
+                buttons.forEach(
+                    function (button) {
+
+                        button.href =
+                            "home.html";
+
+
+                        if (
+                            button.classList.contains(
+                                "landing-nav-register"
+                            )
+                        ) {
+
+                            button.textContent =
+                                "WEJDŹ DO ALBUMU";
+
+                        }
+
+
+                        if (
+                            button.classList.contains(
+                                "hero-button-primary"
+                            )
+                        ) {
+
+                            button.textContent =
+                                "WEJDŹ DO ALBUMU";
+
+                        }
+
+
+                        if (
+                            button.classList.contains(
+                                "cta-button"
+                            )
+                        ) {
+
+                            button.textContent =
+                                "WEJDŹ DO ALBUMU";
+
+                        }
+
+                    }
+                );
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Nie udało się sprawdzić sesji:",
+                error
             );
 
         }
