@@ -1,7 +1,6 @@
 /* =========================================================
-   ALBUM TABLIC REJESTRACYJNYCH
+   ALBUM TABLIC
    auth.js
-
    AUTORYZACJA UŻYTKOWNIKÓW — SUPABASE
    ========================================================= */
 
@@ -10,8 +9,11 @@
    KONFIGURACJA SUPABASE
    ========================================================= */
 
-const SUPABASE_URL = "TU_WKLEJ_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "TU_WKLEJ_SUPABASE_ANON_KEY";
+const SUPABASE_URL =
+    "https://ddlwmtbtsaikbkorkwaa.supabase.co";
+
+const SUPABASE_ANON_KEY =
+    "sb_publishable_i9lPlpSiRH5wLzI8QJ_gcA_-n0IZNL2";
 
 
 /* =========================================================
@@ -28,261 +30,25 @@ const supabaseClient = window.supabase.createClient(
    POMOCNICZE
    ========================================================= */
 
-function showMessage(message, type = "error") {
+function getCurrentPage() {
 
-    const box = document.getElementById("auth-message");
+    return window.location.pathname
+        .split("/")
+        .pop()
+        .toLowerCase();
 
-    if (!box) {
-        alert(message);
-        return;
-    }
-
-    box.textContent = message;
-    box.className = "auth-message " + type;
-    box.hidden = false;
 }
 
 
-function hideMessage() {
+function goTo(page) {
 
-    const box = document.getElementById("auth-message");
+    window.location.href = page;
 
-    if (!box) return;
-
-    box.hidden = true;
-    box.textContent = "";
-}
-
-
-function setLoading(button, loading, normalText) {
-
-    if (!button) return;
-
-    button.disabled = loading;
-
-    if (loading) {
-        button.dataset.originalText = button.textContent;
-        button.textContent = "PROSZĘ CZEKAĆ...";
-    } else {
-        button.textContent =
-            button.dataset.originalText || normalText;
-    }
 }
 
 
 /* =========================================================
-   REJESTRACJA
-   ========================================================= */
-
-async function registerUser(email, password) {
-
-    hideMessage();
-
-    if (!email || !password) {
-
-        showMessage(
-            "Podaj adres e-mail i hasło."
-        );
-
-        return false;
-    }
-
-
-    if (password.length < 6) {
-
-        showMessage(
-            "Hasło musi mieć co najmniej 6 znaków."
-        );
-
-        return false;
-    }
-
-
-    try {
-
-        const { data, error } =
-            await supabaseClient.auth.signUp({
-
-                email: email.trim(),
-                password: password
-
-            });
-
-
-        if (error) {
-
-            console.error(
-                "Błąd rejestracji:",
-                error
-            );
-
-            showMessage(
-                getAuthErrorMessage(error)
-            );
-
-            return false;
-        }
-
-
-        /*
-         * Jeżeli Supabase wymaga potwierdzenia
-         * adresu e-mail, użytkownik nie będzie
-         * jeszcze zalogowany.
-         */
-
-        if (data.user && !data.session) {
-
-            showMessage(
-                "Konto zostało utworzone. Sprawdź swoją skrzynkę e-mail i potwierdź adres.",
-                "success"
-            );
-
-            return true;
-        }
-
-
-        /*
-         * Jeżeli potwierdzenie e-mail jest wyłączone,
-         * użytkownik zostanie zalogowany od razu.
-         */
-
-        if (data.session) {
-
-            window.location.href = "home.html";
-
-            return true;
-        }
-
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Nieoczekiwany błąd rejestracji:",
-            error
-        );
-
-        showMessage(
-            "Wystąpił nieoczekiwany błąd."
-        );
-
-        return false;
-    }
-}
-
-
-/* =========================================================
-   LOGOWANIE
-   ========================================================= */
-
-async function loginUser(email, password) {
-
-    hideMessage();
-
-    if (!email || !password) {
-
-        showMessage(
-            "Podaj adres e-mail i hasło."
-        );
-
-        return false;
-    }
-
-
-    try {
-
-        const { data, error } =
-            await supabaseClient.auth.signInWithPassword({
-
-                email: email.trim(),
-                password: password
-
-            });
-
-
-        if (error) {
-
-            console.error(
-                "Błąd logowania:",
-                error
-            );
-
-            showMessage(
-                getAuthErrorMessage(error)
-            );
-
-            return false;
-        }
-
-
-        if (data.session) {
-
-            window.location.href = "home.html";
-
-            return true;
-        }
-
-
-        return false;
-
-    } catch (error) {
-
-        console.error(
-            "Nieoczekiwany błąd logowania:",
-            error
-        );
-
-        showMessage(
-            "Wystąpił nieoczekiwany błąd."
-        );
-
-        return false;
-    }
-}
-
-
-/* =========================================================
-   WYLOGOWANIE
-   ========================================================= */
-
-async function logoutUser() {
-
-    try {
-
-        const { error } =
-            await supabaseClient.auth.signOut();
-
-
-        if (error) {
-
-            console.error(
-                "Błąd wylogowania:",
-                error
-            );
-
-            return false;
-        }
-
-
-        window.location.href = "login.html";
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Nieoczekiwany błąd wylogowania:",
-            error
-        );
-
-        return false;
-    }
-}
-
-
-/* =========================================================
-   SPRAWDZENIE ZALOGOWANIA
+   SPRAWDZENIE SESJI
    ========================================================= */
 
 async function getCurrentUser() {
@@ -292,7 +58,6 @@ async function getCurrentUser() {
         error
     } = await supabaseClient.auth.getUser();
 
-
     if (error) {
 
         console.error(
@@ -301,289 +66,284 @@ async function getCurrentUser() {
         );
 
         return null;
+
     }
 
-
     return data.user || null;
+
 }
 
 
 /* =========================================================
-   OCHRONA STRONY
-   =========================================================
-
-   Używamy na stronach wymagających logowania,
-   np. home.html.
-
-   Jeżeli użytkownik nie jest zalogowany,
-   zostanie przeniesiony do login.html.
+   REJESTRACJA
    ========================================================= */
 
-async function requireAuth() {
+async function registerUser(email, password) {
+
+    email = email.trim();
+
+    if (!email || !password) {
+
+        return {
+            success: false,
+            message: "Podaj e-mail i hasło."
+        };
+
+    }
+
+
+    if (password.length < 6) {
+
+        return {
+            success: false,
+            message: "Hasło musi mieć minimum 6 znaków."
+        };
+
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.signUp({
+
+        email: email,
+
+        password: password
+
+    });
+
+
+    if (error) {
+
+        console.error(
+            "Błąd rejestracji:",
+            error
+        );
+
+        return {
+            success: false,
+            message: error.message
+        };
+
+    }
+
+
+    return {
+        success: true,
+        data: data
+    };
+
+}
+
+
+/* =========================================================
+   LOGOWANIE
+   ========================================================= */
+
+async function loginUser(email, password) {
+
+    email = email.trim();
+
+
+    if (!email || !password) {
+
+        return {
+            success: false,
+            message: "Podaj e-mail i hasło."
+        };
+
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.signInWithPassword({
+
+        email: email,
+
+        password: password
+
+    });
+
+
+    if (error) {
+
+        console.error(
+            "Błąd logowania:",
+            error
+        );
+
+        return {
+            success: false,
+            message: "Nieprawidłowy e-mail lub hasło."
+        };
+
+    }
+
+
+    return {
+        success: true,
+        data: data
+    };
+
+}
+
+
+/* =========================================================
+   WYLOGOWANIE
+   ========================================================= */
+
+async function logoutUser() {
+
+    const {
+        error
+    } = await supabaseClient.auth.signOut();
+
+
+    if (error) {
+
+        console.error(
+            "Błąd wylogowania:",
+            error
+        );
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   OCHRONA HOME
+   Jeżeli użytkownik nie jest zalogowany,
+   wracamy do login.html
+   ========================================================= */
+
+async function requireLogin() {
 
     const user = await getCurrentUser();
 
+
     if (!user) {
 
-        window.location.href = "login.html";
+        goTo("login.html");
 
         return null;
+
     }
 
+
     return user;
+
 }
 
 
 /* =========================================================
-   PRZEKIEROWANIE Z LOGIN / REJESTRACJA
-   =========================================================
-
-   Jeżeli użytkownik jest już zalogowany,
-   nie ma sensu pokazywać mu formularza logowania.
+   JEŻELI UŻYTKOWNIK JEST JUŻ ZALOGOWANY,
+   NIE MA SENSU POKAZYWAĆ LOGIN / REGISTER
    ========================================================= */
 
 async function redirectIfLoggedIn() {
 
     const user = await getCurrentUser();
 
-    if (user) {
 
-        window.location.href = "home.html";
+    if (!user) {
 
-        return true;
+        return null;
+
     }
 
-    return false;
+
+    const page = getCurrentPage();
+
+
+    if (
+        page === "login.html" ||
+        page === "register.html"
+    ) {
+
+        goTo("home.html");
+
+    }
+
+
+    return user;
+
 }
 
 
 /* =========================================================
-   OBSŁUGA FORMULARZA LOGOWANIA
+   OBSŁUGA ZMIAN SESJI
    ========================================================= */
 
-function initLoginForm() {
+supabaseClient.auth.onAuthStateChange(
+    (event, session) => {
 
-    const form =
-        document.getElementById("login-form");
+        console.log(
+            "Zmiana sesji:",
+            event
+        );
 
-    if (!form) return;
-
-
-    const emailInput =
-        document.getElementById("login-email");
-
-    const passwordInput =
-        document.getElementById("login-password");
-
-    const button =
-        document.getElementById("login-btn");
-
-
-    form.addEventListener(
-        "submit",
-        async function(event) {
-
-            event.preventDefault();
-
-            const email =
-                emailInput
-                    ? emailInput.value
-                    : "";
-
-            const password =
-                passwordInput
-                    ? passwordInput.value
-                    : "";
-
-
-            setLoading(
-                button,
-                true,
-                "ZALOGUJ SIĘ"
-            );
-
-
-            await loginUser(
-                email,
-                password
-            );
-
-
-            setLoading(
-                button,
-                false,
-                "ZALOGUJ SIĘ"
-            );
-
-        }
-    );
-}
+    }
+);
 
 
 /* =========================================================
-   OBSŁUGA FORMULARZA REJESTRACJI
-   ========================================================= */
-
-function initRegisterForm() {
-
-    const form =
-        document.getElementById("register-form");
-
-    if (!form) return;
-
-
-    const emailInput =
-        document.getElementById("register-email");
-
-    const passwordInput =
-        document.getElementById("register-password");
-
-    const passwordRepeatInput =
-        document.getElementById("register-password-repeat");
-
-    const button =
-        document.getElementById("register-btn");
-
-
-    form.addEventListener(
-        "submit",
-        async function(event) {
-
-            event.preventDefault();
-
-            hideMessage();
-
-
-            const email =
-                emailInput
-                    ? emailInput.value
-                    : "";
-
-            const password =
-                passwordInput
-                    ? passwordInput.value
-                    : "";
-
-            const passwordRepeat =
-                passwordRepeatInput
-                    ? passwordRepeatInput.value
-                    : "";
-
-
-            if (password !== passwordRepeat) {
-
-                showMessage(
-                    "Hasła nie są takie same."
-                );
-
-                return;
-            }
-
-
-            setLoading(
-                button,
-                true,
-                "ZAREJESTRUJ SIĘ"
-            );
-
-
-            await registerUser(
-                email,
-                password
-            );
-
-
-            setLoading(
-                button,
-                false,
-                "ZAREJESTRUJ SIĘ"
-            );
-
-        }
-    );
-}
-
-
-/* =========================================================
-   KOMUNIKATY BŁĘDÓW SUPABASE
-   ========================================================= */
-
-function getAuthErrorMessage(error) {
-
-    if (!error) {
-        return "Wystąpił nieznany błąd.";
-    }
-
-
-    const message =
-        String(error.message || "")
-            .toLowerCase();
-
-
-    if (
-        message.includes("invalid login credentials")
-    ) {
-
-        return "Nieprawidłowy e-mail lub hasło.";
-    }
-
-
-    if (
-        message.includes("email not confirmed")
-    ) {
-
-        return "Najpierw potwierdź swój adres e-mail.";
-    }
-
-
-    if (
-        message.includes("user already registered")
-    ) {
-
-        return "Konto z tym adresem e-mail już istnieje.";
-    }
-
-
-    if (
-        message.includes("password should be at least")
-    ) {
-
-        return "Hasło jest za krótkie.";
-    }
-
-
-    if (
-        message.includes("invalid email")
-    ) {
-
-        return "Podany adres e-mail jest nieprawidłowy.";
-    }
-
-
-    if (
-        message.includes("rate limit")
-    ) {
-
-        return "Zbyt wiele prób. Spróbuj ponownie za chwilę.";
-    }
-
-
-    return error.message ||
-        "Wystąpił błąd autoryzacji.";
-}
-
-
-/* =========================================================
-   AUTOMATYCZNA INICJALIZACJA
+   AUTOMATYCZNE SPRAWDZENIE STRONY
    ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
+    async () => {
 
-        initLoginForm();
+        const page = getCurrentPage();
 
-        initRegisterForm();
+
+        /*
+         * LOGIN / REGISTER
+         */
+
+        if (
+            page === "login.html" ||
+            page === "register.html"
+        ) {
+
+            await redirectIfLoggedIn();
+
+            return;
+
+        }
+
+
+        /*
+         * HOME
+         */
+
+        if (page === "home.html") {
+
+            const user = await requireLogin();
+
+
+            if (!user) {
+
+                return;
+
+            }
+
+
+            console.log(
+                "Zalogowany użytkownik:",
+                user.email
+            );
+
+        }
 
     }
 );
