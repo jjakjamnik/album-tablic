@@ -1,11 +1,17 @@
 /* =========================================================
    ALBUM TABLIC REJESTRACYJNYCH
    script.js
-   WERSJA 8.2 — SUPABASE + UŻYTKOWNICY
+
+   WERSJA 8.2 — SUPABASE + WIELE KONT
 
    - SUPABASE JAKO GŁÓWNA BAZA DANYCH
-   - KAŻDY UŻYTKOWNIK MA WŁASNĄ KOLEKCJĘ
-   - KOMPUTER + TELEFON = TA SAMA KOLEKCJA
+   - KAŻDY UŻYTKOWNIK MA WŁASNY ALBUM
+   - user_id AUTOMATYCZNIE POBIERANY Z AKTUALNEGO KONTA
+   - KOMPUTER + TELEFON = TA SAMA KOLEKCJA UŻYTKOWNIKA
+   - NOWY UŻYTKOWNIK ZACZYNA Z 0 NAKLEJEK
+   - USER = AKTUALNY UŻYTKOWNIK
+   - VIKI USUNIĘTA
+   - SPECIAL = ZŁOTA KARTA
    - AUTOMATYCZNA MIGRACJA STAREGO LOCALSTORAGE
    - ODLEGŁOŚĆ DROGOWA OSRM
    - STAŁA RZADKOŚĆ DLA KRAJÓW
@@ -16,11 +22,8 @@
    - IRLANDIA — ROZPOZNAWANIE KODU HRABSTWA
    - AUTOMATYCZNA AKTUALIZACJA STARYCH KART
    - KOLOR KARTY WYNIKA Z GWIAZDEK
-   - SPECIAL = ZŁOTA KARTA
    - EDYCJA KART
    - DUPLIKATY NIE SĄ DODAWANE
-   - KAŻDY UŻYTKOWNIK WIDZI TYLKO SWOJE KARTY
-   - NOWY UŻYTKOWNIK STARTUJE Z 0 NAKLEJEK
    ========================================================= */
 
 
@@ -53,7 +56,7 @@ const STORAGE_VERSION =
     "8.2";
 
 const MIGRATION_KEY =
-    "albumMigrationV8_2";
+    "albumMigrationV82";
 
 
 /* =========================================================
@@ -62,14 +65,16 @@ const MIGRATION_KEY =
 
 let stickersCache = [];
 
-let stickersLoaded = false;
+let stickersLoaded =
+    false;
 
 
 /* =========================================================
    AKTUALNY UŻYTKOWNIK
    ========================================================= */
 
-let currentUser = null;
+let currentUser =
+    null;
 
 
 /* =========================================================
@@ -132,35 +137,38 @@ document.addEventListener(
 
 
         /* =================================================
-           SPRAWDZENIE ZALOGOWANEGO UŻYTKOWNIKA
+           SPRAWDZENIE UŻYTKOWNIKA
            ================================================= */
 
         try {
 
             currentUser =
-                await getCurrentUserForAlbum();
-
-
-            if (!currentUser) {
-
-                window.location.href =
-                    "login.html";
-
-                return;
-
-            }
+                await getCurrentUser();
 
         }
 
         catch (error) {
 
             console.error(
-                "Błąd sprawdzania użytkownika:",
+                "Błąd pobierania użytkownika:",
                 error
             );
 
-            window.location.href =
-                "login.html";
+            currentUser =
+                null;
+
+        }
+
+
+        /* =================================================
+           BRAK LOGOWANIA
+           ================================================= */
+
+        if (!currentUser) {
+
+            window.location.replace(
+                "login.html"
+            );
 
             return;
 
@@ -168,7 +176,7 @@ document.addEventListener(
 
 
         console.log(
-            "Zalogowany użytkownik:",
+            "Album użytkownika:",
             currentUser.id
         );
 
@@ -195,6 +203,7 @@ document.addEventListener(
                 "Sprawdź połączenie z internetem."
             );
 
+
             if (
                 typeof window.albumSplashReady ===
                 "function"
@@ -203,6 +212,7 @@ document.addEventListener(
                 window.albumSplashReady();
 
             }
+
 
             return;
 
@@ -404,6 +414,68 @@ document.addEventListener(
 
 
         /* =================================================
+           WŁAŚCICIEL — TYLKO USER / SPECIAL
+           ================================================= */
+
+        if (ownerSelect) {
+
+            /*
+             * VIKI NIE JEST JUŻ DOSTĘPNA.
+             *
+             * Jeżeli stary HTML nadal ma opcję Viki,
+             * usuwamy ją automatycznie.
+             */
+
+            Array.from(
+                ownerSelect.options
+            ).forEach(
+                function (option) {
+
+                    const value =
+                        String(
+                            option.value ||
+                            ""
+                        ).toLowerCase();
+
+                    const text =
+                        String(
+                            option.textContent ||
+                            ""
+                        ).toLowerCase();
+
+
+                    if (
+                        value === "viki" ||
+                        text.includes("viki")
+                    ) {
+
+                        option.remove();
+
+                    }
+
+                }
+            );
+
+
+            /*
+             * Jeżeli nie ma wartości,
+             * domyślnie ustawiamy USER.
+             */
+
+            if (
+                !ownerSelect.value ||
+                ownerSelect.value === "viki"
+            ) {
+
+                ownerSelect.value =
+                    "green";
+
+            }
+
+        }
+
+
+        /* =================================================
            ZAPIS / EDYCJA
            ================================================= */
 
@@ -412,6 +484,20 @@ document.addEventListener(
             saveButton.addEventListener(
                 "click",
                 async function () {
+
+                    if (!currentUser) {
+
+                        alert(
+                            "Musisz być zalogowany."
+                        );
+
+                        window.location.href =
+                            "login.html";
+
+                        return;
+
+                    }
+
 
                     const country =
                         countrySelect
@@ -433,10 +519,37 @@ document.addEventListener(
                             : "";
 
 
-                    const owner =
+                    /*
+                     * USER = GREEN
+                     * SPECIAL = SPECIAL
+                     *
+                     * VIKI NIE JEST OBSŁUGIWANA.
+                     */
+
+                    let owner =
                         ownerSelect
                             ? ownerSelect.value
                             : "green";
+
+
+                    if (
+                        owner === "viki"
+                    ) {
+
+                        owner =
+                            "green";
+
+                    }
+
+
+                    if (
+                        owner !== "special"
+                    ) {
+
+                        owner =
+                            "green";
+
+                    }
 
 
                     /* -------------------------------------
@@ -786,6 +899,13 @@ document.addEventListener(
 
                                 ...oldSticker,
 
+                                /*
+                                 * NAJWAŻNIEJSZE:
+                                 *
+                                 * user_id NIE JEST ZMIENIANY
+                                 * PODCZAS EDYCJI.
+                                 */
+
                                 user_id:
                                     currentUser.id,
 
@@ -938,6 +1058,13 @@ document.addEventListener(
 
                             id:
                                 generateStickerId(),
+
+                            /*
+                             * NAJWAŻNIEJSZE:
+                             *
+                             * KAŻDA NOWA KARTA DOSTAJE
+                             * ID AKTUALNIE ZALOGOWANEGO GRACZA.
+                             */
 
                             user_id:
                                 currentUser.id,
@@ -1183,77 +1310,6 @@ document.addEventListener(
 
 
 /* =========================================================
-   AKTUALNY UŻYTKOWNIK — SUPABASE AUTH
-   ========================================================= */
-
-async function getCurrentUserForAlbum() {
-
-    const response =
-        await fetch(
-            "https://ddlwmtbtsaikbkorkwaa.supabase.co/auth/v1/user",
-            {
-                method:
-                    "GET",
-
-                headers: {
-
-                    "apikey":
-                        SUPABASE_KEY,
-
-                    "Authorization":
-                        "Bearer " +
-                        SUPABASE_KEY
-
-                }
-
-            }
-        );
-
-
-    /*
-     * Powyższe REST API nie posiada
-     * sesji użytkownika zapisanej
-     * automatycznie w tym fetchu.
-     *
-     * Dlatego korzystamy z Supabase
-     * clienta z auth.js.
-     */
-
-    if (
-        typeof supabaseClient !==
-        "undefined"
-    ) {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.auth.getUser();
-
-
-        if (error) {
-
-            throw error;
-
-        }
-
-
-        return data.user || null;
-
-    }
-
-
-    /*
-     * Jeżeli auth.js nie jest załadowany,
-     * nie wpuszczamy do albumu.
-     */
-
-    return null;
-
-}
-
-
-/* =========================================================
    SUPABASE — NAGŁÓWKI
    ========================================================= */
 
@@ -1359,9 +1415,11 @@ async function loadStickersFromSupabase() {
 
 
     console.log(
-        "Supabase: wczytano",
+        "Supabase: użytkownik",
+        currentUser.id,
+        "— wczytano",
         stickersCache.length,
-        "naklejek użytkownika."
+        "naklejek."
     );
 
 }
@@ -1383,6 +1441,10 @@ async function saveSticker(
 
     }
 
+
+    /*
+     * Zawsze wymuszamy ID aktualnego konta.
+     */
 
     sticker.user_id =
         currentUser.id;
@@ -1460,7 +1522,9 @@ async function saveSticker(
     console.log(
         "Supabase: dodano",
         sticker.country,
-        sticker.plate
+        sticker.plate,
+        "dla użytkownika",
+        currentUser.id
     );
 
 }
@@ -1482,6 +1546,11 @@ async function updateStickerInSupabase(
 
     }
 
+
+    /*
+     * Aktualizujemy wyłącznie kartę
+     * należącą do aktualnego użytkownika.
+     */
 
     const url =
         SUPABASE_URL +
@@ -1515,8 +1584,13 @@ async function updateStickerInSupabase(
                 body:
                     JSON.stringify(
                         {
-                            user_id:
-                                currentUser.id,
+                            /*
+                             * user_id celowo NIE jest
+                             * przesyłane jako zmieniana wartość.
+                             *
+                             * Właściciela karty nie można zmienić
+                             * przez formularz.
+                             */
 
                             country:
                                 sticker.country,
@@ -2745,6 +2819,26 @@ function editSticker(
     sticker
 ) {
 
+    /*
+     * Dodatkowe zabezpieczenie:
+     * karta musi należeć do aktualnego użytkownika.
+     */
+
+    if (
+        !currentUser ||
+        String(sticker.user_id) !==
+        String(currentUser.id)
+    ) {
+
+        alert(
+            "Nie możesz edytować tej karty."
+        );
+
+        return;
+
+    }
+
+
     editingStickerId =
         sticker.id;
 
@@ -2838,8 +2932,14 @@ function editSticker(
 
     if (ownerSelect) {
 
+        /*
+         * Stare Viki zamieniamy na USER.
+         */
+
         ownerSelect.value =
-            sticker.owner;
+            sticker.owner === "special"
+                ? "special"
+                : "green";
 
     }
 
@@ -2919,9 +3019,29 @@ async function migrateOldStickers() {
     }
 
 
+    /*
+     * Migracja jest wykonywana per konto.
+     *
+     * Stare localStorage pochodzi z poprzedniej,
+     * jednoosobowej wersji albumu.
+     *
+     * Dla Twojego konta stare karty zostały już
+     * przypisane bezpośrednio w bazie.
+     *
+     * Dla bezpieczeństwa nie kopiujemy ponownie
+     * danych, jeżeli użytkownik ma już karty
+     * w Supabase.
+     */
+
+    const migrationKey =
+        MIGRATION_KEY +
+        "_" +
+        currentUser.id;
+
+
     if (
         localStorage.getItem(
-            MIGRATION_KEY
+            migrationKey
         ) === "done"
     ) {
 
@@ -2931,9 +3051,8 @@ async function migrateOldStickers() {
 
 
     /*
-     * Jeżeli użytkownik już ma kolekcję
-     * w Supabase, nie próbujemy importować
-     * starego localStorage.
+     * Jeżeli konto ma już naklejki,
+     * uznajemy je za skonfigurowane.
      */
 
     if (
@@ -2941,7 +3060,7 @@ async function migrateOldStickers() {
     ) {
 
         localStorage.setItem(
-            MIGRATION_KEY,
+            migrationKey,
             "done"
         );
 
@@ -2959,7 +3078,7 @@ async function migrateOldStickers() {
     if (!oldData) {
 
         localStorage.setItem(
-            MIGRATION_KEY,
+            migrationKey,
             "done"
         );
 
@@ -2988,7 +3107,7 @@ async function migrateOldStickers() {
         );
 
         localStorage.setItem(
-            MIGRATION_KEY,
+            migrationKey,
             "done"
         );
 
@@ -3003,7 +3122,7 @@ async function migrateOldStickers() {
     ) {
 
         localStorage.setItem(
-            MIGRATION_KEY,
+            migrationKey,
             "done"
         );
 
@@ -3012,10 +3131,26 @@ async function migrateOldStickers() {
     }
 
 
+    /*
+     * WAŻNE:
+     *
+     * Migracja przypisuje stare lokalne karty
+     * do aktualnie zalogowanego konta.
+     *
+     * Ponieważ Twoje stare 154 karty są już
+     * w Supabase, ta część nie zostanie u Ciebie
+     * uruchomiona.
+     *
+     * Może natomiast przydać się przy koncie,
+     * które ma stare localStorage i nie ma jeszcze
+     * kart w Supabase.
+     */
+
     console.log(
         "Rozpoczynam migrację",
         oldStickers.length,
-        "starych naklejek do konta..."
+        "starych naklejek dla użytkownika",
+        currentUser.id
     );
 
 
@@ -3029,13 +3164,25 @@ async function migrateOldStickers() {
 
         try {
 
-            sticker.user_id =
-                currentUser.id;
+            const migratedSticker = {
+
+                ...sticker,
+
+                user_id:
+                    currentUser.id,
+
+                owner:
+                    sticker.owner === "special"
+                        ? "special"
+                        : "green"
+
+            };
 
 
             await saveStickerToSupabaseOnly(
-                sticker
+                migratedSticker
             );
+
 
             migrated++;
 
@@ -3058,7 +3205,7 @@ async function migrateOldStickers() {
 
 
     localStorage.setItem(
-        MIGRATION_KEY,
+        migrationKey,
         "done"
     );
 
@@ -3075,7 +3222,7 @@ async function migrateOldStickers() {
     ) {
 
         alert(
-            "Twoja stara kolekcja została przeniesiona do Twojego konta.\n\n" +
+            "Kolekcja została przeniesiona do Twojego konta.\n\n" +
             "Przeniesiono: " +
             migrated +
             " naklejek."
@@ -3101,10 +3248,6 @@ async function saveStickerToSupabaseOnly(
         );
 
     }
-
-
-    sticker.user_id =
-        currentUser.id;
 
 
     const url =
@@ -3148,7 +3291,9 @@ async function saveStickerToSupabaseOnly(
                                 sticker.department || "",
 
                             owner:
-                                sticker.owner || "green",
+                                sticker.owner === "special"
+                                    ? "special"
+                                    : "green",
 
                             date:
                                 sticker.date ||
@@ -4095,6 +4240,31 @@ function getStickers() {
 async function deleteSticker(
     stickerToDelete
 ) {
+
+    if (!currentUser) {
+
+        throw new Error(
+            "Brak zalogowanego użytkownika."
+        );
+
+    }
+
+
+    /*
+     * Dodatkowe zabezpieczenie po stronie JS.
+     */
+
+    if (
+        String(stickerToDelete.user_id) !==
+        String(currentUser.id)
+    ) {
+
+        throw new Error(
+            "Ta naklejka nie należy do tego użytkownika."
+        );
+
+    }
+
 
     await deleteStickerFromSupabase(
         stickerToDelete
