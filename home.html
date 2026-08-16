@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta name="theme-color" content="#0b1f3a">
+
+    <title>Album Tablic</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        /* ==================================================
+           HOME — ALBUM TABLIC
+           ================================================== */
+
+        .home-page {
+
+            min-height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
+        }
+
+
+        .home-header {
+
+            background: #0b1f3a;
+
+            color: #ffffff;
+
+            padding: 20px 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            box-sizing: border-box;
+
+        }
+
+
+        .home-brand {
+
+            display: flex;
+
+            flex-direction: column;
+
+        }
+
+
+        .home-brand-title {
+
+            font-size: 22px;
+
+            font-weight: 800;
+
+            letter-spacing: 2px;
+
+        }
+
+
+        .home-brand-subtitle {
+
+            margin-top: 4px;
+
+            color: #c5a45a;
+
+            font-size: 11px;
+
+            letter-spacing: 2px;
+
+        }
+
+
+        .home-user {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            font-size: 13px;
+
+        }
+
+
+        .home-user-email {
+
+            color: #d9dee6;
+
+        }
+
+
+        .home-logout {
+
+            padding: 9px 14px;
+
+            border: 1px solid #c5a45a;
+
+            background: transparent;
+
+            color: #ffffff;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            letter-spacing: 1px;
+
+            cursor: pointer;
+
+        }
+
+
+        .home-logout:hover {
+
+            background: #c5a45a;
+
+            color: #0b1f3a;
+
+        }
+
+
+        .home-main {
+
+            flex: 1;
+
+            width: 100%;
+
+            max-width: 1100px;
+
+            margin: 0 auto;
+
+            padding: 50px 25px;
+
+            box-sizing: border-box;
+
+        }
+
+
+        .home-welcome {
+
+            margin-bottom: 40px;
+
+        }
+
+
+        .home-welcome-label {
+
+            color: #b08a3c;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            letter-spacing: 2px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .home-welcome-title {
+
+            margin: 0;
+
+            color: #0b1f3a;
+
+            font-size: 36px;
+
+            font-weight: 800;
+
+        }
+
+
+        .home-welcome-text {
+
+            margin-top: 12px;
+
+            color: #666;
+
+            font-size: 15px;
+
+        }
+
+
+        .home-panel {
+
+            background: #ffffff;
+
+            border: 1px solid rgba(11, 31, 58, 0.12);
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.08);
+
+            padding: 35px;
+
+        }
+
+
+        .home-panel-title {
+
+            margin: 0 0 10px;
+
+            color: #0b1f3a;
+
+            font-size: 22px;
+
+            font-weight: 800;
+
+        }
+
+
+        .home-panel-text {
+
+            margin: 0;
+
+            color: #777;
+
+            line-height: 1.6;
+
+            font-size: 14px;
+
+        }
+
+
+        .home-footer {
+
+            padding: 20px;
+
+            text-align: center;
+
+            color: #999;
+
+            font-size: 10px;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .home-header {
+
+                padding: 18px 20px;
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+
+            .home-user {
+
+                width: 100%;
+
+                justify-content: space-between;
+
+            }
+
+
+            .home-welcome-title {
+
+                font-size: 28px;
+
+            }
+
+
+            .home-panel {
+
+                padding: 25px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="home-page">
+
+
+    <!-- ==================================================
+         NAGŁÓWEK
+         ================================================== -->
+
+    <header class="home-header">
+
+
+        <div class="home-brand">
+
+            <div class="home-brand-title">
+                ALBUM TABLIC
+            </div>
+
+            <div class="home-brand-subtitle">
+                EUROPEJSKA KOLEKCJA
+            </div>
+
+        </div>
+
+
+        <div class="home-user">
+
+            <span
+                id="home-user-email"
+                class="home-user-email"
+            >
+                ŁADOWANIE...
+            </span>
+
+
+            <button
+                id="home-logout"
+                class="home-logout"
+                type="button"
+            >
+                WYLOGUJ
+            </button>
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- ==================================================
+         GŁÓWNA ZAWARTOŚĆ
+         ================================================== -->
+
+    <main class="home-main">
+
+
+        <section class="home-welcome">
+
+            <div class="home-welcome-label">
+                ALBUM TABLIC • 2026
+            </div>
+
+            <h1
+                id="home-welcome-title"
+                class="home-welcome-title"
+            >
+                Witaj w swoim albumie
+            </h1>
+
+            <p class="home-welcome-text">
+                Twoja kolekcja tablic rejestracyjnych
+                będzie dostępna tutaj.
+            </p>
+
+        </section>
+
+
+
+        <!-- ==================================================
+             MIEJSCE NA ALBUM
+             ================================================== -->
+
+        <section class="home-panel">
+
+            <h2 class="home-panel-title">
+                EUROPA
+            </h2>
+
+            <p class="home-panel-text">
+                Tutaj znajdzie się właściwy album
+                z Twoimi naklejkami, krajami,
+                statystykami i kolekcją.
+            </p>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- ==================================================
+         STOPKA
+         ================================================== -->
+
+    <footer class="home-footer">
+
+        ALBUM TABLIC REJESTRACYJNYCH
+        <span>·</span>
+        KOLEKCJA 2026
+        <span>·</span>
+        EUROPA
+
+    </footer>
+
+
+</div>
+
+
+
+<!-- ==================================================
+     JAVASCRIPT
+     ================================================== -->
+
+<!--
+    auth.js podepniemy w kolejnym etapie.
+-->
+
+
+</body>
+
+</html>
