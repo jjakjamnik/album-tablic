@@ -2,20 +2,14 @@
    ALBUM TABLIC REJESTRACYJNYCH
    auth.js
 
-   AUTORYZACJA UŻYTKOWNIKÓW — SUPABASE
-
    STRUKTURA:
-   index.html    = główny album
-   login.html    = logowanie
-   register.html = rejestracja
 
-   Jeden plik obsługuje:
-   - rejestrację
-   - logowanie
-   - wylogowanie
-   - sprawdzanie użytkownika
-   - ochronę index.html
-   - przekierowanie zalogowanego użytkownika
+   index.html     = STRONA GŁÓWNA / LANDING
+   login.html     = LOGOWANIE
+   register.html  = REJESTRACJA
+   home.html      = WŁAŚCIWY ALBUM
+
+   SUPABASE AUTH
    ========================================================= */
 
 
@@ -42,20 +36,10 @@ const supabaseClient =
 
 
 /* =========================================================
-   POMOCNICZE — KOMUNIKATY
+   KOMUNIKATY
    ========================================================= */
 
 function getMessageBox() {
-
-    /*
-     * Twój login.html używa:
-     *
-     * id="auth-message"
-     *
-     * Rejestracja może używać:
-     *
-     * id="register-message"
-     */
 
     return (
         document.getElementById("auth-message") ||
@@ -111,7 +95,7 @@ function hideMessage() {
 
 
 /* =========================================================
-   POMOCNICZE — PRZYCISK
+   PRZYCISK — LOADING
    ========================================================= */
 
 function setLoading(
@@ -195,12 +179,13 @@ async function registerUser(
 
                     /*
                      * Po potwierdzeniu adresu
-                     * użytkownik wraca do albumu.
+                     * użytkownik wraca do HOME,
+                     * czyli właściwego albumu.
                      */
 
                     emailRedirectTo:
                         window.location.origin +
-                        "/index.html"
+                        "/home.html"
                 }
 
             });
@@ -245,8 +230,9 @@ async function registerUser(
 
 
         /*
-         * Potwierdzanie e-maila wyłączone.
-         * Supabase zalogował użytkownika od razu.
+         * Jeżeli potwierdzanie e-maila
+         * jest wyłączone, Supabase
+         * zaloguje użytkownika od razu.
          */
 
         if (
@@ -255,7 +241,7 @@ async function registerUser(
         ) {
 
             window.location.href =
-                "index.html";
+                "home.html";
 
             return true;
         }
@@ -346,11 +332,11 @@ async function loginUser(
         ) {
 
             /*
-             * GŁÓWNY ALBUM = index.html
+             * PO ZALOGOWANIU → HOME
              */
 
             window.location.href =
-                "index.html";
+                "home.html";
 
             return true;
         }
@@ -408,8 +394,12 @@ async function logoutUser() {
         }
 
 
+        /*
+         * PO WYLOGOWANIU → LANDING
+         */
+
         window.location.href =
-            "login.html";
+            "index.html";
 
 
         return true;
@@ -429,7 +419,7 @@ async function logoutUser() {
 
 
 /* =========================================================
-   POBRANIE AKTUALNEGO UŻYTKOWNIKA
+   AKTUALNY UŻYTKOWNIK
    ========================================================= */
 
 async function getCurrentUser() {
@@ -472,7 +462,7 @@ async function getCurrentUser() {
 
 
 /* =========================================================
-   OCHRONA STRONY
+   OCHRONA HOME.HTML
    ========================================================= */
 
 async function requireAuth() {
@@ -482,6 +472,11 @@ async function requireAuth() {
 
 
     if (!user) {
+
+        /*
+         * Ktoś próbuje wejść bez logowania.
+         * → LOGIN
+         */
 
         window.location.href =
             "login.html";
@@ -496,7 +491,17 @@ async function requireAuth() {
 
 
 /* =========================================================
-   PRZEKIEROWANIE JEŚLI JUŻ ZALOGOWANY
+   PRZEKIEROWANIE Z LOGIN / REGISTER
+   =========================================================
+
+   WAŻNE:
+
+   Jeżeli użytkownik już jest zalogowany
+   i wejdzie ręcznie na login.html albo
+   register.html, przenosimy go do home.html.
+
+   NIE DOTYCZY index.html.
+   Landing jest dostępny normalnie.
    ========================================================= */
 
 async function redirectIfLoggedIn() {
@@ -508,7 +513,7 @@ async function redirectIfLoggedIn() {
     if (user) {
 
         window.location.href =
-            "index.html";
+            "home.html";
 
 
         return true;
@@ -520,7 +525,7 @@ async function redirectIfLoggedIn() {
 
 
 /* =========================================================
-   OBSŁUGA LOGIN.HTML
+   LOGIN.HTML
    ========================================================= */
 
 function initLoginForm() {
@@ -545,12 +550,6 @@ function initLoginForm() {
             "login-password"
         );
 
-
-    /*
-     * TWÓJ LOGIN.HTML:
-     *
-     * id="login-btn"
-     */
 
     const button =
         document.getElementById(
@@ -584,25 +583,30 @@ function initLoginForm() {
             );
 
 
-            await loginUser(
-                email,
-                password
-            );
+            const success =
+                await loginUser(
+                    email,
+                    password
+                );
 
 
             /*
-             * Jeżeli logowanie się udało,
-             * nastąpi przekierowanie.
+             * Jeżeli logowanie się nie udało,
+             * przywracamy przycisk.
              *
-             * Jeżeli nie — przycisk wraca
-             * do normalnego stanu.
+             * Przy sukcesie następuje
+             * przekierowanie do home.html.
              */
 
-            setLoading(
-                button,
-                false,
-                "ZALOGUJ SIĘ"
-            );
+            if (!success) {
+
+                setLoading(
+                    button,
+                    false,
+                    "ZALOGUJ SIĘ"
+                );
+
+            }
 
         }
     );
@@ -610,7 +614,7 @@ function initLoginForm() {
 
 
 /* =========================================================
-   OBSŁUGA REGISTER.HTML
+   REGISTER.HTML
    ========================================================= */
 
 function initRegisterForm() {
@@ -697,17 +701,55 @@ function initRegisterForm() {
             );
 
 
-            await registerUser(
-                email,
-                password
-            );
+            const success =
+                await registerUser(
+                    email,
+                    password
+                );
 
 
-            setLoading(
-                button,
-                false,
-                "UTWÓRZ KONTO"
-            );
+            /*
+             * Przy błędzie przywracamy przycisk.
+             *
+             * Przy sukcesie:
+             *
+             * - wymagane potwierdzenie →
+             *   zostajemy na register.html
+             *
+             * - brak potwierdzenia →
+             *   home.html
+             */
+
+            if (!success) {
+
+                setLoading(
+                    button,
+                    false,
+                    "UTWÓRZ KONTO"
+                );
+
+            } else {
+
+                /*
+                 * Jeśli nie nastąpiło przekierowanie,
+                 * czyli Supabase wymaga potwierdzenia
+                 * e-mail, przywracamy przycisk.
+                 */
+
+                setTimeout(
+                    function() {
+
+                        setLoading(
+                            button,
+                            false,
+                            "UTWÓRZ KONTO"
+                        );
+
+                    },
+                    300
+                );
+
+            }
 
         }
     );
@@ -838,10 +880,6 @@ function getCurrentPage() {
             .toLowerCase();
 
 
-    /*
-     * Pusta ścieżka = również index.html
-     */
-
     if (!path) {
 
         return "index.html";
@@ -874,7 +912,28 @@ document.addEventListener(
 
 
         const isHomePage =
+            currentPage === "home.html";
+
+
+        const isLandingPage =
             currentPage === "index.html";
+
+
+        /* =================================================
+           LANDING — INDEX.HTML
+           =================================================
+
+           Landing NIE jest chroniony.
+
+           Każdy może go otworzyć.
+           Nie przekierowujemy stąd automatycznie
+           zalogowanego użytkownika.
+           */
+
+        if (isLandingPage) {
+
+            return;
+        }
 
 
         /* =================================================
@@ -887,7 +946,7 @@ document.addEventListener(
         ) {
 
             /*
-             * Inicjalizujemy odpowiedni formularz.
+             * Najpierw inicjalizujemy formularze.
              */
 
             initLoginForm();
@@ -896,8 +955,10 @@ document.addEventListener(
 
 
             /*
-             * Jeżeli użytkownik już jest zalogowany,
-             * nie ma po co pokazywać mu logowania.
+             * Jeżeli użytkownik jest już zalogowany,
+             * nie pokazujemy mu formularza.
+             *
+             * → HOME
              */
 
             await redirectIfLoggedIn();
@@ -908,16 +969,19 @@ document.addEventListener(
 
 
         /* =================================================
-           GŁÓWNY ALBUM — INDEX.HTML
+           HOME.HTML — WŁAŚCIWY ALBUM
            ================================================= */
 
         if (isHomePage) {
 
             /*
-             * INDEX.HTML jest chroniony.
+             * HOME jest chronione.
+
+             * Brak sesji:
+             *     → login.html
              *
-             * Bez sesji → login.html
-             * Z sesją → album działa normalnie.
+             * Jest sesja:
+             *     → album działa normalnie
              */
 
             const user =
@@ -936,13 +1000,7 @@ document.addEventListener(
             );
 
 
-            /*
-             * Tutaj NIE przekierowujemy dalej.
-             *
-             * Album może normalnie uruchomić
-             * swój istniejący script.js.
-             */
-
+            return;
         }
 
     }
