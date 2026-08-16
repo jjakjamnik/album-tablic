@@ -4,10 +4,10 @@
 
    STRUKTURA:
 
-   index.html     = STRONA GŁÓWNA / LANDING
-   login.html     = LOGOWANIE
-   register.html  = REJESTRACJA
-   home.html      = WŁAŚCIWY ALBUM
+   index.html      = STRONA GŁÓWNA / LANDING
+   login.html      = LOGOWANIE
+   register.html   = REJESTRACJA
+   home.html       = WŁAŚCIWY ALBUM
 
    SUPABASE AUTH
    ========================================================= */
@@ -179,8 +179,7 @@ async function registerUser(
 
                     /*
                      * Po potwierdzeniu adresu
-                     * użytkownik wraca do HOME,
-                     * czyli właściwego albumu.
+                     * użytkownik wraca do właściwego albumu.
                      */
 
                     emailRedirectTo:
@@ -210,7 +209,7 @@ async function registerUser(
 
         /*
          * Konto utworzone,
-         * ale wymagane potwierdzenie e-mail.
+         * ale Supabase wymaga potwierdzenia e-mail.
          */
 
         if (
@@ -231,8 +230,8 @@ async function registerUser(
 
         /*
          * Jeżeli potwierdzanie e-maila
-         * jest wyłączone, Supabase
-         * zaloguje użytkownika od razu.
+         * jest wyłączone, użytkownik
+         * zostaje zalogowany od razu.
          */
 
         if (
@@ -332,7 +331,8 @@ async function loginUser(
         ) {
 
             /*
-             * PO ZALOGOWANIU → HOME
+             * POPRAWNE LOGOWANIE
+             * → WŁAŚCIWY ALBUM
              */
 
             window.location.href =
@@ -474,8 +474,8 @@ async function requireAuth() {
     if (!user) {
 
         /*
-         * Ktoś próbuje wejść bez logowania.
-         * → LOGIN
+         * Próba wejścia do albumu
+         * bez zalogowania.
          */
 
         window.location.href =
@@ -492,16 +492,6 @@ async function requireAuth() {
 
 /* =========================================================
    PRZEKIEROWANIE Z LOGIN / REGISTER
-   =========================================================
-
-   WAŻNE:
-
-   Jeżeli użytkownik już jest zalogowany
-   i wejdzie ręcznie na login.html albo
-   register.html, przenosimy go do home.html.
-
-   NIE DOTYCZY index.html.
-   Landing jest dostępny normalnie.
    ========================================================= */
 
 async function redirectIfLoggedIn() {
@@ -511,6 +501,12 @@ async function redirectIfLoggedIn() {
 
 
     if (user) {
+
+        /*
+         * Użytkownik jest już zalogowany.
+         * Nie pokazujemy mu ponownie
+         * formularza logowania/rejestracji.
+         */
 
         window.location.href =
             "home.html";
@@ -525,7 +521,7 @@ async function redirectIfLoggedIn() {
 
 
 /* =========================================================
-   LOGIN.HTML
+   OBSŁUGA LOGIN.HTML
    ========================================================= */
 
 function initLoginForm() {
@@ -591,10 +587,9 @@ function initLoginForm() {
 
 
             /*
-             * Jeżeli logowanie się nie udało,
-             * przywracamy przycisk.
+             * Przy błędzie przywracamy przycisk.
              *
-             * Przy sukcesie następuje
+             * Przy sukcesie nastąpi
              * przekierowanie do home.html.
              */
 
@@ -614,7 +609,7 @@ function initLoginForm() {
 
 
 /* =========================================================
-   REGISTER.HTML
+   OBSŁUGA REGISTER.HTML
    ========================================================= */
 
 function initRegisterForm() {
@@ -709,15 +704,8 @@ function initRegisterForm() {
 
 
             /*
-             * Przy błędzie przywracamy przycisk.
-             *
-             * Przy sukcesie:
-             *
-             * - wymagane potwierdzenie →
-             *   zostajemy na register.html
-             *
-             * - brak potwierdzenia →
-             *   home.html
+             * Jeżeli wystąpił błąd,
+             * przywracamy przycisk.
              */
 
             if (!success) {
@@ -731,9 +719,8 @@ function initRegisterForm() {
             } else {
 
                 /*
-                 * Jeśli nie nastąpiło przekierowanie,
-                 * czyli Supabase wymaga potwierdzenia
-                 * e-mail, przywracamy przycisk.
+                 * Jeśli wymagane jest potwierdzenie
+                 * e-mail, pozostajemy na register.html.
                  */
 
                 setTimeout(
@@ -920,17 +907,17 @@ document.addEventListener(
 
 
         /* =================================================
-           LANDING — INDEX.HTML
-           =================================================
-
-           Landing NIE jest chroniony.
-
-           Każdy może go otworzyć.
-           Nie przekierowujemy stąd automatycznie
-           zalogowanego użytkownika.
-           */
+           INDEX.HTML — LANDING
+           ================================================= */
 
         if (isLandingPage) {
+
+            /*
+             * Landing jest publiczny.
+             *
+             * Nie sprawdzamy tutaj sesji.
+             * Nie przekierowujemy automatycznie.
+             */
 
             return;
         }
@@ -945,10 +932,6 @@ document.addEventListener(
             isRegisterPage
         ) {
 
-            /*
-             * Najpierw inicjalizujemy formularze.
-             */
-
             initLoginForm();
 
             initRegisterForm();
@@ -956,9 +939,7 @@ document.addEventListener(
 
             /*
              * Jeżeli użytkownik jest już zalogowany,
-             * nie pokazujemy mu formularza.
-             *
-             * → HOME
+             * → home.html
              */
 
             await redirectIfLoggedIn();
@@ -976,12 +957,12 @@ document.addEventListener(
 
             /*
              * HOME jest chronione.
-
+             *
              * Brak sesji:
-             *     → login.html
+             * → login.html
              *
              * Jest sesja:
-             *     → album działa normalnie
+             * → album działa.
              */
 
             const user =
