@@ -17,7 +17,7 @@
 
     <meta
         name="description"
-        content="Album Tablic — zbieraj, odkrywaj i kompletuj tablice rejestracyjne Europy."
+        content="Album Tablic — kolekcjonuj tablice rejestracyjne z całej Europy."
     >
 
     <title>Album Tablic — Europejska Kolekcja</title>
@@ -55,19 +55,13 @@
         }
 
 
-        button,
-        a {
-            font-family: inherit;
-        }
-
-
         a {
             text-decoration: none;
         }
 
 
         /* ==================================================
-           GŁÓWNY KONTENER
+           STRONA
            ================================================== */
 
         .landing-page {
@@ -91,9 +85,10 @@
 
             background: #0b1f3a;
 
+            color: #ffffff;
+
             border-bottom:
-                1px solid
-                rgba(197, 164, 90, 0.35);
+                3px solid #c5a45a;
 
         }
 
@@ -102,7 +97,7 @@
 
             width: 100%;
 
-            max-width: 1200px;
+            max-width: 1180px;
 
             margin: 0 auto;
 
@@ -120,7 +115,7 @@
         }
 
 
-        .landing-logo {
+        .brand {
 
             display: flex;
 
@@ -129,20 +124,18 @@
         }
 
 
-        .landing-logo-title {
+        .brand-title {
 
-            color: #ffffff;
+            font-size: 23px;
 
-            font-size: 21px;
-
-            font-weight: 800;
+            font-weight: 900;
 
             letter-spacing: 3px;
 
         }
 
 
-        .landing-logo-subtitle {
+        .brand-subtitle {
 
             margin-top: 5px;
 
@@ -152,62 +145,20 @@
 
             font-weight: 700;
 
-            letter-spacing: 2px;
+            letter-spacing: 3px;
 
         }
 
 
-        .landing-nav {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-
-        }
-
-
-        .landing-nav-login {
+        .header-login {
 
             padding:
-                10px 16px;
-
-            color: #ffffff;
+                10px 18px;
 
             border:
-                1px solid
-                rgba(255, 255, 255, 0.3);
+                1px solid #c5a45a;
 
-            font-size: 11px;
-
-            font-weight: 700;
-
-            letter-spacing: 1px;
-
-            transition:
-                0.2s ease;
-
-        }
-
-
-        .landing-nav-login:hover {
-
-            border-color: #c5a45a;
-
-            color: #c5a45a;
-
-        }
-
-
-        .landing-nav-register {
-
-            padding:
-                11px 17px;
-
-            background: #c5a45a;
-
-            color: #0b1f3a;
+            color: #ffffff;
 
             font-size: 11px;
 
@@ -221,9 +172,11 @@
         }
 
 
-        .landing-nav-register:hover {
+        .header-login:hover {
 
-            background: #dfc477;
+            background: #c5a45a;
+
+            color: #0b1f3a;
 
         }
 
@@ -238,9 +191,38 @@
 
             overflow: hidden;
 
-            background: #0b1f3a;
+            background:
+                linear-gradient(
+                    135deg,
+                    #0b1f3a 0%,
+                    #102b4e 55%,
+                    #173b63 100%
+                );
 
             color: #ffffff;
+
+        }
+
+
+        .hero::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 420px;
+
+            height: 420px;
+
+            border:
+                1px solid
+                rgba(197, 164, 90, 0.18);
+
+            border-radius: 50%;
+
+            right: -120px;
+
+            top: -160px;
 
         }
 
@@ -251,13 +233,9 @@
 
             position: absolute;
 
-            width: 500px;
+            width: 260px;
 
-            height: 500px;
-
-            right: -180px;
-
-            top: -220px;
+            height: 260px;
 
             border:
                 1px solid
@@ -265,9 +243,9 @@
 
             border-radius: 50%;
 
-            box-shadow:
-                0 0 0 60px rgba(197, 164, 90, 0.025),
-                0 0 0 120px rgba(197, 164, 90, 0.02);
+            right: 80px;
+
+            bottom: -180px;
 
         }
 
@@ -280,44 +258,38 @@
 
             width: 100%;
 
-            max-width: 1200px;
-
-            min-height: 570px;
+            max-width: 1180px;
 
             margin: 0 auto;
 
             padding:
-                80px 30px;
+                90px 30px
+                100px;
 
-            display: flex;
+            display: grid;
+
+            grid-template-columns:
+                1.15fr
+                0.85fr;
 
             align-items: center;
 
-        }
-
-
-        .hero-content {
-
-            width: 650px;
-
-            max-width: 100%;
+            gap: 70px;
 
         }
 
 
         .hero-label {
 
-            display: inline-block;
-
-            margin-bottom: 20px;
-
             color: #c5a45a;
 
-            font-size: 11px;
+            font-size: 12px;
 
             font-weight: 800;
 
             letter-spacing: 3px;
+
+            margin-bottom: 18px;
 
         }
 
@@ -326,15 +298,10 @@
 
             margin: 0;
 
-            color: #ffffff;
+            font-size:
+                clamp(42px, 7vw, 76px);
 
-            font-size: clamp(
-                42px,
-                6vw,
-                72px
-            );
-
-            line-height: 0.98;
+            line-height: 0.95;
 
             font-weight: 900;
 
@@ -352,12 +319,12 @@
 
         .hero-text {
 
-            max-width: 570px;
+            max-width: 620px;
 
             margin:
-                25px 0 0;
+                28px 0 0;
 
-            color: #cbd2dc;
+            color: #d7dee7;
 
             font-size: 17px;
 
@@ -368,18 +335,18 @@
 
         .hero-buttons {
 
-            margin-top: 35px;
-
             display: flex;
 
             flex-wrap: wrap;
 
             gap: 12px;
 
+            margin-top: 34px;
+
         }
 
 
-        .hero-button-primary {
+        .button-primary {
 
             display: inline-flex;
 
@@ -387,10 +354,8 @@
 
             justify-content: center;
 
-            min-width: 180px;
-
             padding:
-                15px 22px;
+                15px 25px;
 
             background: #c5a45a;
 
@@ -402,23 +367,25 @@
 
             letter-spacing: 1.5px;
 
+            border:
+                1px solid #c5a45a;
+
             transition:
                 0.2s ease;
 
         }
 
 
-        .hero-button-primary:hover {
+        .button-primary:hover {
 
-            background: #dfc477;
+            background: #ffffff;
 
-            transform:
-                translateY(-2px);
+            border-color: #ffffff;
 
         }
 
 
-        .hero-button-secondary {
+        .button-secondary {
 
             display: inline-flex;
 
@@ -426,22 +393,22 @@
 
             justify-content: center;
 
-            min-width: 150px;
-
             padding:
-                14px 22px;
+                15px 25px;
 
-            border:
-                1px solid
-                rgba(255, 255, 255, 0.35);
+            background: transparent;
 
             color: #ffffff;
 
             font-size: 12px;
 
-            font-weight: 800;
+            font-weight: 900;
 
             letter-spacing: 1.5px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.45);
 
             transition:
                 0.2s ease;
@@ -449,7 +416,7 @@
         }
 
 
-        .hero-button-secondary:hover {
+        .button-secondary:hover {
 
             border-color: #c5a45a;
 
@@ -459,41 +426,83 @@
 
 
         /* ==================================================
-           WIZUALNA TABLICA
+           PRZYKŁADOWA TABLICA
            ================================================== */
 
-        .hero-plate {
+        .hero-plate-area {
 
-            position: absolute;
+            display: flex;
 
-            right: 40px;
+            align-items: center;
 
-            top: 50%;
+            justify-content: center;
 
-            width: 400px;
+            min-height: 300px;
 
-            height: 120px;
+        }
 
-            transform:
-                translateY(-50%)
-                rotate(3deg);
+
+        .hero-sticker {
+
+            width: min(390px, 100%);
+
+            padding: 18px;
 
             background:
-                linear-gradient(
-                    135deg,
-                    #ffffff,
-                    #e8e8e8
-                );
+                rgba(255,255,255,0.06);
 
             border:
-                5px solid
-                #d5d5d5;
-
-            border-radius: 7px;
+                1px solid
+                rgba(197,164,90,0.35);
 
             box-shadow:
                 0 25px 60px
-                rgba(0, 0, 0, 0.35);
+                rgba(0,0,0,0.25);
+
+            transform:
+                rotate(2deg);
+
+        }
+
+
+        .hero-sticker-top {
+
+            color: #c5a45a;
+
+            font-size: 9px;
+
+            font-weight: 800;
+
+            letter-spacing: 2px;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .hero-plate {
+
+            position: relative;
+
+            min-height: 105px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #ffffff;
+
+            border:
+                4px solid #d5d5d5;
+
+            box-shadow:
+                inset 0 0 0 2px #eeeeee;
+
+            color: #111518;
+
+            overflow: hidden;
 
         }
 
@@ -508,7 +517,7 @@
 
             bottom: 0;
 
-            width: 48px;
+            width: 43px;
 
             display: flex;
 
@@ -516,70 +525,83 @@
 
             justify-content: center;
 
-            background: #16477c;
+            background: #164a88;
 
             color: #ffffff;
 
-            font-size: 18px;
+            font-size: 13px;
 
-            font-weight: 800;
+            font-weight: 900;
+
+            letter-spacing: 1px;
 
         }
 
 
         .hero-plate-number {
 
-            height: 100%;
+            margin-left: 43px;
+
+            padding: 0 12px;
+
+            font-family:
+                "Arial Black",
+                Arial,
+                sans-serif;
+
+            font-size:
+                clamp(25px, 5vw, 43px);
+
+            font-weight: 900;
+
+            letter-spacing: 3px;
+
+            white-space: nowrap;
+
+        }
+
+
+        .hero-sticker-info {
 
             display: flex;
 
-            align-items: center;
+            justify-content: space-between;
 
-            justify-content: center;
+            gap: 10px;
 
-            padding-left: 48px;
+            margin-top: 13px;
 
-            color: #111111;
+            color: #cdd5df;
 
-            font-size: 43px;
+            font-size: 10px;
 
-            font-weight: 800;
+            letter-spacing: 1px;
 
-            letter-spacing: 4px;
+        }
+
+
+        .hero-stars {
+
+            color: #c5a45a;
 
         }
 
 
         /* ==================================================
-           FEATURES
+           INTRO
            ================================================== */
 
-        .features {
+        .intro {
 
             width: 100%;
 
-            background: #f4f1e8;
-
-            padding:
-                75px 30px;
-
-        }
-
-
-        .features-inner {
-
-            width: 100%;
-
-            max-width: 1100px;
+            max-width: 1180px;
 
             margin: 0 auto;
 
-        }
-
-
-        .section-heading {
-
-            margin-bottom: 40px;
+            padding:
+                80px 30px
+                70px;
 
             text-align: center;
 
@@ -588,15 +610,15 @@
 
         .section-label {
 
-            margin-bottom: 10px;
-
             color: #b08a3c;
 
             font-size: 11px;
 
-            font-weight: 800;
+            font-weight: 900;
 
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+
+            margin-bottom: 12px;
 
         }
 
@@ -605,184 +627,128 @@
 
             margin: 0;
 
-            color: #0b1f3a;
-
-            font-size: 32px;
+            font-size: 34px;
 
             font-weight: 900;
+
+            color: #0b1f3a;
 
         }
 
 
         .section-text {
 
-            max-width: 650px;
+            max-width: 680px;
 
             margin:
-                12px auto 0;
+                16px auto 0;
 
-            color: #777;
+            color: #666;
 
-            font-size: 14px;
+            font-size: 15px;
 
-            line-height: 1.6;
+            line-height: 1.7;
 
         }
 
 
-        .feature-grid {
+        /* ==================================================
+           JAK TO DZIAŁA
+           ================================================== */
+
+        .steps {
+
+            background: #ffffff;
+
+            border-top:
+                1px solid
+                rgba(11,31,58,0.08);
+
+            border-bottom:
+                1px solid
+                rgba(11,31,58,0.08);
+
+        }
+
+
+        .steps-inner {
+
+            width: 100%;
+
+            max-width: 1180px;
+
+            margin: 0 auto;
+
+            padding:
+                75px 30px
+                80px;
+
+        }
+
+
+        .steps-grid {
+
+            margin-top: 45px;
 
             display: grid;
 
             grid-template-columns:
-                repeat(3, 1fr);
+                repeat(4, 1fr);
 
             gap: 18px;
 
         }
 
 
-        .feature-card {
+        .step {
 
-            padding: 30px;
-
-            background: #ffffff;
+            padding: 30px 25px;
 
             border:
                 1px solid
-                rgba(11, 31, 58, 0.1);
+                rgba(11,31,58,0.10);
 
-            box-shadow:
-                0 10px 30px
-                rgba(0, 0, 0, 0.05);
-
-        }
-
-
-        .feature-icon {
-
-            margin-bottom: 20px;
-
-            color: #c5a45a;
-
-            font-size: 28px;
-
-        }
-
-
-        .feature-title {
-
-            margin: 0 0 10px;
-
-            color: #0b1f3a;
-
-            font-size: 17px;
-
-            font-weight: 800;
-
-        }
-
-
-        .feature-text {
-
-            margin: 0;
-
-            color: #777;
-
-            font-size: 13px;
-
-            line-height: 1.65;
-
-        }
-
-
-        /* ==================================================
-           GRA — JAK TO DZIAŁA
-           ================================================== */
-
-        .how {
-
-            background: #ffffff;
-
-            padding:
-                75px 30px;
-
-        }
-
-
-        .how-inner {
-
-            width: 100%;
-
-            max-width: 1100px;
-
-            margin: 0 auto;
-
-        }
-
-
-        .steps {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 25px;
-
-        }
-
-
-        .step {
-
-            position: relative;
-
-            padding: 30px;
-
-            border-top:
-                3px solid
-                #c5a45a;
+            background: #fafafa;
 
         }
 
 
         .step-number {
 
-            margin-bottom: 18px;
-
             color: #c5a45a;
 
-            font-size: 12px;
+            font-size: 28px;
 
             font-weight: 900;
 
-            letter-spacing: 2px;
+            margin-bottom: 18px;
 
         }
 
 
         .step-title {
 
-            margin: 0 0 10px;
+            margin: 0;
 
             color: #0b1f3a;
 
-            font-size: 18px;
+            font-size: 17px;
 
-            font-weight: 800;
+            font-weight: 900;
 
         }
 
 
         .step-text {
 
-            margin: 0;
+            margin:
+                10px 0 0;
 
             color: #777;
 
             font-size: 13px;
 
-            line-height: 1.65;
+            line-height: 1.6;
 
         }
 
@@ -793,63 +759,51 @@
 
         .app-section {
 
+            width: 100%;
+
+            max-width: 1180px;
+
+            margin: 0 auto;
+
+            padding:
+                80px 30px;
+
+        }
+
+
+        .app-box {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                1fr;
+
+            gap: 50px;
+
+            align-items: center;
+
+            padding:
+                55px;
+
             background: #0b1f3a;
 
             color: #ffffff;
 
-            padding:
-                70px 30px;
-
-        }
-
-
-        .app-inner {
-
-            width: 100%;
-
-            max-width: 1000px;
-
-            margin: 0 auto;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            gap: 50px;
-
-        }
-
-
-        .app-content {
-
-            max-width: 620px;
-
-        }
-
-
-        .app-label {
-
-            color: #c5a45a;
-
-            font-size: 11px;
-
-            font-weight: 800;
-
-            letter-spacing: 2px;
+            box-shadow:
+                0 20px 50px
+                rgba(0,0,0,0.10);
 
         }
 
 
         .app-title {
 
-            margin:
-                12px 0;
+            margin: 0;
 
             color: #ffffff;
 
-            font-size: 30px;
+            font-size: 31px;
 
             font-weight: 900;
 
@@ -858,9 +812,10 @@
 
         .app-text {
 
-            margin: 0;
+            margin:
+                16px 0 0;
 
-            color: #cbd2dc;
+            color: #cbd4df;
 
             font-size: 14px;
 
@@ -869,22 +824,9 @@
         }
 
 
-        .app-button {
+        .app-note {
 
-            flex-shrink: 0;
-
-            display: inline-flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            padding:
-                15px 22px;
-
-            border:
-                1px solid
-                #c5a45a;
+            margin-top: 20px;
 
             color: #c5a45a;
 
@@ -892,16 +834,125 @@
 
             font-weight: 800;
 
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
 
         }
 
 
-        .app-button:hover {
+        .app-visual {
 
-            background: #c5a45a;
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+        }
+
+
+        .phone {
+
+            width: 190px;
+
+            height: 310px;
+
+            padding: 10px;
+
+            border:
+                3px solid #c5a45a;
+
+            border-radius: 25px;
+
+            background: #111518;
+
+            box-shadow:
+                0 20px 45px
+                rgba(0,0,0,0.35);
+
+        }
+
+
+        .phone-screen {
+
+            width: 100%;
+
+            height: 100%;
+
+            padding: 16px;
+
+            border-radius: 16px;
+
+            background: #f4f1e8;
 
             color: #0b1f3a;
+
+        }
+
+
+        .phone-logo {
+
+            font-size: 11px;
+
+            font-weight: 900;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .phone-line {
+
+            height: 1px;
+
+            margin:
+                12px 0;
+
+            background:
+                rgba(11,31,58,0.15);
+
+        }
+
+
+        .phone-card {
+
+            padding: 12px;
+
+            background: #ffffff;
+
+            border:
+                1px solid
+                rgba(11,31,58,0.12);
+
+        }
+
+
+        .phone-plate {
+
+            padding: 12px 5px;
+
+            text-align: center;
+
+            background: #ffffff;
+
+            border:
+                3px solid #d0d0d0;
+
+            font-size: 16px;
+
+            font-weight: 900;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .phone-stars {
+
+            margin-top: 10px;
+
+            color: #c5a45a;
+
+            font-size: 12px;
 
         }
 
@@ -913,20 +964,10 @@
         .cta {
 
             padding:
-                80px 30px;
-
-            background: #f4f1e8;
+                80px 30px
+                90px;
 
             text-align: center;
-
-        }
-
-
-        .cta-inner {
-
-            max-width: 700px;
-
-            margin: 0 auto;
 
         }
 
@@ -937,7 +978,7 @@
 
             color: #0b1f3a;
 
-            font-size: 34px;
+            font-size: 36px;
 
             font-weight: 900;
 
@@ -946,14 +987,16 @@
 
         .cta-text {
 
-            margin:
-                15px 0 30px;
+            max-width: 600px;
 
-            color: #777;
+            margin:
+                15px auto 0;
+
+            color: #666;
 
             font-size: 14px;
 
-            line-height: 1.6;
+            line-height: 1.7;
 
         }
 
@@ -962,29 +1005,37 @@
 
             display: inline-flex;
 
-            align-items: center;
-
-            justify-content: center;
+            margin-top: 28px;
 
             padding:
-                16px 28px;
+                16px 30px;
 
             background: #0b1f3a;
 
             color: #ffffff;
 
+            border:
+                1px solid #0b1f3a;
+
             font-size: 12px;
 
-            font-weight: 800;
+            font-weight: 900;
 
             letter-spacing: 1.5px;
+
+            transition:
+                0.2s ease;
 
         }
 
 
         .cta-button:hover {
 
-            background: #17365f;
+            background: #c5a45a;
+
+            border-color: #c5a45a;
+
+            color: #0b1f3a;
 
         }
 
@@ -995,73 +1046,94 @@
 
         .landing-footer {
 
+            margin-top: auto;
+
             padding:
                 25px 30px;
 
-            background: #08182d;
+            background: #0b1f3a;
 
-            color: #8e98a6;
+            color: #8f9baa;
 
             text-align: center;
 
             font-size: 10px;
 
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
 
         }
 
 
-        .landing-footer span {
-
-            margin:
-                0 8px;
+        .landing-footer strong {
 
             color: #c5a45a;
+
+            font-weight: 800;
+
+        }
+
+
+        .footer-author {
+
+            display: block;
+
+            margin-top: 8px;
+
+            color: #687586;
+
+            font-size: 9px;
+
+            letter-spacing: 2px;
 
         }
 
 
         /* ==================================================
-           RESPONSIVE
+           MOBILE
            ================================================== */
 
-        @media (max-width: 900px) {
-
-            .hero-plate {
-
-                display: none;
-
-            }
-
+        @media (max-width: 850px) {
 
             .hero-inner {
 
-                min-height: 500px;
+                grid-template-columns: 1fr;
+
+                gap: 45px;
+
+                padding-top: 65px;
+
+                padding-bottom: 70px;
 
             }
 
 
-            .feature-grid,
-            .steps {
+            .hero-plate-area {
+
+                min-height: auto;
+
+            }
+
+
+            .steps-grid {
 
                 grid-template-columns:
-                    1fr;
+                    repeat(2, 1fr);
 
             }
 
 
-            .app-inner {
+            .app-box {
 
-                flex-direction: column;
+                grid-template-columns: 1fr;
 
-                align-items: flex-start;
+                padding: 40px 30px;
 
             }
 
         }
 
 
-        @media (max-width: 650px) {
+        @media (max-width: 600px) {
 
             .landing-header-inner {
 
@@ -1071,26 +1143,44 @@
             }
 
 
-            .landing-nav-login {
+            .brand-title {
 
-                display: none;
+                font-size: 18px;
+
+                letter-spacing: 2px;
+
+            }
+
+
+            .brand-subtitle {
+
+                font-size: 8px;
+
+            }
+
+
+            .header-login {
+
+                padding:
+                    9px 12px;
+
+                font-size: 9px;
 
             }
 
 
             .hero-inner {
 
-                min-height: 500px;
-
                 padding:
-                    65px 20px;
+                    55px 20px
+                    65px;
 
             }
 
 
             .hero-title {
 
-                font-size: 44px;
+                font-size: 48px;
 
             }
 
@@ -1102,10 +1192,56 @@
             }
 
 
-            .features,
-            .how,
-            .app-section,
-            .cta {
+            .hero-buttons {
+
+                flex-direction: column;
+
+            }
+
+
+            .button-primary,
+            .button-secondary {
+
+                width: 100%;
+
+            }
+
+
+            .hero-sticker {
+
+                transform: none;
+
+            }
+
+
+            .hero-plate {
+
+                min-height: 85px;
+
+            }
+
+
+            .hero-plate-country {
+
+                width: 35px;
+
+            }
+
+
+            .hero-plate-number {
+
+                margin-left: 35px;
+
+                font-size: 25px;
+
+                letter-spacing: 1px;
+
+            }
+
+
+            .intro,
+            .steps-inner,
+            .app-section {
 
                 padding-left: 20px;
 
@@ -1114,17 +1250,47 @@
             }
 
 
-            .section-title,
-            .cta-title {
+            .section-title {
+
+                font-size: 28px;
+
+            }
+
+
+            .steps-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .app-box {
+
+                padding:
+                    35px 25px;
+
+            }
+
+
+            .app-title {
 
                 font-size: 27px;
 
             }
 
 
-            .feature-card {
+            .cta {
 
-                padding: 25px;
+                padding:
+                    65px 20px
+                    75px;
+
+            }
+
+
+            .cta-title {
+
+                font-size: 29px;
 
             }
 
@@ -1150,40 +1316,25 @@
         <div class="landing-header-inner">
 
 
-            <a
-                href="index.html"
-                class="landing-logo"
-            >
+            <div class="brand">
 
-                <div class="landing-logo-title">
+                <div class="brand-title">
                     ALBUM TABLIC
                 </div>
 
-                <div class="landing-logo-subtitle">
+                <div class="brand-subtitle">
                     EUROPEJSKA KOLEKCJA
                 </div>
 
+            </div>
+
+
+            <a
+                href="login.html"
+                class="header-login"
+            >
+                ZALOGUJ SIĘ
             </a>
-
-
-            <nav class="landing-nav">
-
-                <a
-                    href="login.html"
-                    class="landing-nav-login"
-                >
-                    ZALOGUJ SIĘ
-                </a>
-
-
-                <a
-                    href="login.html"
-                    class="landing-nav-register"
-                >
-                    ZAGRAJ TERAZ
-                </a>
-
-            </nav>
 
 
         </div>
@@ -1196,361 +1347,420 @@
          HERO
          ================================================== -->
 
-    <section class="hero">
+    <main>
 
 
-        <div class="hero-inner">
+        <section class="hero">
+
+            <div class="hero-inner">
 
 
-            <div class="hero-content">
+                <div class="hero-content">
 
 
-                <div class="hero-label">
-                    ALBUM TABLIC • 2026
+                    <div class="hero-label">
+                        ALBUM TABLIC • 2026
+                    </div>
+
+
+                    <h1 class="hero-title">
+
+                        ZBIERAJ.<br>
+
+                        ODKRYWAJ.<br>
+
+                        <span>KOMPLETUJ.</span>
+
+                    </h1>
+
+
+                    <p class="hero-text">
+
+                        Twoja własna kolekcja tablic
+                        rejestracyjnych z całej Europy.
+                        Dodawaj znalezione tablice,
+                        odkrywaj ich pochodzenie,
+                        zdobywaj gwiazdki i kompletuj
+                        kolejne kraje.
+
+                    </p>
+
+
+                    <div class="hero-buttons">
+
+
+                        <a
+                            href="register.html"
+                            class="button-primary"
+                        >
+                            ZAŁÓŻ KONTO
+                        </a>
+
+
+                        <a
+                            href="login.html"
+                            class="button-secondary"
+                        >
+                            MAM JUŻ KONTO
+                        </a>
+
+
+                    </div>
+
+
                 </div>
 
 
-                <h1 class="hero-title">
 
-                    ZBIERAJ.<br>
+                <!-- ==================================================
+                     PRZYKŁADOWA KARTA
+                     ================================================== -->
 
-                    ODKRYWAJ.<br>
-
-                    <span>KOMPLETUJ.</span>
-
-                </h1>
+                <div class="hero-plate-area">
 
 
-                <p class="hero-text">
-
-                    Europejska kolekcja tablic
-                    rejestracyjnych, w której każda
-                    znaleziona tablica staje się
-                    częścią Twojego własnego albumu.
-
-                </p>
+                    <div class="hero-sticker">
 
 
-                <div class="hero-buttons">
-
-                    <a
-                        href="login.html"
-                        class="hero-button-primary"
-                    >
-                        ZACZNIJ KOLEKCJĘ
-                    </a>
+                        <div class="hero-sticker-top">
+                            PRZYKŁADOWE ZNALEZISKO
+                        </div>
 
 
-                    <a
-                        href="#jak-dziala"
-                        class="hero-button-secondary"
-                    >
-                        JAK TO DZIAŁA?
-                    </a>
+                        <div class="hero-plate">
+
+                            <div class="hero-plate-country">
+                                DE
+                            </div>
+
+                            <div class="hero-plate-number">
+                                B&nbsp;AB&nbsp;1234
+                            </div>
+
+                        </div>
+
+
+                        <div class="hero-sticker-info">
+
+                            <span>
+                                BERLIN
+                            </span>
+
+                            <span class="hero-stars">
+                                ★★★
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
 
                 </div>
 
 
             </div>
 
+        </section>
 
 
-            <!-- WIZUALNA TABLICA -->
 
-            <div class="hero-plate">
+        <!-- ==================================================
+             INTRO
+             ================================================== -->
 
-                <div class="hero-plate-country">
-                    PL
-                </div>
+        <section class="intro">
 
-                <div class="hero-plate-number">
-                    ZS 2026X
-                </div>
 
+            <div class="section-label">
+                TWOJA KOLEKCJA
             </div>
 
 
-        </div>
-
-    </section>
-
-
-
-    <!-- ==================================================
-         FUNKCJE
-         ================================================== -->
-
-    <section class="features">
+            <h2 class="section-title">
+                Europa jest pełna tablic.
+            </h2>
 
 
-        <div class="features-inner">
+            <p class="section-text">
+
+                Niektóre mijasz codziennie.
+                Inne zobaczysz tylko raz.
+                A jeszcze inne mogą być naprawdę
+                rzadkie. Album Tablic pozwala
+                zachować każde takie znalezisko
+                i stworzyć własną kolekcję.
+
+            </p>
 
 
-            <div class="section-heading">
+        </section>
+
+
+
+        <!-- ==================================================
+             JAK TO DZIAŁA
+             ================================================== -->
+
+        <section class="steps">
+
+
+            <div class="steps-inner">
+
 
                 <div class="section-label">
-                    TWOJA KOLEKCJA
+                    JAK TO DZIAŁA
                 </div>
+
 
                 <h2 class="section-title">
-                    Więcej niż zwykła lista
+                    Cztery kroki do kompletnej kolekcji.
                 </h2>
 
-                <p class="section-text">
-                    Każda tablica ma swoje miejsce,
-                    historię i poziom rzadkości.
-                    Buduj kolekcję i sprawdzaj,
-                    jak daleko udało Ci się dotrzeć.
-                </p>
 
-            </div>
+                <div class="steps-grid">
 
 
+                    <article class="step">
 
-            <div class="feature-grid">
+                        <div class="step-number">
+                            01
+                        </div>
 
+                        <h3 class="step-title">
+                            ZNAJDŹ TABLICĘ
+                        </h3>
 
-                <article class="feature-card">
+                        <p class="step-text">
+                            Zobaczysz ciekawą tablicę?
+                            Zapisz jej numer i miejsce,
+                            w którym ją znalazłeś.
+                        </p>
 
-                    <div class="feature-icon">
-                        ★
-                    </div>
-
-                    <h3 class="feature-title">
-                        System rzadkości
-                    </h3>
-
-                    <p class="feature-text">
-                        Im dalej od miejsca pochodzenia
-                        znalazłeś tablicę, tym więcej
-                        otrzymuje gwiazdek.
-                    </p>
-
-                </article>
+                    </article>
 
 
 
-                <article class="feature-card">
+                    <article class="step">
 
-                    <div class="feature-icon">
-                        ◈
-                    </div>
+                        <div class="step-number">
+                            02
+                        </div>
 
-                    <h3 class="feature-title">
-                        Europa na jednej mapie
-                    </h3>
+                        <h3 class="step-title">
+                            DODAJ DO ALBUMU
+                        </h3>
 
-                    <p class="feature-text">
-                        Zbieraj tablice z kolejnych
-                        państw i odkrywaj różnorodność
-                        europejskich systemów rejestracyjnych.
-                    </p>
+                        <p class="step-text">
+                            Wprowadź numer, kraj oraz
+                            miejsce znalezienia.
+                            Resztą zajmie się album.
+                        </p>
 
-                </article>
-
-
-
-                <article class="feature-card">
-
-                    <div class="feature-icon">
-                        ♢
-                    </div>
-
-                    <h3 class="feature-title">
-                        Twoja kolekcja online
-                    </h3>
-
-                    <p class="feature-text">
-                        Kolekcja jest zapisywana online,
-                        dzięki czemu możesz korzystać
-                        z niej na komputerze i telefonie.
-                    </p>
-
-                </article>
-
-
-            </div>
-
-        </div>
-
-    </section>
+                    </article>
 
 
 
-    <!-- ==================================================
-         JAK TO DZIAŁA
-         ================================================== -->
+                    <article class="step">
 
-    <section
-        id="jak-dziala"
-        class="how"
-    >
+                        <div class="step-number">
+                            03
+                        </div>
+
+                        <h3 class="step-title">
+                            ZDOBYWAJ GWIAZDKI
+                        </h3>
+
+                        <p class="step-text">
+                            Im rzadsze i dalsze
+                            znalezisko, tym więcej
+                            gwiazdek trafia na kartę.
+                        </p>
+
+                    </article>
 
 
-        <div class="how-inner">
+
+                    <article class="step">
+
+                        <div class="step-number">
+                            04
+                        </div>
+
+                        <h3 class="step-title">
+                            KOMPLETUJ EUROPĘ
+                        </h3>
+
+                        <p class="step-text">
+                            Odkrywaj kolejne kraje,
+                            zapełniaj album i buduj
+                            własną kolekcję.
+                        </p>
+
+                    </article>
 
 
-            <div class="section-heading">
-
-                <div class="section-label">
-                    ZASADY GRY
                 </div>
 
-                <h2 class="section-title">
-                    Jak działa Album Tablic?
-                </h2>
 
             </div>
 
 
+        </section>
 
-            <div class="steps">
 
 
-                <article class="step">
+        <!-- ==================================================
+             APLIKACJA
+             ================================================== -->
 
-                    <div class="step-number">
-                        01 / ZNAJDŹ
+        <section class="app-section">
+
+
+            <div class="app-box">
+
+
+                <div>
+
+
+                    <div class="section-label">
+                        ZAWSZE PRZY TOBIE
                     </div>
 
-                    <h3 class="step-title">
-                        Znajdź prawdziwą tablicę
-                    </h3>
 
-                    <p class="step-text">
-                        Podróżujesz po Polsce lub Europie?
-                        Wypatrz ciekawą tablicę i zapisz,
-                        gdzie ją znalazłeś.
+                    <h2 class="app-title">
+                        Zbieraj także w podróży.
+                    </h2>
+
+
+                    <p class="app-text">
+
+                        Tablice nie czekają, aż wrócisz
+                        do domu. Album został pomyślany
+                        tak, aby można było korzystać
+                        z niego również podczas podróży.
+
+                        <br><br>
+
+                        W przyszłości będzie można
+                        korzystać z Albumu także
+                        wygodnie na telefonie jako
+                        z aplikacji.
+
                     </p>
 
-                </article>
 
-
-
-                <article class="step">
-
-                    <div class="step-number">
-                        02 / DODAJ
+                    <div class="app-note">
+                        WERSJA MOBILNA — W PRZYGOTOWANIU
                     </div>
 
-                    <h3 class="step-title">
-                        Dodaj ją do albumu
-                    </h3>
 
-                    <p class="step-text">
-                        Wybierz kraj, wpisz numer,
-                        miejsce znalezienia i właściciela
-                        karty.
-                    </p>
-
-                </article>
-
-
-
-                <article class="step">
-
-                    <div class="step-number">
-                        03 / KOLEKCJONUJ
-                    </div>
-
-                    <h3 class="step-title">
-                        Kompletuj kolekcję
-                    </h3>
-
-                    <p class="step-text">
-                        Zdobywaj kolejne tablice,
-                        odkrywaj rzadkie okazy i próbuj
-                        skompletować całą Europę.
-                    </p>
-
-                </article>
-
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ==================================================
-         APLIKACJA
-         ================================================== -->
-
-    <section class="app-section">
-
-
-        <div class="app-inner">
-
-
-            <div class="app-content">
-
-                <div class="app-label">
-                    ZAWSZE PRZY TOBIE
                 </div>
 
-                <h2 class="app-title">
-                    Zabierz swój album w drogę.
-                </h2>
 
-                <p class="app-text">
-                    Album działa na komputerze,
-                    telefonie i innych urządzeniach.
-                    Możesz więc dodać nową zdobycz
-                    od razu wtedy, gdy ją znajdziesz.
-                </p>
+
+                <div class="app-visual">
+
+
+                    <div class="phone">
+
+
+                        <div class="phone-screen">
+
+
+                            <div class="phone-logo">
+                                ALBUM TABLIC
+                            </div>
+
+
+                            <div class="phone-line"></div>
+
+
+                            <div class="phone-card">
+
+
+                                <div class="phone-plate">
+                                    PL&nbsp; ZS&nbsp; 12345
+                                </div>
+
+
+                                <div class="phone-stars">
+                                    ★★
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="phone-line"></div>
+
+
+                            <div
+                                style="
+                                    font-size: 9px;
+                                    color: #777;
+                                    line-height: 1.5;
+                                "
+                            >
+                                ZNALEZIONA:<br>
+                                Świnoujście
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
 
             </div>
 
 
-            <a
-                href="#"
-                class="app-button"
-                onclick="return false;"
-            >
-                APLIKACJA WKRÓTCE
-            </a>
-
-
-        </div>
-
-    </section>
+        </section>
 
 
 
-    <!-- ==================================================
-         CTA
-         ================================================== -->
+        <!-- ==================================================
+             CTA
+             ================================================== -->
 
-    <section class="cta">
+        <section class="cta">
 
 
-        <div class="cta-inner">
+            <div class="section-label">
+                TWOJA PRZYGODA ZACZYNA SIĘ TUTAJ
+            </div>
+
 
             <h2 class="cta-title">
-                Gotowy rozpocząć kolekcję?
+                Zacznij tworzyć swój album.
             </h2>
 
 
             <p class="cta-text">
-                Załóż konto i zacznij tworzyć
-                swój własny album tablic
-                rejestracyjnych.
+
+                Załóż konto i zacznij zapisywać
+                swoje znaleziska. Twoja kolekcja
+                będzie dostępna z każdego urządzenia.
+
             </p>
 
 
             <a
-                href="login.html"
+                href="register.html"
                 class="cta-button"
             >
-                ZACZNIJ TERAZ
+                DOŁĄCZ DO ALBUMU
             </a>
 
-        </div>
+
+        </section>
 
 
-    </section>
+    </main>
 
 
 
@@ -1560,118 +1770,27 @@
 
     <footer class="landing-footer">
 
-        ALBUM TABLIC REJESTRACYJNYCH
+        <strong>
+            ALBUM TABLIC
+        </strong>
 
-        <span>·</span>
+        <span> · </span>
 
         KOLEKCJA 2026
 
-        <span>·</span>
+        <span> · </span>
 
         EUROPA
+
+
+        <span class="footer-author">
+            by Jamnik
+        </span>
 
     </footer>
 
 
 </div>
-
-
-
-<!-- ==================================================
-     SUPABASE + AUTH
-     ================================================== -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="auth.js"></script>
-
-
-<!-- ==================================================
-     SPRAWDZENIE SESJI
-     ================================================== -->
-
-<script>
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async function () {
-
-        try {
-
-            const user =
-                await getCurrentUser();
-
-
-            if (user) {
-
-                const buttons =
-                    document.querySelectorAll(
-                        'a[href="login.html"]'
-                    );
-
-
-                buttons.forEach(
-                    function (button) {
-
-                        button.href =
-                            "home.html";
-
-
-                        if (
-                            button.classList.contains(
-                                "landing-nav-register"
-                            )
-                        ) {
-
-                            button.textContent =
-                                "WEJDŹ DO ALBUMU";
-
-                        }
-
-
-                        if (
-                            button.classList.contains(
-                                "hero-button-primary"
-                            )
-                        ) {
-
-                            button.textContent =
-                                "WEJDŹ DO ALBUMU";
-
-                        }
-
-
-                        if (
-                            button.classList.contains(
-                                "cta-button"
-                            )
-                        ) {
-
-                            button.textContent =
-                                "WEJDŹ DO ALBUMU";
-
-                        }
-
-                    }
-                );
-
-            }
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Nie udało się sprawdzić sesji:",
-                error
-            );
-
-        }
-
-    }
-);
-
-</script>
 
 
 </body>
