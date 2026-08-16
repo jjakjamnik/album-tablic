@@ -3,14 +3,6 @@
    auth.js
 
    AUTORYZACJA UŻYTKOWNIKÓW — SUPABASE
-
-   OBSŁUGUJE:
-   - LOGOWANIE
-   - REJESTRACJĘ
-   - WYLOGOWANIE
-   - POBIERANIE AKTUALNEGO UŻYTKOWNIKA
-   - OCHRONĘ HOME.HTML
-   - AUTOMATYCZNE PRZEKIEROWANIA
    ========================================================= */
 
 
@@ -37,7 +29,7 @@ const supabaseClient =
 
 
 /* =========================================================
-   KOMUNIKATY
+   POMOCNICZE — KOMUNIKATY
    ========================================================= */
 
 function getMessageBox() {
@@ -47,70 +39,49 @@ function getMessageBox() {
         document.getElementById("login-message") ||
         document.getElementById("register-message")
     );
-
 }
 
 
-function showMessage(
-    message,
-    type = "error"
-) {
+function showMessage(message, type = "error") {
 
-    const box =
-        getMessageBox();
-
+    const box = getMessageBox();
 
     if (!box) {
 
         alert(message);
 
         return;
-
     }
 
-
-    box.textContent =
-        message;
-
+    box.textContent = message;
 
     box.className =
-        "auth-message " +
-        type;
+        "auth-message " + type;
 
+    box.hidden = false;
 
-    box.hidden =
-        false;
-
+    box.style.display = "block";
 }
 
 
 function hideMessage() {
 
-    const box =
-        getMessageBox();
+    const box = getMessageBox();
 
+    if (!box) return;
 
-    if (!box) {
-        return;
-    }
+    box.hidden = true;
 
+    box.textContent = "";
 
-    box.hidden =
-        true;
+    box.className = "auth-message";
 
-
-    box.textContent =
-        "";
-
-
-    box.className =
-        "auth-message";
-
+    box.style.display = "none";
 }
 
 
 /* =========================================================
-   PRZYCISK — LOADING
+   POMOCNICZE — PRZYCISK
    ========================================================= */
 
 function setLoading(
@@ -119,34 +90,24 @@ function setLoading(
     normalText
 ) {
 
-    if (!button) {
-        return;
-    }
+    if (!button) return;
 
-
-    button.disabled =
-        loading;
-
+    button.disabled = loading;
 
     if (loading) {
 
         button.dataset.originalText =
             button.textContent;
 
-
         button.textContent =
             "PROSZĘ CZEKAĆ...";
 
-    }
-
-    else {
+    } else {
 
         button.textContent =
             button.dataset.originalText ||
             normalText;
-
     }
-
 }
 
 
@@ -161,37 +122,27 @@ async function registerUser(
 
     hideMessage();
 
-
     email =
-        String(
-            email || ""
-        ).trim();
+        String(email || "").trim();
 
 
-    if (
-        !email ||
-        !password
-    ) {
+    if (!email || !password) {
 
         showMessage(
             "Podaj adres e-mail i hasło."
         );
 
         return false;
-
     }
 
 
-    if (
-        password.length < 6
-    ) {
+    if (password.length < 6) {
 
         showMessage(
             "Hasło musi mieć co najmniej 6 znaków."
         );
 
         return false;
-
     }
 
 
@@ -203,18 +154,15 @@ async function registerUser(
         } =
             await supabaseClient.auth.signUp({
 
-                email:
-                    email,
+                email: email,
 
-                password:
-                    password,
+                password: password,
 
                 options: {
 
                     emailRedirectTo:
                         window.location.origin +
                         "/home.html"
-
                 }
 
             });
@@ -227,22 +175,18 @@ async function registerUser(
                 error
             );
 
-
             showMessage(
-                getAuthErrorMessage(
-                    error
-                )
+                getAuthErrorMessage(error)
             );
 
-
             return false;
-
         }
 
 
-        /* -----------------------------------------
-           POTWIERDZENIE E-MAILA WYMAGANE
-           ----------------------------------------- */
+        /*
+         * Konto utworzone,
+         * ale wymagane potwierdzenie e-mail.
+         */
 
         if (
             data &&
@@ -251,21 +195,18 @@ async function registerUser(
         ) {
 
             showMessage(
-                "Konto zostało utworzone. " +
-                "Sprawdź swoją skrzynkę e-mail " +
-                "i potwierdź adres.",
+                "Konto zostało utworzone. Sprawdź swoją skrzynkę e-mail i potwierdź adres.",
                 "success"
             );
 
-
             return true;
-
         }
 
 
-        /* -----------------------------------------
-           SESJA UTWORZONA OD RAZU
-           ----------------------------------------- */
+        /*
+         * Jeżeli potwierdzanie e-maila
+         * jest wyłączone.
+         */
 
         if (
             data &&
@@ -275,33 +216,26 @@ async function registerUser(
             window.location.href =
                 "home.html";
 
-
             return true;
-
         }
 
 
         return true;
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Nieoczekiwany błąd rejestracji:",
             error
         );
 
-
         showMessage(
             "Wystąpił nieoczekiwany błąd."
         );
 
-
         return false;
-
     }
-
 }
 
 
@@ -316,25 +250,17 @@ async function loginUser(
 
     hideMessage();
 
-
     email =
-        String(
-            email || ""
-        ).trim();
+        String(email || "").trim();
 
 
-    if (
-        !email ||
-        !password
-    ) {
+    if (!email || !password) {
 
         showMessage(
             "Podaj adres e-mail i hasło."
         );
 
-
         return false;
-
     }
 
 
@@ -346,18 +272,12 @@ async function loginUser(
         } =
             await supabaseClient.auth.signInWithPassword({
 
-                email:
-                    email,
+                email: email,
 
-                password:
-                    password
+                password: password
 
             });
 
-
-        /* -----------------------------------------
-           BŁĄD LOGOWANIA
-           ----------------------------------------- */
 
         if (error) {
 
@@ -366,40 +286,23 @@ async function loginUser(
                 error
             );
 
-
             showMessage(
-                getAuthErrorMessage(
-                    error
-                )
+                getAuthErrorMessage(error)
             );
 
-
             return false;
-
         }
 
-
-        /* -----------------------------------------
-           SESJA
-           ----------------------------------------- */
 
         if (
             data &&
             data.session
         ) {
 
-            console.log(
-                "Logowanie zakończone sukcesem.",
-                data.user
-            );
-
-
             window.location.href =
                 "home.html";
 
-
             return true;
-
         }
 
 
@@ -407,28 +310,22 @@ async function loginUser(
             "Nie udało się utworzyć sesji."
         );
 
-
         return false;
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Nieoczekiwany błąd logowania:",
             error
         );
 
-
         showMessage(
             "Wystąpił nieoczekiwany błąd."
         );
 
-
         return false;
-
     }
-
 }
 
 
@@ -453,9 +350,7 @@ async function logoutUser() {
                 error
             );
 
-
             return false;
-
         }
 
 
@@ -465,20 +360,16 @@ async function logoutUser() {
 
         return true;
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Nieoczekiwany błąd wylogowania:",
             error
         );
 
-
         return false;
-
     }
-
 }
 
 
@@ -504,85 +395,22 @@ async function getCurrentUser() {
                 error
             );
 
-
             return null;
-
         }
 
 
-        return (
-            data &&
-            data.user
-                ? data.user
-                : null
-        );
+        return data.user || null;
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Błąd getCurrentUser:",
             error
         );
 
-
         return null;
-
     }
-
-}
-
-
-/* =========================================================
-   POBRANIE SESJI
-   ========================================================= */
-
-async function getCurrentSession() {
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.auth.getSession();
-
-
-        if (error) {
-
-            console.error(
-                "Błąd pobierania sesji:",
-                error
-            );
-
-
-            return null;
-
-        }
-
-
-        return (
-            data &&
-            data.session
-                ? data.session
-                : null
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Błąd getCurrentSession:",
-            error
-        );
-
-
-        return null;
-
-    }
-
 }
 
 
@@ -592,74 +420,48 @@ async function getCurrentSession() {
 
 async function requireAuth() {
 
-    const session =
-        await getCurrentSession();
-
-
-    if (!session) {
-
-        window.location.replace(
-            "login.html"
-        );
-
-
-        return null;
-
-    }
-
-
     const user =
         await getCurrentUser();
 
 
     if (!user) {
 
-        window.location.replace(
-            "login.html"
-        );
-
+        window.location.href =
+            "login.html";
 
         return null;
-
     }
 
 
     return user;
-
 }
 
 
 /* =========================================================
-   PRZEKIEROWANIE JEŻELI JUŻ ZALOGOWANY
+   PRZEKIEROWANIE Z LOGIN / REGISTER
    ========================================================= */
 
 async function redirectIfLoggedIn() {
 
-    const session =
-        await getCurrentSession();
+    const user =
+        await getCurrentUser();
 
 
-    if (
-        session
-    ) {
+    if (user) {
 
-        window.location.replace(
-            "home.html"
-        );
-
+        window.location.href =
+            "home.html";
 
         return true;
-
     }
 
 
     return false;
-
 }
 
 
 /* =========================================================
-   OBSŁUGA LOGIN.HTML
+   OBSŁUGA LOGIN
    ========================================================= */
 
 function initLoginForm() {
@@ -670,9 +472,7 @@ function initLoginForm() {
         );
 
 
-    if (!form) {
-        return;
-    }
+    if (!form) return;
 
 
     const emailInput =
@@ -688,7 +488,7 @@ function initLoginForm() {
 
 
     /*
-     * TWÓJ LOGIN.HTML:
+     * LOGIN.HTML:
      *
      * id="login-btn"
      */
@@ -728,36 +528,29 @@ function initLoginForm() {
             );
 
 
-            const success =
+            try {
+
                 await loginUser(
                     email,
                     password
                 );
 
-
-            /*
-             * Jeżeli logowanie się udało,
-             * nastąpiło już przekierowanie.
-             */
-
-            if (!success) {
+            } finally {
 
                 setLoading(
                     button,
                     false,
                     "ZALOGUJ SIĘ"
                 );
-
             }
 
         }
     );
-
 }
 
 
 /* =========================================================
-   OBSŁUGA REGISTER.HTML
+   OBSŁUGA REJESTRACJI
    ========================================================= */
 
 function initRegisterForm() {
@@ -768,9 +561,7 @@ function initRegisterForm() {
         );
 
 
-    if (!form) {
-        return;
-    }
+    if (!form) return;
 
 
     const emailInput =
@@ -791,9 +582,24 @@ function initRegisterForm() {
         );
 
 
+    /*
+     * Dla bezpieczeństwa obsługujemy
+     * również alternatywną nazwę.
+     */
+
+    const passwordRepeat =
+        passwordRepeatInput ||
+        document.getElementById(
+            "register-password-repeat"
+        );
+
+
     const button =
         document.getElementById(
             "register-button"
+        ) ||
+        document.getElementById(
+            "register-btn"
         );
 
 
@@ -819,28 +625,22 @@ function initRegisterForm() {
                     : "";
 
 
-            const passwordRepeat =
-                passwordRepeatInput
-                    ? passwordRepeatInput.value
+            const passwordConfirmation =
+                passwordRepeat
+                    ? passwordRepeat.value
                     : "";
 
 
-            /* -----------------------------------------
-               SPRAWDZENIE HASEŁ
-               ----------------------------------------- */
-
             if (
                 password !==
-                passwordRepeat
+                passwordConfirmation
             ) {
 
                 showMessage(
                     "Hasła nie są takie same."
                 );
 
-
                 return;
-
             }
 
 
@@ -851,43 +651,69 @@ function initRegisterForm() {
             );
 
 
-            const success =
+            try {
+
                 await registerUser(
                     email,
                     password
                 );
 
-
-            if (!success) {
+            } finally {
 
                 setLoading(
                     button,
                     false,
                     "UTWÓRZ KONTO"
                 );
-
             }
 
         }
     );
-
 }
 
 
 /* =========================================================
-   TŁUMACZENIE BŁĘDÓW SUPABASE
+   OBSŁUGA LOGOUT
    ========================================================= */
 
-function getAuthErrorMessage(
-    error
-) {
+function initLogoutButtons() {
+
+    const buttons =
+        document.querySelectorAll(
+            "[data-logout]"
+        );
+
+
+    buttons.forEach(
+        function(button) {
+
+            button.addEventListener(
+                "click",
+                async function(event) {
+
+                    event.preventDefault();
+
+                    await logoutUser();
+
+                }
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   BŁĘDY SUPABASE
+   ========================================================= */
+
+function getAuthErrorMessage(error) {
 
     if (!error) {
 
         return (
             "Wystąpił nieznany błąd."
         );
-
     }
 
 
@@ -896,10 +722,6 @@ function getAuthErrorMessage(
             error.message || ""
         ).toLowerCase();
 
-
-    /* -----------------------------------------
-       NIEPRAWIDŁOWE DANE LOGOWANIA
-       ----------------------------------------- */
 
     if (
         message.includes(
@@ -910,13 +732,8 @@ function getAuthErrorMessage(
         return (
             "Nieprawidłowy e-mail lub hasło."
         );
-
     }
 
-
-    /* -----------------------------------------
-       E-MAIL NIEPOTWIERDZONY
-       ----------------------------------------- */
 
     if (
         message.includes(
@@ -927,13 +744,8 @@ function getAuthErrorMessage(
         return (
             "Najpierw potwierdź swój adres e-mail."
         );
-
     }
 
-
-    /* -----------------------------------------
-       UŻYTKOWNIK JUŻ ISTNIEJE
-       ----------------------------------------- */
 
     if (
         message.includes(
@@ -944,13 +756,8 @@ function getAuthErrorMessage(
         return (
             "Konto z tym adresem e-mail już istnieje."
         );
-
     }
 
-
-    /* -----------------------------------------
-       ZA KRÓTKIE HASŁO
-       ----------------------------------------- */
 
     if (
         message.includes(
@@ -961,13 +768,8 @@ function getAuthErrorMessage(
         return (
             "Hasło jest za krótkie."
         );
-
     }
 
-
-    /* -----------------------------------------
-       NIEPRAWIDŁOWY E-MAIL
-       ----------------------------------------- */
 
     if (
         message.includes(
@@ -978,13 +780,8 @@ function getAuthErrorMessage(
         return (
             "Podany adres e-mail jest nieprawidłowy."
         );
-
     }
 
-
-    /* -----------------------------------------
-       LIMIT PRÓB
-       ----------------------------------------- */
 
     if (
         message.includes(
@@ -995,7 +792,6 @@ function getAuthErrorMessage(
         return (
             "Zbyt wiele prób. Spróbuj ponownie za chwilę."
         );
-
     }
 
 
@@ -1008,19 +804,25 @@ function getAuthErrorMessage(
         return (
             "Limit wysyłania wiadomości e-mail został przekroczony. Spróbuj ponownie później."
         );
-
     }
 
 
-    /* -----------------------------------------
-       DOMYŚLNY KOMUNIKAT
-       ----------------------------------------- */
+    if (
+        message.includes(
+            "too many requests"
+        )
+    ) {
+
+        return (
+            "Zbyt wiele prób. Spróbuj ponownie później."
+        );
+    }
+
 
     return (
         error.message ||
         "Wystąpił błąd autoryzacji."
     );
-
 }
 
 
@@ -1032,102 +834,70 @@ document.addEventListener(
     "DOMContentLoaded",
     async function() {
 
-        /* -----------------------------------------
-           SPRAWDZAMY STRONĘ
-           ----------------------------------------- */
+        /*
+         * Sprawdzamy stronę.
+         */
 
-        const loginForm =
-            document.getElementById(
+        const isLoginPage =
+            !!document.getElementById(
                 "login-form"
             );
 
 
-        const registerForm =
-            document.getElementById(
+        const isRegisterPage =
+            !!document.getElementById(
                 "register-form"
             );
 
 
         const isHomePage =
+            document.body.dataset.page === "home" ||
             window.location.pathname
                 .toLowerCase()
-                .endsWith(
-                    "/home.html"
-                ) ||
-            window.location.pathname
-                .toLowerCase()
-                .endsWith(
-                    "home.html"
-                );
+                .endsWith("/home.html");
 
 
-        /* -----------------------------------------
-           LOGIN
-           ----------------------------------------- */
+        /*
+         * Formularze.
+         */
 
         initLoginForm();
 
-
-        /* -----------------------------------------
-           REGISTER
-           ----------------------------------------- */
-
         initRegisterForm();
 
+        initLogoutButtons();
 
-        /* -----------------------------------------
-           LOGIN / REGISTER
-           ----------------------------------------- */
+
+        /*
+         * LOGIN / REGISTER
+         *
+         * Jeżeli użytkownik już jest
+         * zalogowany — nie ma sensu
+         * pokazywać formularza.
+         */
 
         if (
-            loginForm ||
-            registerForm
+            isLoginPage ||
+            isRegisterPage
         ) {
 
             await redirectIfLoggedIn();
 
             return;
-
         }
 
 
-        /* -----------------------------------------
-           HOME
-           ----------------------------------------- */
+        /*
+         * HOME
+         *
+         * Jeżeli home.html korzysta
+         * z auth.js, zabezpieczamy stronę.
+         */
 
-        if (
-            isHomePage
-        ) {
+        if (isHomePage) {
 
             await requireAuth();
-
-            return;
-
         }
 
     }
 );
-
-
-/* =========================================================
-   NASŁUCHIWANIE ZMIAN SESJI
-   ========================================================= */
-
-supabaseClient.auth.onAuthStateChange(
-    function(event, session) {
-
-        console.log(
-            "Supabase Auth:",
-            event,
-            session
-                ? "SESJA AKTYWNA"
-                : "BRAK SESJI"
-        );
-
-    }
-);
-
-
-/* =========================================================
-   GOTOWE
-   ========================================================= */
