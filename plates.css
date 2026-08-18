@@ -14,7 +14,7 @@
         "FE-Schrift";
 
     src:
-        url("fonts/FE-Schrift.ttf")
+        url("fonts/FE-Schrift.TTF")
         format("truetype");
 
     font-weight:
@@ -98,7 +98,7 @@
         "Tratex";
 
     src:
-        url("fonts/Tratex.ttf")
+        url("fonts/Tratex.TTF")
         format("truetype");
 
     font-weight:
