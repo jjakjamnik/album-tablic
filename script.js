@@ -1940,8 +1940,12 @@ function findCity(
         "BY":
             typeof BIALORUS_KODY !== "undefined"
                 ? BIALORUS_KODY
-                : null
+                : null,
 
+       "TR":
+            typeof BIALORUS_KODY !== "undefined"
+                ? BIALORUS_KODY
+                : null,
     };
 
 
@@ -2284,6 +2288,7 @@ async function calculateStickerDistance(
         "IE": "Ireland",
         "GB": "United Kingdom",
         "BY": "Belarus"
+       "TR": "Turkey"
 
     };
 
