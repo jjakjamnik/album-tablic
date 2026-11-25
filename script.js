@@ -1941,11 +1941,10 @@ function findCity(
             typeof BIALORUS_KODY !== "undefined"
                 ? BIALORUS_KODY
                 : null,
-
-       "TR":
-            typeof BIALORUS_KODY !== "undefined"
-                ? BIALORUS_KODY
-                : null,
+"TR":
+    typeof TURCJA_KODY !== "undefined"
+        ? TURCJA_KODY
+        : null,
     };
 
 
