@@ -4,7 +4,7 @@
    PWA — WERSJA 1.0
    ========================================================= */
 
-const CACHE_NAME = "album-tablic-v1";
+const CACHE_NAME = "album-tablic-v2";
 
 const FILES_TO_CACHE = [
     "./",
