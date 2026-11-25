@@ -3573,7 +3573,7 @@ function getCurrentCountry() {
         "ua.html": "UA",
         "hu.html": "HU",
         "gb.html": "GB",
-        "it.html": "IT"
+        "it.html": "IT",
        "tr.html": "TR"
 
     };
