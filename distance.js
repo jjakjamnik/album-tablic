@@ -83,6 +83,7 @@ async function geocodeLocation(
         IE: "Ireland",
         IS: "Iceland",
         CH: "Switzerland",
+       TR: "Turkey",
         AL: "Albania",
         XK: "Kosovo"
 
