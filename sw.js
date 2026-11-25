@@ -26,6 +26,7 @@ const FILES_TO_CACHE = [
     "./slowacja.js",
     "./rumunia.js",
     "./szwajcaria.js",
+       "./turcja.js",
     "./ukraina.js",
     "./wielkabrytania.js",
 
