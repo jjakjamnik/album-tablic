@@ -2286,7 +2286,7 @@ async function calculateStickerDistance(
         "IS": "Iceland",
         "IE": "Ireland",
         "GB": "United Kingdom",
-        "BY": "Belarus"
+        "BY": "Belarus",
        "TR": "Turkey"
 
     };
@@ -3574,6 +3574,7 @@ function getCurrentCountry() {
         "hu.html": "HU",
         "gb.html": "GB",
         "it.html": "IT"
+       "tr.html": "TR"
 
     };
 
