@@ -3161,19 +3161,15 @@ function createStickerCard(
     if (
         sticker.owner ===
         "special"
-    ) {
+if (sticker.owner === "special") {
 
-        stickerClass =
-            "sticker-gold";
+    stickerClass = "sticker-gold";
 
-    }
+} else if (sticker.owner === "guest") {
 
+    stickerClass = "sticker-purple";
 
-    article.className =
-        "sticker " +
-        stickerClass;
-
-
+}
     const plate =
         document.createElement(
             "div"
