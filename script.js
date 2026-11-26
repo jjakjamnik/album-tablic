@@ -172,7 +172,19 @@ document.addEventListener(
 
 
         /* =================================================
+           ODŚWIEŻENIE ALBUMU PO WCZYTANIU BAZY
+           ================================================= */
+
+        updateCountryCounters();
+
+        updateCountryCardStates();
+
+        renderCurrentCountry();
+
+
+        /* =================================================
            ELEMENTY FORMULARZA
+           ================================================= */
            ================================================= */
 
         const addButton =
