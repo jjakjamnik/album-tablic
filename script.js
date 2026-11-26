@@ -3159,201 +3159,157 @@ function renderCurrentCountry() {
    TWORZENIE KARTY
    ========================================================= */
 
-function createStickerCard(
-    sticker
-) {
 
-    const article =
-        document.createElement(
-            "article"
-        );
+function createStickerCard(sticker) {
 
+    const article = document.createElement("article");
 
-    let stickerClass =
-        getStickerColorClass(
-            sticker
-        );
-
+    let stickerClass = getStickerColorClass(sticker);
 
     if (sticker.owner === "special") {
-
         stickerClass = "sticker-gold";
-
     } else if (sticker.owner === "guest") {
-
         stickerClass = "sticker-purple";
-
     }
 
-    article.className =
-        "sticker " + stickerClass;
+    article.className = "sticker " + stickerClass;
 
-    const actions =
-        document.createElement("div");
+    /* GÓRNY NAGŁÓWEK */
 
-    const plate =
-        document.createElement(
-            "div"
-        );
+    const header = document.createElement("div");
+    header.className = "sticker-header";
 
+    const collectionName = document.createElement("div");
+    collectionName.className = "sticker-collection-name";
+    collectionName.textContent = "EURO PLATES";
+
+    const countryCode = document.createElement("div");
+    countryCode.className = "sticker-country-code";
+    countryCode.textContent = sticker.country;
+
+    header.appendChild(collectionName);
+    header.appendChild(countryCode);
+
+    /* OZNACZENIE EDYCJI */
+
+    const edition = document.createElement("div");
+    edition.className = "sticker-edition";
+
+    if (sticker.owner === "special") {
+        edition.textContent = "VIP EDITION";
+    } else if (sticker.owner === "guest") {
+        edition.textContent = "GUEST EDITION";
+    } else {
+        edition.textContent = "COLLECTOR EDITION";
+    }
+
+    /* TABLICA REJESTRACYJNA */
+
+    const plate = document.createElement("div");
 
     plate.className =
         "plate plate-" +
         sticker.country.toLowerCase();
 
+    const country = document.createElement("div");
+    country.className = "plate-country";
+    country.textContent = sticker.country;
 
-    const country =
-        document.createElement(
-            "div"
-        );
+    const number = document.createElement("div");
+    number.className = "plate-number";
+    number.textContent = sticker.plate;
 
+    plate.appendChild(country);
+    plate.appendChild(number);
 
-    country.className =
-        "plate-country";
+    if (sticker.country === "FR" && sticker.department) {
 
+        const department = document.createElement("div");
+        department.className = "plate-department";
+        department.textContent = sticker.department;
 
-    country.textContent =
-        sticker.country;
-
-
-    const number =
-        document.createElement(
-            "div"
-        );
-
-
-    number.className =
-        "plate-number";
-
-
-    number.textContent =
-        sticker.plate;
-
-
-    plate.appendChild(
-        country
-    );
-
-
-    plate.appendChild(
-        number
-    );
-
-
-    if (
-        sticker.country === "FR" &&
-        sticker.department
-    ) {
-
-        const department =
-            document.createElement(
-                "div"
-            );
-
-
-        department.className =
-            "plate-department";
-
-
-        department.textContent =
-            sticker.department;
-
-
-        plate.appendChild(
-            department
-        );
-
+        plate.appendChild(department);
     }
 
+    /* MIEJSCE POCHODZENIA */
 
-    const origin =
-        document.createElement(
-            "div"
-        );
+    const originSection = document.createElement("div");
+    originSection.className = "sticker-origin-section";
 
+    const originLabel = document.createElement("div");
+    originLabel.className = "sticker-section-label";
+    originLabel.textContent = "MIEJSCE POCHODZENIA";
 
-    origin.className =
-        "plate-origin";
+    const origin = document.createElement("div");
+    origin.className = "plate-origin";
 
-
-    let originText =
-        sticker.origin;
-
+    let originText = sticker.origin;
 
     if (!originText) {
-
         originText =
             findCity(
                 sticker.country,
                 sticker.plate,
                 sticker.department || ""
             ) || "";
-
     }
 
+    origin.textContent = originText;
 
-    origin.textContent =
-        originText;
+    originSection.appendChild(originLabel);
+    originSection.appendChild(origin);
 
+    /* INFORMACJE O ZNALEZIENIU */
 
-    const found =
-        document.createElement(
-            "div"
-        );
+    const meta = document.createElement("div");
+    meta.className = "sticker-meta";
 
+    const found = document.createElement("div");
+    found.className = "sticker-location";
 
-    found.className =
-        "sticker-location";
+    const foundLabel = document.createElement("span");
+    foundLabel.className = "sticker-meta-label";
+    foundLabel.textContent = "ZNALEZIONA W";
 
+    const foundValue = document.createElement("strong");
+    foundValue.className = "sticker-meta-value";
+    foundValue.textContent = sticker.location || "—";
 
-    found.textContent =
-        "ZNALEZIONA: " +
-        sticker.location;
+    found.appendChild(foundLabel);
+    found.appendChild(foundValue);
 
+    /* ODLEGŁOŚĆ */
 
-    const distance =
-        document.createElement(
-            "div"
-        );
+    const distance = document.createElement("div");
+    distance.className = "sticker-distance";
 
+    const distanceLabel = document.createElement("span");
+    distanceLabel.className = "sticker-meta-label";
+    distanceLabel.textContent = "ODLEGŁOŚĆ";
 
-    distance.className =
-        "sticker-distance";
-
+    const distanceValue = document.createElement("strong");
+    distanceValue.className = "sticker-meta-value";
 
     if (
-        typeof sticker.kilometers ===
-            "number" &&
-
-        Number.isFinite(
-            sticker.kilometers
-        )
+        typeof sticker.kilometers === "number" &&
+        Number.isFinite(sticker.kilometers)
     ) {
-
-        distance.textContent =
-            "ODLEGŁOŚĆ: " +
-            sticker.kilometers +
-            " KM";
-
+        distanceValue.textContent =
+            sticker.kilometers + " km";
+    } else {
+        distanceValue.textContent = "—";
     }
 
-    else {
+    distance.appendChild(distanceLabel);
+    distance.appendChild(distanceValue);
 
-        distance.textContent =
-            "ODLEGŁOŚĆ: —";
+    meta.appendChild(found);
+    meta.appendChild(distance);
 
-    }
+    /* RZADKOŚĆ KARTY */
 
-
-    const stars =
-        document.createElement(
-            "div"
-        );
-
-
-    stars.className =
-        "sticker-stars";
-
+    const stars = document.createElement("div");
+    stars.className = "sticker-stars";
 
     if (sticker.owner === "special") {
 
@@ -3368,164 +3324,85 @@ function createStickerCard(
         sticker.stars > 0
     ) {
 
-        stars.textContent =
-            "★".repeat(sticker.stars);
+        stars.textContent = "★".repeat(sticker.stars);
 
     } else {
 
         stars.textContent = "—";
-
     }
 
+    /* PRZYCISKI EDYCJI I USUWANIA */
 
-    const editButton =
-        document.createElement(
-            "button"
+    const actions = document.createElement("div");
+    actions.className = "sticker-actions";
+
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.className = "sticker-edit";
+    editButton.textContent = "EDYTUJ";
+
+    editButton.addEventListener("click", function () {
+        editSticker(sticker);
+    });
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "sticker-delete";
+    deleteButton.textContent = "USUŃ";
+
+    deleteButton.addEventListener("click", async function () {
+
+        const confirmed = confirm(
+            "Usunąć tablicę " +
+            sticker.country +
+            " " +
+            sticker.plate +
+            " z kolekcji?"
         );
 
+        if (!confirmed) {
+            return;
+        }
 
-    editButton.type =
-        "button";
+        deleteButton.disabled = true;
 
+        try {
 
-    editButton.className =
-        "sticker-edit";
+            await deleteSticker(sticker);
 
+            renderCurrentCountry();
 
-    editButton.textContent =
-        "EDYTUJ";
+            updateCountryCounters();
 
+            updateCountryCardStates();
 
-    editButton.addEventListener(
-        "click",
-        function () {
+        } catch (error) {
 
-            editSticker(
-                sticker
+            console.error("Błąd usuwania:", error);
+
+            alert(
+                "Nie udało się usunąć naklejki z bazy.\n\n" +
+                error.message
             );
 
+            deleteButton.disabled = false;
         }
-    );
+    });
 
+    actions.appendChild(editButton);
+    actions.appendChild(deleteButton);
 
-    const deleteButton =
-        document.createElement(
-            "button"
-        );
+    /* SKŁADANIE NOWEJ KARTY */
 
-
-    deleteButton.type =
-        "button";
-
-
-    deleteButton.className =
-        "sticker-delete";
-
-
-    deleteButton.textContent =
-        "USUŃ";
-
-
-    deleteButton.addEventListener(
-        "click",
-        async function () {
-
-            const confirmed =
-                confirm(
-                    "Usunąć tablicę " +
-                    sticker.country +
-                    " " +
-                    sticker.plate +
-                    " z kolekcji?"
-                );
-
-
-            if (!confirmed) {
-                return;
-            }
-
-
-            deleteButton.disabled =
-                true;
-
-
-            try {
-
-                await deleteSticker(
-                    sticker
-                );
-
-                renderCurrentCountry();
-
-                updateCountryCounters();
-
-                updateCountryCardStates();
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "Błąd usuwania:",
-                    error
-                );
-
-                alert(
-                    "Nie udało się usunąć naklejki z bazy.\n\n" +
-                    error.message
-                );
-
-                deleteButton.disabled =
-                    false;
-
-            }
-
-        }
-    );
-
-
-    actions.appendChild(
-        editButton
-    );
-
-
-    actions.appendChild(
-        deleteButton
-    );
-
-
-    article.appendChild(
-        plate
-    );
-
-
-    article.appendChild(
-        origin
-    );
-
-
-    article.appendChild(
-        found
-    );
-
-
-    article.appendChild(
-        distance
-    );
-
-
-    article.appendChild(
-        stars
-    );
-
-
-    article.appendChild(
-        actions
-    );
-
+    article.appendChild(header);
+    article.appendChild(edition);
+    article.appendChild(plate);
+    article.appendChild(originSection);
+    article.appendChild(meta);
+    article.appendChild(stars);
+    article.appendChild(actions);
 
     return article;
-
 }
 
 
