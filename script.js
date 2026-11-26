@@ -3140,22 +3140,84 @@ function renderCurrentCountry() {
         return;
     }
 
-    /* KIESZONKI W ALBUMIE — 50 MIEJSC */
+       /* STRONY ALBUMU — 50 KIESZONEK NA STRONĘ */
 
-    const totalPockets = Math.max(50, stickers.length);
+    const pocketsPerPage = 50;
+    const totalPages = Math.ceil(stickers.length / pocketsPerPage);
 
-    for (let i = 0; i < totalPockets; i++) {
+    currentCountryPage = Math.min(
+        currentCountryPage,
+        totalPages
+    );
+
+    const startIndex =
+        (currentCountryPage - 1) * pocketsPerPage;
+
+    const pageStickers = stickers.slice(
+        startIndex,
+        startIndex + pocketsPerPage
+    );
+
+    /* NAWIGACJA STRON */
+
+    const oldPagination =
+        document.getElementById("album-pagination");
+
+    if (oldPagination) {
+        oldPagination.remove();
+    }
+
+    const pagination = document.createElement("div");
+    pagination.id = "album-pagination";
+    pagination.className = "album-pagination";
+
+    const previousButton = document.createElement("button");
+    previousButton.textContent = "← POPRZEDNIA";
+    previousButton.disabled = currentCountryPage === 1;
+
+    previousButton.addEventListener("click", function () {
+        currentCountryPage--;
+        renderCurrentCountry();
+    });
+
+    const pageInfo = document.createElement("span");
+    pageInfo.textContent =
+        "STRONA " + currentCountryPage + " / " + totalPages;
+
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "NASTĘPNA →";
+    nextButton.disabled = currentCountryPage === totalPages;
+
+    nextButton.addEventListener("click", function () {
+        currentCountryPage++;
+        renderCurrentCountry();
+    });
+
+    pagination.appendChild(previousButton);
+    pagination.appendChild(pageInfo);
+    pagination.appendChild(nextButton);
+
+    stickerGrid.parentNode.insertBefore(
+        pagination,
+        stickerGrid
+    );
+
+    /* 50 KIESZONEK NA KAŻDEJ STRONIE */
+
+    for (let i = 0; i < pocketsPerPage; i++) {
 
         const pocket = document.createElement("div");
         pocket.className = "album-pocket";
 
-        if (stickers[i]) {
+        const sticker = pageStickers[i];
+
+        if (sticker) {
 
             pocket.classList.add("album-pocket-filled");
 
             const article = createStickerCard(
-                stickers[i],
-                countryNumbers.get(stickers[i]) || 1
+                sticker,
+                countryNumbers.get(sticker) || 1
             );
 
             pocket.appendChild(article);
@@ -3166,7 +3228,9 @@ function renderCurrentCountry() {
 
             const pocketNumber = document.createElement("span");
             pocketNumber.className = "album-pocket-number";
-            pocketNumber.textContent = String(i + 1).padStart(3, "0");
+            pocketNumber.textContent = String(
+                startIndex + i + 1
+            ).padStart(3, "0");
 
             const pocketLabel = document.createElement("span");
             pocketLabel.className = "album-pocket-label";
@@ -3177,6 +3241,9 @@ function renderCurrentCountry() {
 
         }
 
+        stickerGrid.appendChild(pocket);
+
+    }
         stickerGrid.appendChild(pocket);
 
     }
