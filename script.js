@@ -400,9 +400,11 @@ document.addEventListener(
 
 
                     const owner =
-                        ownerSelect
-                            ? ownerSelect.value
-                            : "green";
+    country === "UZ"
+        ? "special"
+        : ownerSelect
+            ? ownerSelect.value
+            : "green";
 
 
                     /* -------------------------------------
