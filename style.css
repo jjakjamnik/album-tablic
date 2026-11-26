@@ -1424,6 +1424,9 @@ main {
 .country-lt {
     background: linear-gradient(145deg,#998e54,#726c3e 55%,#4c4828);
 }
+.country-lu {
+    background: linear-gradient(145deg,#b45c68,#873b50 55%,#542638);
+}
 
 .country-lv {
     background: linear-gradient(145deg,#a75a61,#823e47 55%,#592a31);
