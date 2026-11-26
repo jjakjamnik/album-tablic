@@ -1,13 +1,9 @@
 
 /* =========================================================
-   EURO PLATES — COLLECTOR'S HERITAGE EDITION
-   Nowy system kart kolekcjonerskich
+   EURO PLATES — VIBRANT COLLECTOR EDITION
 ========================================================= */
 
-
-/* =========================================================
-   SIATKA ALBUMU
-========================================================= */
+/* SIATKA — 5 KART NA LAPTOPIE */
 
 .sticker-grid {
     display: grid;
@@ -16,17 +12,14 @@
     align-items: stretch;
 }
 
-
-/* =========================================================
-   BAZA KARTY
-========================================================= */
+/* BAZA KARTY */
 
 .sticker {
-    --card-light: #b58a62;
-    --card-mid: #805b3c;
-    --card-dark: #49301f;
-    --card-metal: #e5c994;
-    --card-text: #fff4df;
+    --card-light: #d49a50;
+    --card-mid: #a65c28;
+    --card-dark: #542b19;
+    --card-metal: #ffe0a0;
+    --card-text: #fff8e9;
 
     position: relative;
     isolation: isolate;
@@ -58,8 +51,8 @@
     box-shadow:
         0 8px 18px rgba(0,0,0,0.28),
         0 2px 4px rgba(0,0,0,0.18),
-        inset 0 1px 0 rgba(255,255,255,0.35),
-        inset 0 0 0 3px rgba(255,255,255,0.035),
+        inset 0 1px 0 rgba(255,255,255,0.4),
+        inset 0 0 0 3px rgba(255,255,255,0.04),
         inset 0 -15px 24px rgba(0,0,0,0.16);
 
     transition:
@@ -68,10 +61,7 @@
         filter 0.2s ease;
 }
 
-
-/* =========================================================
-   FAKTURA PAPIERU I METALICZNE ŚWIATŁO
-========================================================= */
+/* FAKTURA I ŚWIATŁO */
 
 .sticker::before {
     content: "";
@@ -83,28 +73,25 @@
     background:
         radial-gradient(
             circle at 50% 0%,
-            rgba(255,255,255,0.20),
+            rgba(255,255,255,0.24),
             transparent 48%
         ),
         repeating-linear-gradient(
             135deg,
             transparent 0 6px,
-            rgba(255,255,255,0.025) 7px,
+            rgba(255,255,255,0.035) 7px,
             transparent 8px
         ),
         radial-gradient(
-            rgba(255,255,255,0.16) 0.6px,
+            rgba(255,255,255,0.18) 0.6px,
             transparent 0.9px
         );
 
     background-size: 100% 100%, 100% 100%, 6px 6px;
-    opacity: 0.65;
+    opacity: 0.7;
 }
 
-
-/* =========================================================
-   PODWÓJNA RAMKA KOLEKCJONERSKA
-========================================================= */
+/* PODWÓJNA RAMKA */
 
 .sticker::after {
     content: "";
@@ -116,15 +103,11 @@
     border: 1px solid var(--card-metal);
     border-radius: 5px;
 
-    outline: 1px solid rgba(255,255,255,0.20);
+    outline: 1px solid rgba(255,255,255,0.2);
     outline-offset: 3px;
 
-    box-shadow:
-        inset 0 0 0 2px rgba(0,0,0,0.055);
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.055);
 }
-
-
-/* Treść ponad fakturą, pod ramką */
 
 .sticker > * {
     position: relative;
@@ -132,106 +115,90 @@
     min-width: 0;
 }
 
-
 /* =========================================================
-   WARIANTY KOLORÓW
+   KOLORY KOLEKCJONERSKIE
 ========================================================= */
+
+/* 1 GWIAZDKA — BRĄZ */
 
 .sticker-brown {
-    --card-light: #b58a62;
-    --card-mid: #805b3c;
-    --card-dark: #49301f;
-    --card-metal: #e8c99b;
-    --card-text: #fff4df;
+    --card-light: #e3ad65;
+    --card-mid: #b66c32;
+    --card-dark: #66351d;
+    --card-metal: #ffe0a0;
+    --card-text: #fff8e9;
 }
+
+/* 2 GWIAZDKI — NIEBIESKI */
 
 .sticker-blue {
-    --card-light: #78a9d0;
-    --card-mid: #426f99;
-    --card-dark: #203d5b;
-    --card-metal: #c4dced;
-    --card-text: #f1f8ff;
+    --card-light: #65c5ee;
+    --card-mid: #287bb5;
+    --card-dark: #123d70;
+    --card-metal: #bcecff;
+    --card-text: #f1fbff;
 }
+
+/* 3 GWIAZDKI — ZIELONY */
 
 .sticker-green {
-    --card-light: #83b982;
-    --card-mid: #477b4d;
-    --card-dark: #25472e;
-    --card-metal: #c6e1b8;
-    --card-text: #f2fff0;
+    --card-light: #8bd66c;
+    --card-mid: #3c9b50;
+    --card-dark: #174b31;
+    --card-metal: #d0f5b7;
+    --card-text: #f4fff0;
 }
+
+/* 4 GWIAZDKI — CZERWONY */
 
 .sticker-red {
-    --card-light: #c97975;
-    --card-mid: #91413f;
-    --card-dark: #542324;
-    --card-metal: #e9b7a9;
-    --card-text: #fff1ed;
+    --card-light: #f07878;
+    --card-mid: #bd3d4b;
+    --card-dark: #681e35;
+    --card-metal: #ffc0bd;
+    --card-text: #fff1f0;
 }
+
+/* 5 GWIAZDEK — CZARNY */
 
 .sticker-black {
-    --card-light: #666b6c;
-    --card-mid: #34393b;
-    --card-dark: #171a1c;
-    --card-metal: #c4c5bd;
-    --card-text: #f4f1e9;
+    --card-light: #777e89;
+    --card-mid: #3c424e;
+    --card-dark: #171c29;
+    --card-metal: #e0e2e8;
+    --card-text: #fff;
 }
 
-
-/* =========================================================
-   VIP — ZŁOTA EDYCJA
-========================================================= */
+/* VIP — ZŁOTY */
 
 .sticker-gold {
-    --card-light: #f1d98e;
-    --card-mid: #bd963e;
-    --card-dark: #73521b;
-    --card-metal: #fff0b5;
-    --card-text: #fff9e7;
+    --card-light: #ffe18a;
+    --card-mid: #d6a32e;
+    --card-dark: #815014;
+    --card-metal: #fff3bd;
+    --card-text: #fffbea;
 
     box-shadow:
-        0 9px 22px rgba(90,65,15,0.30),
-        inset 0 1px 0 rgba(255,255,255,0.55),
-        inset 0 0 0 3px rgba(255,244,190,0.10);
+        0 9px 22px rgba(90,65,15,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.55);
 }
 
 .sticker-gold::before {
-    opacity: 0.85;
-    background:
-        radial-gradient(
-            circle at 50% 0%,
-            rgba(255,255,255,0.40),
-            transparent 55%
-        ),
-        repeating-linear-gradient(
-            135deg,
-            transparent 0 6px,
-            rgba(255,255,255,0.06) 7px,
-            transparent 8px
-        ),
-        radial-gradient(
-            rgba(255,255,255,0.25) 0.7px,
-            transparent 1px
-        );
-    background-size: 100% 100%, 100% 100%, 6px 6px;
+    opacity: 0.9;
 }
 
-
-/* =========================================================
-   GUEST — FIOLETOWA EDYCJA
-========================================================= */
+/* GUEST — FIOLETOWY */
 
 .sticker-purple {
-    --card-light: #bd91df;
-    --card-mid: #8250ae;
-    --card-dark: #43245f;
-    --card-metal: #e7c8ff;
+    --card-light: #d4a0fa;
+    --card-mid: #9856d2;
+    --card-dark: #50217d;
+    --card-metal: #f0d1ff;
     --card-text: #fff5ff;
 }
 
-
 /* =========================================================
-   GÓRNY NAGŁÓWEK
+   NAGŁÓWEK I NUMER KARTY
 ========================================================= */
 
 .sticker-header {
@@ -244,16 +211,27 @@
     padding: 0 2px 7px;
 
     border-bottom: 1px solid var(--card-metal);
-
     color: var(--card-text);
 }
 
 .sticker-collection-name {
-    font-family: Georgia, "Times New Roman", serif;
+    display: grid;
+    place-items: center;
+
+    min-width: 29px;
+    height: 20px;
+    padding: 0 5px;
+
+    border: 1px solid var(--card-metal);
+    border-radius: 3px;
+
+    background: rgba(0,0,0,0.12);
+
+    font-family: "Keep Calm", sans-serif;
     font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1.8px;
-    line-height: 1.2;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    line-height: 1;
 }
 
 .sticker-country-code {
@@ -267,33 +245,27 @@
     border: 1px solid var(--card-metal);
     border-radius: 3px;
 
-    font-family: Arial, sans-serif;
+    font-family: "Keep Calm", sans-serif;
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 500;
     letter-spacing: 1px;
 }
 
-
-/* =========================================================
-   RODZAJ EDYCJI
-========================================================= */
+/* RODZAJ EDYCJI */
 
 .sticker-edition {
     margin-top: 7px;
 
     color: var(--card-metal);
 
-    font-family: Arial, sans-serif;
+    font-family: "Keep Calm", sans-serif;
     font-size: 7px;
-    font-weight: 700;
-    letter-spacing: 1.7px;
+    font-weight: 500;
+    letter-spacing: 1px;
     text-align: center;
 }
 
-
-/* =========================================================
-   TABLICA — GŁÓWNY ELEMENT KARTY
-========================================================= */
+/* TABLICA */
 
 .sticker .plate {
     position: relative;
@@ -311,10 +283,7 @@
         0 0 0 2px rgba(255,255,255,0.28);
 }
 
-
-/* =========================================================
-   MIEJSCE POCHODZENIA
-========================================================= */
+/* MIEJSCOWOŚĆ */
 
 .sticker-origin-section {
     display: flex;
@@ -326,7 +295,7 @@
     margin-top: 10px;
     padding: 5px 3px 7px;
 
-    border-bottom: 1px solid rgba(255,255,255,0.22);
+    border-bottom: 1px solid rgba(255,255,255,0.25);
 }
 
 .sticker-section-label {
@@ -334,10 +303,10 @@
 
     color: var(--card-metal);
 
-    font-family: Arial, sans-serif;
+    font-family: "Keep Calm", sans-serif;
     font-size: 6px;
-    font-weight: 700;
-    letter-spacing: 1.4px;
+    font-weight: 500;
+    letter-spacing: 0.7px;
     text-align: center;
 }
 
@@ -359,21 +328,18 @@
 
     color: var(--card-text);
 
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: "Keep Calm", sans-serif;
     font-size: clamp(10px, 1vw, 14px);
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: 0.3px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: 0.2px;
     text-align: center;
     text-transform: uppercase;
 
     text-shadow: 0 1px 3px rgba(0,0,0,0.35);
 }
 
-
-/* =========================================================
-   POLA INFORMACYJNE
-========================================================= */
+/* INFORMACJE O ZNALEZIENIU */
 
 .sticker-meta {
     display: grid;
@@ -397,10 +363,10 @@
     margin: 0;
     padding: 5px 4px;
 
-    border: 1px solid rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.25);
     border-radius: 4px;
 
-    background: rgba(0,0,0,0.12);
+    background: rgba(0,0,0,0.14);
 
     text-align: center;
     text-transform: none;
@@ -412,11 +378,11 @@
 
     color: var(--card-metal);
 
-    font-family: Arial, sans-serif;
+    font-family: "Keep Calm", sans-serif;
     font-size: 6px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    line-height: 1.1;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    line-height: 1.2;
 }
 
 .sticker-meta-value {
@@ -427,16 +393,13 @@
 
     color: var(--card-text);
 
-    font-family: Arial, sans-serif;
+    font-family: "Keep Calm", sans-serif;
     font-size: 9px;
-    font-weight: 700;
+    font-weight: 500;
     line-height: 1.2;
 }
 
-
-/* =========================================================
-   GWIAZDKI / SERCA
-========================================================= */
+/* GWIAZDKI I SERCA */
 
 .sticker-stars {
     display: flex;
@@ -447,7 +410,7 @@
     margin-top: auto;
     padding-top: 9px;
 
-    color: #ffe6a2;
+    color: #fff0a8;
 
     font-family: Georgia, serif;
     font-size: 14px;
@@ -456,7 +419,7 @@
 
     text-shadow:
         0 1px 2px rgba(0,0,0,0.4),
-        0 0 7px rgba(255,220,150,0.2);
+        0 0 7px rgba(255,220,150,0.25);
 }
 
 .sticker-purple .sticker-stars {
@@ -465,14 +428,11 @@
 }
 
 .sticker-gold .sticker-stars {
-    color: #fff5c5;
+    color: #fff8c8;
     text-shadow: 0 1px 3px rgba(70,45,5,0.45);
 }
 
-
-/* =========================================================
-   PRZYCISKI
-========================================================= */
+/* PRZYCISKI */
 
 .sticker-actions {
     display: flex;
@@ -491,20 +451,19 @@
     min-height: 23px;
     padding: 4px 9px;
 
-    border: 1px solid rgba(255,255,255,0.30);
+    border: 1px solid rgba(255,255,255,0.3);
     border-radius: 3px;
 
     background: rgba(0,0,0,0.15);
-
     color: var(--card-text);
 
-    font-family: Arial, sans-serif;
+    font-family: "Keep Calm", sans-serif;
     font-size: 7px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
 
     cursor: pointer;
-    opacity: 0.72;
+    opacity: 0.78;
 
     transition:
         opacity 0.16s ease,
@@ -524,10 +483,7 @@
     transform: translateY(0);
 }
 
-
-/* =========================================================
-   RUCH I PODŚWIETLENIE
-========================================================= */
+/* PODŚWIETLENIE */
 
 .sticker:hover {
     transform: translateY(-3px);
@@ -542,10 +498,7 @@
     transform: translateY(-1px);
 }
 
-
-/* =========================================================
-   TABLET
-========================================================= */
+/* TABLET */
 
 @media (max-width: 950px) {
     .sticker-grid {
@@ -553,10 +506,7 @@
     }
 }
 
-
-/* =========================================================
-   MAŁY TABLET
-========================================================= */
+/* MAŁY TABLET */
 
 @media (max-width: 750px) {
     .sticker-grid {
@@ -569,19 +519,12 @@
         padding: 12px 9px 10px;
     }
 
-    .sticker-collection-name {
-        font-size: 8px;
-    }
-
     .sticker .plate-origin {
         font-size: 12px;
     }
 }
 
-
-/* =========================================================
-   TELEFON
-========================================================= */
+/* TELEFON */
 
 @media (max-width: 520px) {
     .sticker-grid {
@@ -599,8 +542,7 @@
     }
 
     .sticker-collection-name {
-        font-size: 7px;
-        letter-spacing: 1.2px;
+        font-size: 8px;
     }
 
     .sticker-country-code {
@@ -633,7 +575,6 @@
 
     .sticker-meta-label {
         font-size: 5px;
-        letter-spacing: 0.5px;
     }
 
     .sticker-meta-value {
@@ -652,10 +593,7 @@
     }
 }
 
-
-/* =========================================================
-   BARDZO MAŁY TELEFON
-========================================================= */
+/* BARDZO MAŁY TELEFON */
 
 @media (max-width: 340px) {
     .sticker-grid {
