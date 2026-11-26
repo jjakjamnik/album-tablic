@@ -958,89 +958,212 @@
 
 
 /* =========================================
-   NOWY WYGLĄD KART — KLASYCZNY ALBUM
-   WERSJA TESTOWA 1.0
+   KARTY KOLEKCJONERSKIE — DESIGN 2.0
+   KOLORY RZADKOSCI ZOSTAJA
 ========================================= */
+
+/* GŁÓWNA FORMA KARTY */
 
 .sticker {
 
-    color: #302b23;
+    color: #ffffff;
 
-    background:
-        linear-gradient(
-            145deg,
-            #fffdf7 0%,
-            #f2eddf 55%,
-            #e7dfce 100%
-        );
+    border: 1px solid rgba(255,255,255,0.38);
 
-    border: 1px solid #c9bea8;
+    border-radius: 10px;
 
-    border-radius: 5px;
+    padding: 15px;
+
+    min-height: 220px;
 
     box-shadow:
-        0 5px 12px rgba(35,29,20,0.18),
-        0 1px 3px rgba(35,29,20,0.12),
-        inset 0 1px 0 rgba(255,255,255,0.9);
+        0 10px 20px rgba(10,15,20,0.28),
+        0 3px 6px rgba(10,15,20,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.35),
+        inset 0 -2px 5px rgba(0,0,0,0.12);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        filter 0.25s ease;
 
 }
+
+/* DELIKATNA FAKTURA POWIERZCHNI */
 
 .sticker::before {
 
-    opacity: 0.12;
+    opacity: 0.30;
 
-    mix-blend-mode: multiply;
+    mix-blend-mode: overlay;
 
 }
+
+/* ELEGANCKA PODWÓJNA RAMKA */
 
 .sticker::after {
 
-    inset: 7px;
+    inset: 8px;
 
-    border: 1px solid rgba(120,100,65,0.28);
+    border: 1px solid rgba(255,255,255,0.42);
 
-    border-radius: 3px;
+    border-radius: 6px;
+
+    outline: 1px solid rgba(255,255,255,0.12);
+
+    outline-offset: 3px;
 
 }
+
+/* TABLICA — EFEKT GŁĘBI */
+
+.sticker .plate {
+
+    margin-top: 10px;
+
+    box-shadow:
+        0 7px 14px rgba(0,0,0,0.34),
+        0 2px 4px rgba(0,0,0,0.22),
+        0 0 0 1px rgba(255,255,255,0.35);
+
+}
+
+/* MIEJSCOWOŚĆ */
 
 .sticker .plate-origin {
 
-    color: #40372b;
+    margin-top: 13px;
 
-    text-shadow: none;
+    font-size: 19px;
+
+    letter-spacing: 0.4px;
+
+    text-shadow:
+        0 2px 3px rgba(0,0,0,0.28);
 
 }
+
+/* INFORMACJA O ZNALEZIENIU */
 
 .sticker .sticker-location {
 
-    color: #766b59;
+    margin-top: 10px;
+
+    font-size: 7px;
+
+    letter-spacing: 1.1px;
+
+    color: rgba(255,255,255,0.86);
 
 }
+
+/* ODLEGŁOŚĆ */
 
 .sticker .sticker-distance {
 
-    color: #91846e;
+    margin-top: 5px;
+
+    font-size: 7px;
+
+    letter-spacing: 1px;
+
+    color: rgba(255,255,255,0.72);
 
 }
+
+/* KTO ZNALAZŁ */
 
 .sticker .sticker-found-by {
 
-    color: #625744;
+    margin-top: 6px;
+
+    font-size: 8px;
 
 }
+
+/* GWIAZDKI */
 
 .sticker .sticker-stars {
 
-    color: #a98235;
+    padding-top: 13px;
 
-    text-shadow: none;
+    font-size: 14px;
+
+    letter-spacing: 2.5px;
+
+    color: #ffe39a;
+
+    text-shadow:
+        0 2px 4px rgba(0,0,0,0.42);
 
 }
 
-.sticker-gold .sticker-stars {
+/* ZŁOTA KARTA */
 
-    color: #a98235;
+.sticker-gold {
 
-    text-shadow: none;
+    border-color: rgba(255,239,180,0.85);
+
+    box-shadow:
+        0 11px 24px rgba(75,55,15,0.36),
+        0 3px 7px rgba(75,55,15,0.22),
+        inset 0 1px 0 rgba(255,255,255,0.55);
 
 }
+
+/* FIOLETOWA KARTA GOŚCIA */
+
+.sticker-purple {
+
+    border-color: rgba(235,210,255,0.75);
+
+}
+
+/* HOVER — EFEKT FIZYCZNEJ KARTY */
+
+.sticker:hover {
+
+    filter: brightness(1.07);
+
+    box-shadow:
+        0 17px 30px rgba(10,15,20,0.34),
+        0 5px 9px rgba(10,15,20,0.20);
+
+}
+
+/* TELEFONY */
+
+@media (max-width: 520px) {
+
+    .sticker {
+
+        min-height: 195px;
+
+        padding: 11px;
+
+    }
+
+    .sticker .plate-origin {
+
+        font-size: 16px;
+
+    }
+
+    .sticker .sticker-location,
+    .sticker .sticker-distance {
+
+        font-size: 6px;
+
+    }
+
+    .sticker .sticker-stars {
+
+        font-size: 11px;
+
+    }
+
+}
+
+
+
+
