@@ -1957,3 +1957,123 @@ main {
     border-color: rgba(190, 153, 211, .55);
     box-shadow: 0 8px 20px rgba(43, 29, 60, .28);
 }
+
+
+/* =========================================
+   ALBUM KRAJU — ALBANIA
+   PIERWSZA STRONA TESTOWA
+   ========================================= */
+
+.albania-album {
+    background: #eee5dc;
+    border: 1px solid #c5a99b;
+}
+
+.albania-album .country-header {
+    background: linear-gradient(120deg, #f3e8df, #dfc5b9);
+    border-bottom: 3px solid #8f2930;
+}
+
+.albania-album .country-title {
+    color: #79232b;
+}
+
+.albania-album main {
+    background: linear-gradient(180deg, #eee3d9, #e5d6ca);
+    padding: 28px;
+}
+
+.albania-page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 14px 18px;
+    color: #fff8ef;
+    background: linear-gradient(120deg, #9e3038, #501c25);
+    border: 2px solid #c49b5b;
+    box-shadow: 0 5px 14px rgba(50,20,20,.2);
+}
+
+.albania-page-heading strong {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+}
+
+.albania-page-heading span {
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.albania-pocket-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.albania-pocket {
+    position: relative;
+    aspect-ratio: 0.72;
+    min-width: 0;
+    border: 1px solid rgba(100,75,65,.35);
+    border-radius: 5px;
+    background: linear-gradient(
+        145deg,
+        rgba(255,255,255,.68),
+        rgba(255,255,255,.20)
+    );
+    box-shadow:
+        inset 0 0 10px rgba(255,255,255,.65),
+        0 3px 7px rgba(65,40,30,.13);
+}
+
+.albania-pocket::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 8%;
+    right: 8%;
+    height: 3px;
+    border-radius: 3px;
+    background: rgba(255,255,255,.8);
+    box-shadow: 0 1px 2px rgba(0,0,0,.12);
+}
+
+.albania-pocket::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(255,255,255,.45);
+    border-radius: 3px;
+    pointer-events: none;
+}
+
+.albania-page-footer {
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 1px solid #b99b8b;
+    color: #795d51;
+    text-align: center;
+    font-family: Georgia, serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+@media (max-width: 600px) {
+    .albania-album main {
+        padding: 16px;
+    }
+
+    .albania-pocket-grid {
+        gap: 7px;
+    }
+
+    .albania-page-heading {
+        padding: 11px;
+    }
+
+    .albania-page-heading strong {
+        font-size: 17px;
+    }
+}
