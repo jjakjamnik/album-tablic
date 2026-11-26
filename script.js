@@ -3034,27 +3034,41 @@ function renderCurrentCountry() {
     }
 
 
-    const currentCountry =
-        getCurrentCountry();
-
-
-    if (!currentCountry) {
-        return;
-    }
-
+    const albumView =
+        document.body.dataset.albumView;
 
     let stickers =
-        getStickers()
-            .filter(
-                function (sticker) {
+        getStickers();
 
-                    return (
-                        sticker.country ===
-                        currentCountry
-                    );
+    if (albumView === "special") {
 
-                }
-            );
+        stickers =
+            stickers.filter(function (sticker) {
+                return sticker.owner === "special";
+            });
+
+    } else if (albumView === "guest") {
+
+        stickers =
+            stickers.filter(function (sticker) {
+                return sticker.owner === "guest";
+            });
+
+    } else {
+
+        const currentCountry =
+            getCurrentCountry();
+
+        if (!currentCountry) {
+            return;
+        }
+
+        stickers =
+            stickers.filter(function (sticker) {
+                return sticker.country === currentCountry;
+            });
+
+    }
 
 
     stickers.sort(
