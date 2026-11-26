@@ -3176,6 +3176,13 @@ function createStickerCard(
         stickerClass = "sticker-purple";
 
     }
+
+    article.className =
+        "sticker " + stickerClass;
+
+    const actions =
+        document.createElement("div");
+
     const plate =
         document.createElement(
             "div"
