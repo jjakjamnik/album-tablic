@@ -1357,172 +1357,41 @@ main {
 }
 
 
-/* =========================================================
-   KOLORY KRAJÓW
-   ========================================================= */
-
-.country-al {
-    background: linear-gradient(145deg,#c65a5a,#963737 55%,#692525);
-}
-
-.country-at {
-    background: linear-gradient(145deg,#c95b5d,#98383d 55%,#69272d);
-}
-
-.country-by {
-    background: linear-gradient(145deg,#71935d,#506f42 55%,#354b2d);
-}
-
-.country-be {
-    background: linear-gradient(145deg,#c0a65b,#987e38 55%,#66511f);
-}
-
-.country-bg {
-    background: linear-gradient(145deg,#769566,#527447 55%,#354d2d);
-}
-
-.country-hr {
-    background: linear-gradient(145deg,#c85b5b,#983a3a 55%,#692626);
-}
-
-.country-cz {
-    background: linear-gradient(145deg,#607c99,#3b5773 55%,#23374d);
-}
-
-.country-dk {
-    background: linear-gradient(145deg,#d25a5c,#a62e35 55%,#741c24);
-}
-
-.country-ee {
-    background: linear-gradient(145deg,#6b91ad,#476f8d 55%,#2d4e66);
-}
-
-.country-fi {
-    background: linear-gradient(145deg,#7295b0,#4c708d 55%,#304c63);
-}
-
-.country-fr {
-    background: linear-gradient(145deg,#657b9e,#405774 55%,#293d56);
-}
-
-.country-gr {
-    background: linear-gradient(145deg,#729bbb,#4b7693 55%,#2f526b);
-}
-
-.country-es {
-    background: linear-gradient(145deg,#c87b50,#9e5032 55%,#6c3523);
-}
-
-.country-ie {
-    background: linear-gradient(145deg,#71936a,#53734c 55%,#354d30);
-}
-
-.country-is {
-    background: linear-gradient(145deg,#6f94b1,#4a708d 55%,#2d4d65);
-}
-
-.country-lt {
-    background: linear-gradient(145deg,#998e54,#726c3e 55%,#4c4828);
-}
-.country-lu {
-    background: linear-gradient(145deg,#b45c68,#873b50 55%,#542638);
-}
-
-.country-lv {
-    background: linear-gradient(145deg,#a75a61,#823e47 55%,#592a31);
-}
-
-.country-nl {
-    background: linear-gradient(145deg,#c58655,#9c6039 55%,#693f28);
-}
-
-.country-de {
-    background: linear-gradient(145deg,#646768,#383b3c 55%,#1b1d1e);
-}
-
-.country-no {
-    background: linear-gradient(145deg,#c85a5c,#99383c 55%,#69262a);
-}
-
-.country-pl {
-    background: linear-gradient(145deg,#d1cec6,#a8a59e 55%,#77746e);
-}
-
-.country-pt {
-    background: linear-gradient(145deg,#71936a,#53734c 55%,#354d30);
-}
-
-.country-ro {
-    background: linear-gradient(145deg,#6d8d9c,#506f7d 55%,#354d58);
-}
-
-.country-sk {
-    background: linear-gradient(145deg,#7189a1,#4c667e 55%,#304557);
-}
-
-.country-si {
-    background: linear-gradient(145deg,#6d917e,#4f735f 55%,#304c3e);
-}
-
-.country-ch {
-    background: linear-gradient(145deg,#c95b5b,#983737 55%,#692626);
-}
-
-.country-se {
-    background: linear-gradient(145deg,#dec34d,#ae9429 55%,#715d17);
-}
-
-.country-ua {
-    background: linear-gradient(145deg,#5c96b5,#3b708d 55%,#254e66);
-}
-
-.country-hu {
-    background: linear-gradient(145deg,#a96d60,#814c42 55%,#59332e);
-}
-
-.country-gb {
-    background: linear-gradient(145deg,#627999,#415773 55%,#2b3e57);
-}
-
-.country-it {
-    background: linear-gradient(145deg,#6e9278,#4f735b 55%,#304b3a);
-}
-
-.country-xk {
-    background: linear-gradient(145deg,#7290ae,#4c6d8b 55%,#304d66);
-}
-
 
 /* =========================================================
-   POLSKA — JASNA KARTA
+   KOLORY KRAJÓW — RETRO FLAGI
    ========================================================= */
 
-.country-pl .country-card-label,
-.country-pl .country-card-code,
-.country-pl .country-card-name,
-.country-pl .country-card-count,
-.country-pl .country-card-bottom {
+.country-at { background: linear-gradient(145deg,#c64b50,#982d35 55%,#641d27); }
+.country-be { background: linear-gradient(145deg,#a98a36,#514321 55%,#242321); }
+.country-by { background: linear-gradient(145deg,#8d493e,#55743d 55%,#293d2a); }
+.country-bg { background: linear-gradient(145deg,#66864d,#3e653f 55%,#783b35); }
+.country-ch { background: linear-gradient(145deg,#d04449,#a3222b 55%,#681b25); }
+.country-cz { background: linear-gradient(145deg,#526f91,#344f70 55%,#702e35); }
+.country-de { background: linear-gradient(145deg,#55504a,#302d2b 55%,#17191a); }
+.country-dk { background: linear-gradient(145deg,#d04c50,#a32631 55%,#6c1c27); }
+.country-ee { background: linear-gradient(145deg,#527f9e,#354f65 55%,#252b31); }
+.country-es { background: linear-gradient(145deg,#c77a32,#a34a2e 55%,#692b25); }
+.country-fr { background: linear-gradient(145deg,#526b98,#344d78 55%,#202d4b); }
+.country-gb { background: linear-gradient(145deg,#526b91,#344c70 55%,#762b37); }
+.country-hr { background: linear-gradient(145deg,#d04b4d,#a52d34 55%,#63232b); }
+.country-hu { background: linear-gradient(145deg,#a94e42,#76513b 55%,#3c5438); }
+.country-ie { background: linear-gradient(145deg,#557e49,#37613e 55%,#a65d36); }
+.country-it { background: linear-gradient(145deg,#56845c,#37684b 55%,#244638); }
+.country-lt { background: linear-gradient(145deg,#b08a37,#8b6c2c 55%,#526039); }
+.country-lu { background: linear-gradient(145deg,#b94d60,#824052 55%,#344c68); }
+.country-nl { background: linear-gradient(145deg,#c66b35,#a33d35 55%,#34445f); }
+.country-no { background: linear-gradient(145deg,#d04b50,#a52b35 55%,#62202a); }
+.country-pl { background: linear-gradient(145deg,#bd5554,#923b40 55%,#572b32); }
+.country-pt { background: linear-gradient(145deg,#668247,#3e663f 55%,#8b3b32); }
+.country-ro { background: linear-gradient(145deg,#426b91,#a17b35 55%,#803b37); }
+.country-si { background: linear-gradient(145deg,#527c91,#456c59 55%,#344a65); }
+.country-sk { background: linear-gradient(145deg,#4c7196,#354f72 55%,#8d3438); }
+.country-se { background: linear-gradient(145deg,#3e78a4,#285b87 55%,#a68a32); }
+.country-tr { background: linear-gradient(145deg,#d04449,#a3222b 55%,#681b25); }
+.country-ua { background: linear-gradient(145deg,#397ba5,#28658b 55%,#9b7b32); }
 
-    color:
-        #25282a;
-}
 
-
-.country-pl .country-card-code {
-
-    background:
-        rgba(255,255,255,.30);
-
-    border-color:
-        rgba(0,0,0,.18);
-}
-
-
-.country-pl .country-card-background {
-
-    color:
-        rgba(255,255,255,.28);
-}
 
 
 /* =========================================================
