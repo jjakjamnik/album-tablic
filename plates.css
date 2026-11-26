@@ -161,35 +161,20 @@
 
 .sticker .plate {
 
-    position:
-        relative;
+    position: relative;
+    z-index: 5;
 
-    z-index:
-        5;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
 
-    display:
-        flex !important;
+    width: 100% !important;
+    height: 34px !important;
 
-    flex-direction:
-        row !important;
+    margin: 8px auto 6px !important;
+    padding: 0 !important;
 
-    align-items:
-        stretch !important;
-
-    width:
-        90% !important;
-
-    height:
-        31px !important;
-
-    margin:
-        8px auto 6px !important;
-
-    padding:
-        0 !important;
-
-    box-sizing:
-        border-box !important;
+    box-sizing: border-box !important;
 
     background:
         linear-gradient(
@@ -199,27 +184,21 @@
             #eeeeeb 100%
         ) !important;
 
-    border:
-        1px solid rgba(25,25,25,0.70) !important;
+    border: 1px solid rgba(25,25,25,0.70) !important;
+    border-radius: 3px !important;
 
-    border-radius:
-        3px !important;
-
-    overflow:
-        hidden !important;
+    overflow: hidden !important;
 
     box-shadow:
         0 3px 6px rgba(15,20,17,0.24),
         inset 0 1px 0 rgba(255,255,255,0.95);
 
-    color:
-        #161616 !important;
+    color: #161616 !important;
 
     font-family:
         "Trebuchet MS",
         Arial,
         sans-serif;
-
 }
 
 
