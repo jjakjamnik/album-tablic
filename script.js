@@ -2337,7 +2337,7 @@ async function calculateStickerDistance(
 "GB": "United Kingdom",
 "BY": "Belarus",
 "TR": "Turkey",
-"UZ": "Uzbekistan""
+"UZ": "Uzbekistan"
        
 
     };
