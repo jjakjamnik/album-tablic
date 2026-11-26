@@ -2090,3 +2090,92 @@ main {
         font-size: 17px;
     }
 }
+
+
+/* =========================================================
+   POLSKA — BORDOWA OPRAWA ALBUMU
+========================================================= */
+
+.polska-album {
+    background:
+        linear-gradient(
+            145deg,
+            #681f2b 0%,
+            #501722 55%,
+            #381019 100%
+        );
+
+    border: 2px solid #a77b49;
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.45),
+        inset 0 0 35px rgba(0,0,0,.18);
+}
+
+/* NAGŁÓWEK */
+
+.polska-album .country-header {
+    background:
+        linear-gradient(
+            120deg,
+            #762936,
+            #48141f
+        );
+
+    border-bottom: 2px solid #c5a16a;
+}
+
+.polska-album .country-title {
+    color: #fff3df;
+    font-family: Georgia, serif;
+    letter-spacing: 2px;
+}
+
+.polska-album .album-subtitle {
+    color: #d9bd91;
+}
+
+/* GŁÓWNA STRONA */
+
+.polska-album main {
+    background:
+        linear-gradient(
+            145deg,
+            #702632,
+            #511923 65%,
+            #3d121b
+        );
+}
+
+/* TYTUŁ STRONY */
+
+.polska-album .index-heading {
+    color: #fff1dc;
+}
+
+.polska-album .index-heading-line {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #c5a16a,
+        transparent
+    );
+}
+
+.polska-album #country-sticker-count {
+    color: #d9bd91;
+}
+
+/* POWRÓT DO ALBUMU */
+
+.polska-album .country-back {
+    color: #f5dfbd;
+    border-color: rgba(197,161,106,.55);
+}
+
+/* STOPKA */
+
+.polska-album .album-footer {
+    color: #d9bd91;
+    border-top-color: rgba(197,161,106,.45);
+}
