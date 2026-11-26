@@ -185,7 +185,6 @@ document.addEventListener(
         /* =================================================
            ELEMENTY FORMULARZA
            ================================================= */
-           ================================================= */
 
         const addButton =
             document.getElementById(
