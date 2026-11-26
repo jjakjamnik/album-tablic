@@ -3040,56 +3040,61 @@ async function saveStickerToSupabaseOnly(
 
 function renderCurrentCountry() {
 
-    const stickerGrid =
-        document.getElementById(
-            "sticker-grid"
-        );
-
+    const stickerGrid = document.getElementById("sticker-grid");
 
     if (!stickerGrid) {
         return;
     }
 
+    const albumView = document.body.dataset.albumView;
 
-    const albumView =
-        document.body.dataset.albumView;
-
-    let stickers =
-        getStickers();
+    const allStickers = getStickers();
+    let stickers = allStickers;
 
     if (albumView === "special") {
 
-        stickers =
-            stickers.filter(function (sticker) {
-                return sticker.owner === "special";
-            });
+        stickers = stickers.filter(function (sticker) {
+            return sticker.owner === "special";
+        });
 
     } else if (albumView === "guest") {
 
-        stickers =
-            stickers.filter(function (sticker) {
-                return sticker.owner === "guest";
-            });
+        stickers = stickers.filter(function (sticker) {
+            return sticker.owner === "guest";
+        });
 
     } else {
 
-        const currentCountry =
-            getCurrentCountry();
+        const currentCountry = getCurrentCountry();
 
         if (!currentCountry) {
             return;
         }
 
-        stickers =
-            stickers.filter(function (sticker) {
-                return sticker.country === currentCountry;
-            });
+        stickers = stickers.filter(function (sticker) {
+            return sticker.country === currentCountry;
+        });
 
     }
 
+    /* NUMERACJA OSOBNO DLA KAŻDEGO KRAJU */
 
-    stickers.sort(
-        function (a, b) {
+    const countryNumbers = new Map();
+    const countryGroups = new Map();
+
+    allStickers.forEach(function (sticker) {
+
+        if (!countryGroups.has(sticker.country)) {
+            countryGroups.set(sticker.country, []);
+        }
+
+        countryGroups.get(sticker.country).push(sticker);
+
+    });
+
+    countryGroups.forEach(function (countryStickers) {
+
+        countryStickers.sort(function (a, b) {
 
             return a.plate.localeCompare(
                 b.plate,
@@ -3100,57 +3105,51 @@ function renderCurrentCountry() {
                 }
             );
 
-        }
-    );
+        });
 
+        countryStickers.forEach(function (sticker, index) {
+            countryNumbers.set(sticker, index + 1);
+        });
 
-    stickerGrid.innerHTML =
-        "";
+    });
 
+    stickers.sort(function (a, b) {
 
-    if (
-        stickers.length === 0
-    ) {
-
-        const empty =
-            document.createElement(
-                "div"
-            );
-
-
-        empty.className =
-            "album-empty";
-
-
-        empty.textContent =
-            "TEN ALBUM JEST OBECNIE PUSTY";
-
-
-        stickerGrid.appendChild(
-            empty
+        return a.plate.localeCompare(
+            b.plate,
+            "pl",
+            {
+                numeric: true,
+                sensitivity: "base"
+            }
         );
 
+    });
+
+    stickerGrid.innerHTML = "";
+
+    if (stickers.length === 0) {
+
+        const empty = document.createElement("div");
+
+        empty.className = "album-empty";
+        empty.textContent = "TEN ALBUM JEST OBECNIE PUSTY";
+
+        stickerGrid.appendChild(empty);
 
         return;
-
     }
 
+    stickers.forEach(function (sticker) {
 
-    stickers.forEach(
-        function (sticker) {
+        const article = createStickerCard(
+            sticker,
+            countryNumbers.get(sticker) || 1
+        );
 
-            const article =
-                createStickerCard(
-                    sticker
-                );
+        stickerGrid.appendChild(article);
 
-
-            stickerGrid.appendChild(
-                article
-            );
-
-        }
-    );
+    });
 
 }
 
@@ -3160,7 +3159,7 @@ function renderCurrentCountry() {
    ========================================================= */
 
 
-function createStickerCard(sticker) {
+function createStickerCard(sticker, cardNumber) {
 
     const article = document.createElement("article");
 
@@ -3181,7 +3180,7 @@ function createStickerCard(sticker) {
 
     const collectionName = document.createElement("div");
     collectionName.className = "sticker-collection-name";
-    collectionName.textContent = "EURO PLATES";
+    collectionName.textContent = String(cardNumber).padStart(3, "0");
 
     const countryCode = document.createElement("div");
     countryCode.className = "sticker-country-code";
@@ -3294,8 +3293,7 @@ function createStickerCard(sticker) {
         typeof sticker.kilometers === "number" &&
         Number.isFinite(sticker.kilometers)
     ) {
-        distanceValue.textContent =
-            sticker.kilometers + " km";
+        distanceValue.textContent = sticker.kilometers + " km";
     } else {
         distanceValue.textContent = "—";
     }
@@ -3371,9 +3369,7 @@ function createStickerCard(sticker) {
             await deleteSticker(sticker);
 
             renderCurrentCountry();
-
             updateCountryCounters();
-
             updateCountryCardStates();
 
         } catch (error) {
@@ -3392,7 +3388,7 @@ function createStickerCard(sticker) {
     actions.appendChild(editButton);
     actions.appendChild(deleteButton);
 
-    /* SKŁADANIE NOWEJ KARTY */
+    /* SKŁADANIE KARTY */
 
     article.appendChild(header);
     article.appendChild(edition);
