@@ -2050,15 +2050,11 @@ main {
         animation:
             none !important;
     }
+}
 
-
-
-
-
-
-   /* TURCJA */
+/* TURCJA */
 .country-card.country-tr {
     background: linear-gradient(135deg, #e32636, #a80018);
     color: #ffffff;
 }
-}
+
