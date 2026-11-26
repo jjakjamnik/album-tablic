@@ -82,6 +82,7 @@ const FIXED_COUNTRY_STARS = {
     "DK": 1,
 
     // 2 GWIAZDKI
+    "BE": 2,
     "NL": 2,
     "LV": 2,
     "LT": 2,
@@ -89,7 +90,6 @@ const FIXED_COUNTRY_STARS = {
     // 3 GWIAZDKI
     "FI": 3,
     "ES": 3,
-    "BE": 3,
     "EE": 3,
     "LU": 3,
     "HU": 3,
