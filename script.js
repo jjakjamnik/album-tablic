@@ -3388,6 +3388,11 @@ function createStickerCard(sticker, cardNumber) {
     actions.appendChild(editButton);
     actions.appendChild(deleteButton);
 
+    /* PRZEZROCZYSTA KOSZULKA */
+
+    const sleeve = document.createElement("div");
+    sleeve.className = "sticker-sleeve";
+   
     /* SKŁADANIE KARTY */
 
     article.appendChild(header);
@@ -3397,6 +3402,7 @@ function createStickerCard(sticker, cardNumber) {
     article.appendChild(meta);
     article.appendChild(stars);
     article.appendChild(actions);
+    article.appendChild(sleeve);
 
     return article;
 }
