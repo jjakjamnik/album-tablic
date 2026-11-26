@@ -62,6 +62,7 @@ let stickersCache = [];
 
 let stickersLoaded = false;
 
+let currentCountryPage = 1;
 
 /* =========================================================
    AKTUALNIE EDYTOWANA KARTA
