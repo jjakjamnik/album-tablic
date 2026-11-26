@@ -3344,26 +3344,27 @@ if (sticker.owner === "special") {
         stars.textContent =
             "★".repeat(
                 sticker.stars
-            );
+if (sticker.owner === "special") {
 
-    }
+    stars.textContent = "★★★★★";
 
-    else {
+} else if (sticker.owner === "guest") {
 
-        stars.textContent =
-            "—";
+    stars.textContent = "❤️❤️❤️❤️❤️";
 
-    }
+} else if (
+    typeof sticker.stars === "number" &&
+    sticker.stars > 0
+) {
 
+    stars.textContent =
+        "★".repeat(sticker.stars);
 
-    const actions =
-        document.createElement(
-            "div"
-        );
+} else {
 
+    stars.textContent = "—";
 
-    actions.className =
-        "sticker-actions";
+}
 
 
     const editButton =
