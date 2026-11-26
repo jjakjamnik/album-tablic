@@ -1924,3 +1924,36 @@ main {
     }
 }
 
+
+/* =========================================================
+   KARTY SPECJALNE VIP — STARE ZŁOTO
+   ========================================================= */
+
+.country-card.special-card-tile {
+    background: linear-gradient(
+        145deg,
+        #c5a34b,
+        #96732d 55%,
+        #59431e
+    );
+    color: #fff8df;
+    border-color: rgba(226, 195, 112, .65);
+    box-shadow: 0 8px 20px rgba(75, 54, 18, .28);
+}
+
+
+/* =========================================================
+   KARTY OTRZYMANE GUEST — ŚLIWKOWY FIOLET
+   ========================================================= */
+
+.country-card.guest-card-tile {
+    background: linear-gradient(
+        145deg,
+        #80608f,
+        #583e70 55%,
+        #332744
+    );
+    color: #f8efff;
+    border-color: rgba(190, 153, 211, .55);
+    box-shadow: 0 8px 20px rgba(43, 29, 60, .28);
+}
