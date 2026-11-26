@@ -954,3 +954,93 @@
     }
 
 }
+
+
+
+/* =========================================
+   NOWY WYGLĄD KART — KLASYCZNY ALBUM
+   WERSJA TESTOWA 1.0
+========================================= */
+
+.sticker {
+
+    color: #302b23;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fffdf7 0%,
+            #f2eddf 55%,
+            #e7dfce 100%
+        );
+
+    border: 1px solid #c9bea8;
+
+    border-radius: 5px;
+
+    box-shadow:
+        0 5px 12px rgba(35,29,20,0.18),
+        0 1px 3px rgba(35,29,20,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+
+}
+
+.sticker::before {
+
+    opacity: 0.12;
+
+    mix-blend-mode: multiply;
+
+}
+
+.sticker::after {
+
+    inset: 7px;
+
+    border: 1px solid rgba(120,100,65,0.28);
+
+    border-radius: 3px;
+
+}
+
+.sticker .plate-origin {
+
+    color: #40372b;
+
+    text-shadow: none;
+
+}
+
+.sticker .sticker-location {
+
+    color: #766b59;
+
+}
+
+.sticker .sticker-distance {
+
+    color: #91846e;
+
+}
+
+.sticker .sticker-found-by {
+
+    color: #625744;
+
+}
+
+.sticker .sticker-stars {
+
+    color: #a98235;
+
+    text-shadow: none;
+
+}
+
+.sticker-gold .sticker-stars {
+
+    color: #a98235;
+
+    text-shadow: none;
+
+}
