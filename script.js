@@ -77,28 +77,43 @@ let editingStickerId =
 
 const FIXED_COUNTRY_STARS = {
 
+    // 1 GWIAZDKA
     "SE": 1,
     "DK": 1,
 
+    // 2 GWIAZDKI
     "NL": 2,
     "LV": 2,
     "LT": 2,
 
+    // 3 GWIAZDKI
     "FI": 3,
     "ES": 3,
     "BE": 3,
     "EE": 3,
+    "LU": 3,
+    "HU": 3,
+    "IT": 3,
 
+    // 4 GWIAZDKI
     "PT": 4,
     "GR": 4,
+    "BA": 4,
+    "MT": 4,
+    "ME": 4,
 
-    "IT": 4,
-
+    // 5 GWIAZDEK
     "AL": 5,
-    "IS": 5
+    "IS": 5,
+    "AD": 5,
+    "AM": 5,
+    "CY": 5,
+    "GE": 5,
+    "LI": 5,
+    "MC": 5,
+    "SM": 5
 
 };
-
 
 /* =========================================================
    FALLBACK RZADKOŚCI
