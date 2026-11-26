@@ -1965,21 +1965,21 @@ main {
    ========================================= */
 
 .albania-album {
-    background: #eee5dc;
-    border: 1px solid #c5a99b;
+    background: #571c27;
+    border: 2px solid #9b3943;
 }
 
 .albania-album .country-header {
-    background: linear-gradient(120deg, #f3e8df, #dfc5b9);
-    border-bottom: 3px solid #8f2930;
+    background: linear-gradient(120deg, #722631, #481720);
+    border-bottom: 3px solid #c49b5b;
 }
 
 .albania-album .country-title {
-    color: #79232b;
+    color: #fff1e5;
 }
 
 .albania-album main {
-    background: linear-gradient(180deg, #eee3d9, #e5d6ca);
+    background: linear-gradient(145deg, #702631, #4b1923 75%, #38131c);
     padding: 28px;
 }
 
