@@ -1802,6 +1802,9 @@ function findCity(
     if (!cleanPlate) {
         return null;
     }
+   if (country === "UZ") {
+    return findUzbekistanCity(cleanPlate);
+   }
 
 
     const databases = {
