@@ -667,3 +667,125 @@
         transparent
     );
 }
+/* =========================================================
+   FIZYCZNE KIESZONKI ALBUMU
+========================================================= */
+
+.album-pocket {
+    position: relative;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 273px;
+    padding: 4px;
+    border: 1px solid rgba(255,255,255,0.48);
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.16),
+            rgba(255,255,255,0.035) 45%,
+            rgba(0,0,0,0.16)
+        );
+
+    box-shadow:
+        inset 0 1px 3px rgba(255,255,255,0.45),
+        inset 0 -4px 8px rgba(0,0,0,0.16),
+        0 3px 8px rgba(0,0,0,0.20);
+}
+
+/* KARTA W KIESZONCE */
+
+.album-pocket-filled > .sticker {
+    width: 100%;
+    height: 100%;
+    min-height: 265px;
+}
+
+/* FOLIA NA KARCIE */
+
+.album-pocket-filled::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    z-index: 20;
+    pointer-events: none;
+
+    border: 1px solid rgba(255,255,255,0.38);
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            115deg,
+            rgba(255,255,255,0.13),
+            transparent 35%,
+            rgba(255,255,255,0.035) 70%,
+            rgba(0,0,0,0.10)
+        );
+
+    box-shadow:
+        inset 0 1px 3px rgba(255,255,255,0.35),
+        inset 0 -5px 8px rgba(0,0,0,0.12);
+}
+
+/* STARY EFEKT FOLII WYŁĄCZAMY — MAMY NOWĄ KIESZEŃ */
+
+.album-pocket .sticker-sleeve {
+    display: none;
+}
+
+/* PUSTA KIESZONKA */
+
+.album-pocket-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.13),
+            rgba(255,255,255,0.035) 55%,
+            rgba(0,0,0,0.13)
+        );
+}
+
+/* NUMER PUSTEGO MIEJSCA */
+
+.album-pocket-number {
+    color: rgba(255,255,255,0.48);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+
+/* PODPIS PUSTEJ KIESZONKI */
+
+.album-pocket-label {
+    color: rgba(255,255,255,0.38);
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-align: center;
+}
+
+/* ODBICIE ŚWIATŁA NA PUSTEJ FOLII */
+
+.album-pocket-empty::before {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 9%;
+    right: 9%;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.65),
+        transparent
+    );
+}
