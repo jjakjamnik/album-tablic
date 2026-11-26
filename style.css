@@ -2008,8 +2008,8 @@ main {
 
 .albania-pocket-grid {
     display: grid;
-    grid-template-columns: repeat(10, minmax(0, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
 }
 
 .albania-pocket {
