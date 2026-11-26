@@ -1973,6 +1973,26 @@ function findCity(
 
 
     /* =====================================================
+       CZECHY — KOD REGIONU
+       ===================================================== */
+
+    if (country === "CZ") {
+
+        if (/^\d[A-Z]/.test(cleanPlate)) {
+
+            const regionCode =
+                cleanPlate.charAt(1);
+
+            return database[regionCode] || null;
+
+        }
+
+        return null;
+
+    }
+
+   
+    /* =====================================================
        FRANCJA
        ===================================================== */
 
