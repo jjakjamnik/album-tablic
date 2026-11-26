@@ -3244,10 +3244,6 @@ function renderCurrentCountry() {
         stickerGrid.appendChild(pocket);
 
     }
-        stickerGrid.appendChild(pocket);
-
-    }
-
 }
 
 
