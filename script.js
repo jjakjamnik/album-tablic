@@ -3140,16 +3140,46 @@ function renderCurrentCountry() {
         return;
     }
 
-    stickers.forEach(function (sticker) {
+    /* KIESZONKI W ALBUMIE — 50 MIEJSC */
 
-        const article = createStickerCard(
-            sticker,
-            countryNumbers.get(sticker) || 1
-        );
+    const totalPockets = Math.max(50, stickers.length);
 
-        stickerGrid.appendChild(article);
+    for (let i = 0; i < totalPockets; i++) {
 
-    });
+        const pocket = document.createElement("div");
+        pocket.className = "album-pocket";
+
+        if (stickers[i]) {
+
+            pocket.classList.add("album-pocket-filled");
+
+            const article = createStickerCard(
+                stickers[i],
+                countryNumbers.get(stickers[i]) || 1
+            );
+
+            pocket.appendChild(article);
+
+        } else {
+
+            pocket.classList.add("album-pocket-empty");
+
+            const pocketNumber = document.createElement("span");
+            pocketNumber.className = "album-pocket-number";
+            pocketNumber.textContent = String(i + 1).padStart(3, "0");
+
+            const pocketLabel = document.createElement("span");
+            pocketLabel.className = "album-pocket-label";
+            pocketLabel.textContent = "MIEJSCE NA KARTĘ";
+
+            pocket.appendChild(pocketNumber);
+            pocket.appendChild(pocketLabel);
+
+        }
+
+        stickerGrid.appendChild(pocket);
+
+    }
 
 }
 
