@@ -571,7 +571,65 @@
         url("https://flagcdn.com/w20/tr.png");
 }
 
+/* BRAKUJĄCE FLAGI PAŃSTW Z ALBUMU */
 
+.sticker .plate.plate-ad .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/ad.png");
+}
+
+.sticker .plate.plate-am .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/am.png");
+}
+
+.sticker .plate.plate-az .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/az.png");
+}
+
+.sticker .plate.plate-cy .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/cy.png");
+}
+
+.sticker .plate.plate-ge .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/ge.png");
+}
+
+.sticker .plate.plate-kz .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/kz.png");
+}
+
+.sticker .plate.plate-li .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/li.png");
+}
+
+.sticker .plate.plate-lu .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/lu.png");
+}
+
+.sticker .plate.plate-mt .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/mt.png");
+}
+
+.sticker .plate.plate-mc .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/mc.png");
+}
+
+.sticker .plate.plate-ru .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/ru.png");
+}
+
+.sticker .plate.plate-sm .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/sm.png");
+}
+
+.sticker .plate.plate-va .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/va.png");
+}
+
+/* UZBEKISTAN — TYLKO KARTY SPECJALNE */
+
+.sticker .plate.plate-uz .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/uz.png");
+}
 /* =========================================================
    🇮🇪 IRLANDIA
    IRL + DIN 1451
