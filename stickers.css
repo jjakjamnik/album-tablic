@@ -779,20 +779,14 @@
    RESPONSIVE — PC / LAPTOP
 ========================================================= */
 
-@media (max-width: 1100px) {
+@media (min-width: 1101px) {
 
     .sticker-grid {
-
-        grid-template-columns:
-            repeat(5, minmax(0, 1fr));
-
-        gap:
-            14px;
-
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+        gap: 10px;
     }
 
 }
-
 
 /* =========================================================
    TABLET
