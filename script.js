@@ -2334,9 +2334,11 @@ async function calculateStickerDistance(
         "LT": "Lithuania",
         "IS": "Iceland",
         "IE": "Ireland",
-        "GB": "United Kingdom",
-        "BY": "Belarus",
-       "TR": "Turkey"
+"GB": "United Kingdom",
+"BY": "Belarus",
+"TR": "Turkey",
+"UZ": "Uzbekistan""
+       
 
     };
 
