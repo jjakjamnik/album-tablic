@@ -1,23 +1,22 @@
 
 /* =========================================================
    ALBUM 3.0 — PAPER.JS
-   Wersja 6 — prawdziwe przewracanie kartki
-   Przód: aktualna strona
-   Tył: następna strona
+   Przewracanie kartek — wersja 5
+   Nowa strona przygotowywana pod kartką
    ========================================================= */
 
 (function () {
     "use strict";
 
     const ANIMATION_DURATION = 1500;
-    const CLEANUP_DELAY = 100;
+    const CLEANUP_DELAY = 120;
 
     let isTurning = false;
     let animationStyle = null;
 
 
     /* =====================================================
-       STYLE ANIMACJI
+       STYLE
        ===================================================== */
 
     function installAnimationStyles() {
@@ -39,7 +38,7 @@
             }
 
             .album-page-turn-sheet {
-                position: absolute;
+                position: fixed;
                 box-sizing: border-box;
                 transform-style: preserve-3d;
                 backface-visibility: visible;
@@ -56,7 +55,8 @@
                 margin: 0 !important;
                 box-sizing: border-box !important;
                 overflow: hidden !important;
-                opacity: 1 !important;
+                background-color: #eee5d2;
+                opacity: 1;
                 backface-visibility: hidden !important;
                 -webkit-backface-visibility: hidden !important;
             }
@@ -67,6 +67,27 @@
 
             .album-page-turn-back {
                 transform: rotateY(180deg) translateZ(0.7px);
+                background-color: #eee5d2;
+
+                background-image:
+                    radial-gradient(
+                        ellipse at 20% 15%,
+                        rgba(255,255,255,.35),
+                        transparent 55%
+                    ),
+                    radial-gradient(
+                        ellipse at 90% 90%,
+                        rgba(80,60,35,.09),
+                        transparent 60%
+                    ),
+                    repeating-linear-gradient(
+                        0deg,
+                        rgba(80,60,35,.025) 0px,
+                        transparent 1px,
+                        transparent 5px
+                    );
+
+                border: 1px solid rgba(100,80,55,.2);
             }
 
             .album-page-turn-overlay {
@@ -107,9 +128,15 @@
     }
 
 
-    function getPage(spread, side) {
+    function getPageToTurn(direction) {
+
+        const spread = getVisibleSpread();
 
         if (!spread) return null;
+
+        const side = direction === "next"
+            ? "right"
+            : "left";
 
         return spread.querySelector(
             '[data-page-side="' + side + '"]'
@@ -117,32 +144,24 @@
     }
 
 
-    function getTurningSide(direction) {
+    function getPageToPreserve(direction) {
 
-        return direction === "next"
-            ? "right"
-            : "left";
-    }
+        const spread = getVisibleSpread();
 
+        if (!spread) return null;
 
-    function getBackSide(direction) {
-
-        return direction === "next"
+        const side = direction === "next"
             ? "left"
             : "right";
-    }
 
-
-    function getPreservedSide(direction) {
-
-        return direction === "next"
-            ? "left"
-            : "right";
+        return spread.querySelector(
+            '[data-page-side="' + side + '"]'
+        );
     }
 
 
     /* =====================================================
-       KOPIOWANIE STRONY
+       USUWANIE ID Z KOPII
        ===================================================== */
 
     function removeCloneIds(element) {
@@ -155,87 +174,56 @@
     }
 
 
-    function createPageClone(sourcePage, className) {
+    /* =====================================================
+       KOPIA STRONY, KTÓRA NIE JEST PRZEWRACANA
+       ===================================================== */
 
-        if (!sourcePage) return null;
+    function createPageOverlay(originalPage) {
+
+        if (!originalPage) return null;
 
         const rect =
-            sourcePage.getBoundingClientRect();
+            originalPage.getBoundingClientRect();
 
         if (!rect.width || !rect.height) {
             return null;
         }
 
-        const clone =
-            sourcePage.cloneNode(true);
+        const overlay =
+            originalPage.cloneNode(true);
 
-        removeCloneIds(clone);
+        removeCloneIds(overlay);
 
-        clone.classList.add(className);
-
-        clone.inert = true;
-        clone.setAttribute("aria-hidden", "true");
-
-        clone.style.left = rect.left + "px";
-        clone.style.top = rect.top + "px";
-        clone.style.width = rect.width + "px";
-        clone.style.height = rect.height + "px";
-
-        return {
-            element: clone,
-            rect: rect
-        };
-    }
-
-
-    /* =====================================================
-       NIERUCHOMA STRONA PODCZAS ANIMACJI
-       ===================================================== */
-
-    function createPreservedOverlay(sourcePage) {
-
-        const copy = createPageClone(
-            sourcePage,
+        overlay.classList.add(
             "album-page-turn-overlay"
         );
 
-        if (!copy) return null;
+        overlay.inert = true;
+        overlay.setAttribute("aria-hidden", "true");
 
-        document.body.appendChild(copy.element);
+        overlay.style.left = rect.left + "px";
+        overlay.style.top = rect.top + "px";
+        overlay.style.width = rect.width + "px";
+        overlay.style.height = rect.height + "px";
 
-        return copy.element;
+        document.body.appendChild(overlay);
+
+        return overlay;
     }
 
 
     /* =====================================================
-       PRZYGOTOWANIE KARTKI Z DWOMA STRONAMI
+       PRZYGOTOWANIE PRZEWRACANEJ KARTKI
        ===================================================== */
 
-    function createTurningSheet(
-        frontPage,
-        backPage,
-        direction
-    ) {
+    function createTurningSheet(originalPage, direction) {
 
-        if (!frontPage || !backPage) {
+        const rect =
+            originalPage.getBoundingClientRect();
+
+        if (!rect.width || !rect.height) {
             return null;
         }
-
-        const frontCopy = createPageClone(
-            frontPage,
-            "album-page-turn-face album-page-turn-front"
-        );
-
-        const backCopy = createPageClone(
-            backPage,
-            "album-page-turn-face album-page-turn-back"
-        );
-
-        if (!frontCopy || !backCopy) {
-            return null;
-        }
-
-        const rect = frontCopy.rect;
 
         const stage =
             document.createElement("div");
@@ -254,27 +242,63 @@
         sheet.style.width = rect.width + "px";
         sheet.style.height = rect.height + "px";
 
-        // Obie strony muszą mieć identyczne wymiary.
-        backCopy.element.style.left = "0";
-        backCopy.element.style.top = "0";
-        backCopy.element.style.width = "100%";
-        backCopy.element.style.height = "100%";
+        const front =
+            originalPage.cloneNode(true);
 
-        frontCopy.element.style.left = "0";
-        frontCopy.element.style.top = "0";
-        frontCopy.element.style.width = "100%";
-        frontCopy.element.style.height = "100%";
+        removeCloneIds(front);
 
-        sheet.appendChild(frontCopy.element);
-        sheet.appendChild(backCopy.element);
+        front.classList.add(
+            "album-page-turn-face",
+            "album-page-turn-front"
+        );
+
+        front.inert = true;
+        front.setAttribute("aria-hidden", "true");
+
+        const originalStyle =
+            getComputedStyle(originalPage);
+
+        front.style.backgroundColor =
+            originalStyle.backgroundColor;
+
+        front.style.backgroundImage =
+            originalStyle.backgroundImage;
+
+        front.style.opacity = "1";
+
+        front.style.backfaceVisibility =
+            "hidden";
+
+        front.style.webkitBackfaceVisibility =
+            "hidden";
+
+        const back =
+            document.createElement("div");
+
+        back.className =
+            "album-page-turn-face album-page-turn-back";
+
+        back.setAttribute("aria-hidden", "true");
+
+        back.style.opacity = "1";
+
+        back.style.backfaceVisibility =
+            "hidden";
+
+        back.style.webkitBackfaceVisibility =
+            "hidden";
+
+        sheet.appendChild(front);
+        sheet.appendChild(back);
+
+        stage.appendChild(sheet);
+
+        document.body.appendChild(stage);
 
         sheet.style.transformOrigin =
             direction === "next"
                 ? "left center"
                 : "right center";
-
-        stage.appendChild(sheet);
-        document.body.appendChild(stage);
 
         return {
             stage: stage,
@@ -284,7 +308,7 @@
 
 
     /* =====================================================
-       PRZYGOTOWANIE DOCELOWEJ ROZKŁADÓWKI
+       PRZYGOTOWANIE NOWEJ ROZKŁADÓWKI POD KARTKĄ
        ===================================================== */
 
     function showCountrySpread(targetPage) {
@@ -326,131 +350,56 @@
 
 
     /* =====================================================
-       ANIMACJA PRZEWRACANIA
+       ANIMACJA
        ===================================================== */
 
-    function turnPage(
-        direction,
-        prepareDestination,
-        onComplete
-    ) {
+    function turnPage(direction, prepareDestination, onComplete) {
 
         if (
             window.matchMedia("(max-width: 750px)").matches
         ) {
-            if (prepareDestination) {
-                prepareDestination();
-            }
-
-            if (onComplete) {
-                onComplete();
-            }
-
+            if (onComplete) onComplete();
             return;
         }
 
         if (isTurning) return;
 
-        const currentSpread =
-            getVisibleSpread();
+        const originalPage =
+            getPageToTurn(direction);
 
-        if (!currentSpread) return;
-
-        const turningSide =
-            getTurningSide(direction);
-
-        const preservedSide =
-            getPreservedSide(direction);
-
-        const originalFront =
-            getPage(currentSpread, turningSide);
-
-        const originalPreserved =
-            getPage(currentSpread, preservedSide);
-
-        if (!originalFront) return;
+        if (!originalPage) {
+            if (onComplete) onComplete();
+            return;
+        }
 
         installAnimationStyles();
 
-        // Zapamiętujemy nieruchomą stronę starej rozkładówki.
-        const preservedOverlay =
-            createPreservedOverlay(originalPreserved);
+        // Najpierw kopiujemy starą kartkę.
+        const turningSheet =
+            createTurningSheet(originalPage, direction);
+
+        if (!turningSheet) {
+            if (onComplete) onComplete();
+            return;
+        }
+
+        // Zachowujemy stronę, która nie będzie przewracana.
+        const preservedPage =
+            getPageToPreserve(direction);
+
+        const overlay =
+            createPageOverlay(preservedPage);
 
         isTurning = true;
 
-        // Przygotowujemy nową rozkładówkę pod kartką.
+        // Przygotowujemy nową zawartość POD przewracaną kartką.
         if (prepareDestination) {
             prepareDestination();
         }
 
-        const destinationSpread =
-            getVisibleSpread();
+        const sheet = turningSheet.sheet;
 
-        const destinationBack =
-            getPage(
-                destinationSpread,
-                getBackSide(direction)
-            );
-
-        if (!destinationBack) {
-
-            if (preservedOverlay) {
-                preservedOverlay.remove();
-            }
-
-            isTurning = false;
-
-            if (onComplete) onComplete();
-
-            return;
-        }
-
-        // Przód kartki: stara strona.
-        // Tył kartki: nowa strona.
-        const turningSheet =
-            createTurningSheet(
-                originalFront,
-                destinationBack,
-                direction
-            );
-
-        if (!turningSheet) {
-
-            if (preservedOverlay) {
-                preservedOverlay.remove();
-            }
-
-            isTurning = false;
-
-            return;
-        }
-
-        const sheet =
-            turningSheet.sheet;
-
-        const isNext =
-            direction === "next";
-
-        let finished = false;
-
-        function finishAnimation() {
-
-            if (finished) return;
-
-            finished = true;
-
-            turningSheet.stage.remove();
-
-            if (preservedOverlay) {
-                preservedOverlay.remove();
-            }
-
-            isTurning = false;
-
-            if (onComplete) {
-                onComplete();
-            }
-        }
+        const isNext = direction === "next";
 
         const animation = sheet.animate(
             [
@@ -484,6 +433,27 @@
             }
         );
 
+        let finished = false;
+
+        function finishAnimation() {
+
+            if (finished) return;
+
+            finished = true;
+
+            turningSheet.stage.remove();
+
+            if (overlay) {
+                overlay.remove();
+            }
+
+            isTurning = false;
+
+            if (onComplete) {
+                onComplete();
+            }
+        }
+
         animation.onfinish = function () {
 
             window.setTimeout(
@@ -498,17 +468,40 @@
 
 
     /* =====================================================
-       POWRÓT DO SPISU TREŚCI
+       ROZPOZNAWANIE KIERUNKU
        ===================================================== */
 
-    function returnToToc() {
+    function getDirection(button) {
 
-        turnPage(
-            "previous",
-            function () {
-                showAlbumFrontmatter();
+        if (
+            button.matches("#album-frontmatter-next")
+        ) {
+            return "next";
+        }
+
+        if (
+            button.matches("#album-toc-return")
+        ) {
+            return "previous";
+        }
+
+        if (
+            button.matches("#album-pagination button")
+        ) {
+
+            const text =
+                button.textContent.trim();
+
+            if (text.includes("NASTĘPNA")) {
+                return "next";
             }
-        );
+
+            if (text.includes("POPRZEDNIA")) {
+                return "previous";
+            }
+        }
+
+        return null;
     }
 
 
@@ -538,7 +531,13 @@
 
         if (!button && !link) return;
 
-        // Na telefonie pozostaje zwykła nawigacja.
+        const direction = button
+            ? getDirection(button)
+            : "next";
+
+        if (!direction) return;
+
+        // Telefon: zwykła, natychmiastowa nawigacja.
         if (
             window.matchMedia("(max-width: 750px)").matches
         ) {
@@ -552,26 +551,19 @@
 
 
         /* ================================================
-           SPIS TREŚCI → WYBRANY KRAJ
+           POWRÓT DO SPISU TREŚCI
            ================================================ */
 
-        if (link) {
-
-            const spreadIndex = Number(
-                link.dataset.albumSpreadIndex
-            );
-
-            if (!Number.isFinite(spreadIndex)) {
-                return;
-            }
-
-            const targetPage =
-                spreadIndex + 1;
+        if (
+            button &&
+            button.matches("#album-toc-return")
+        ) {
 
             turnPage(
-                "next",
+                "previous",
+                null,
                 function () {
-                    showCountrySpread(targetPage);
+                    showAlbumFrontmatter();
                 }
             );
 
@@ -580,10 +572,11 @@
 
 
         /* ================================================
-           PRZYCISK OTWÓRZ ALBUM
+           PRZEJŚCIE ZE STRONY 1 DO ALBUMU
            ================================================ */
 
         if (
+            button &&
             button.matches("#album-frontmatter-next")
         ) {
 
@@ -615,55 +608,64 @@
 
 
         /* ================================================
-           POWRÓT DO SPISU TREŚCI
+           PRZEJŚCIE Z POZIOMU SPISU TREŚCI
            ================================================ */
 
-        if (
-            button.matches("#album-toc-return")
-        ) {
+        if (link) {
 
-            returnToToc();
+            const spreadIndex = Number(
+                link.dataset.albumSpreadIndex
+            );
+
+            if (!Number.isFinite(spreadIndex)) {
+                return;
+            }
+
+            const targetPage =
+                spreadIndex + 1;
+
+            turnPage(
+                "next",
+                function () {
+                    showCountrySpread(targetPage);
+                }
+            );
 
             return;
         }
 
 
         /* ================================================
-           POPRZEDNIA / NASTĘPNA
+           POPRZEDNIA / NASTĘPNA ROZKŁADÓWKA
            ================================================ */
 
         if (
+            button &&
             button.matches("#album-pagination button")
         ) {
 
-            const text =
-                button.textContent.trim();
+            const currentPage =
+                currentCountryPage;
 
-            if (text.includes("SPIS TREŚCI")) {
-                returnToToc();
-                return;
+            let targetPage;
+
+            if (direction === "next") {
+                targetPage = currentPage + 1;
+            } else {
+                targetPage = currentPage - 1;
             }
-
-            let direction = null;
-
-            if (text.includes("NASTĘPNA")) {
-                direction = "next";
-            }
-
-            if (text.includes("POPRZEDNIA")) {
-                direction = "previous";
-            }
-
-            if (!direction) return;
-
-            const targetPage =
-                direction === "next"
-                    ? currentCountryPage + 1
-                    : currentCountryPage - 1;
 
             // Powrót z pierwszej rozkładówki do spisu.
             if (targetPage < 1) {
-                returnToToc();
+
+                turnPage(
+                    "previous",
+                    null,
+                    function () {
+                        showAlbumFrontmatter();
+                    }
+                );
+
                 return;
             }
 
@@ -673,13 +675,14 @@
                     showCountrySpread(targetPage);
                 }
             );
+
         }
 
     }, true);
 
 
     console.log(
-        "Album 3.0 — przewracanie kartek v6 załadowane"
+        "Album 3.0 — mechanizm przewracania kartek v5 załadowany"
     );
 
 })();
