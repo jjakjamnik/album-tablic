@@ -3350,10 +3350,40 @@ function renderCurrentCountry() {
         const emoji = data[1];
         const displayCode = countryCode || "EU";
 
-        page.dataset.country =
-            countryCode === "GUEST" || countryCode === "VIP"
-                ? "SPECIAL"
-                : (countryCode || "SPECIAL");
+page.dataset.country =
+    countryCode === "GUEST" || countryCode === "VIP"
+        ? countryCode
+        : (countryCode || "SPECIAL");
+
+/* KOLOR KARTKI — STAŁY DLA CAŁEGO KRAJU */
+const countryColors = [
+    "#55A9E8",
+    "#3567C8",
+    "#65B96A",
+    "#95613F",
+    "#E875A4",
+    "#E76B59",
+    "#36BDB3",
+    "#9299A3"
+];
+
+let pageColor;
+
+if (countryCode === "GUEST") {
+    pageColor = "#9870D8";
+} else if (countryCode === "VIP") {
+    pageColor = "#D5AE38";
+} else {
+    let colorIndex = 0;
+
+    for (let i = 0; i < countryCode.length; i++) {
+        colorIndex += countryCode.charCodeAt(i);
+    }
+
+    pageColor = countryColors[colorIndex % countryColors.length];
+}
+
+page.style.setProperty("--page-color", pageColor);
 
         flag.textContent = emoji;
         title.textContent = name;
