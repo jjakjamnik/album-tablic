@@ -1,7 +1,7 @@
 
 /* =========================================================
    ALBUM 3.0 — PAPER.JS
-   Przewracanie kartek — wersja 3
+   Przewracanie kartek — wersja 4
    ========================================================= */
 
 (function () {
@@ -11,6 +11,7 @@
     const CLEANUP_DELAY = 120;
 
     let isTurning = false;
+    let replayingClick = false;
     let animationStyle = null;
 
 
@@ -95,6 +96,7 @@
        ===================================================== */
 
     function getVisibleSpread() {
+
         const frontmatter =
             document.getElementById("album-frontmatter");
 
@@ -114,6 +116,7 @@
 
 
     function getPageToTurn(direction) {
+
         const spread = getVisibleSpread();
 
         if (!spread) return null;
@@ -133,6 +136,7 @@
        ===================================================== */
 
     function removeCloneIds(element) {
+
         element.removeAttribute("id");
 
         element.querySelectorAll("[id]").forEach(function (item) {
@@ -142,6 +146,7 @@
 
 
     function createTurningSheet(originalPage, direction) {
+
         const rect = originalPage.getBoundingClientRect();
 
         if (!rect.width || !rect.height) {
@@ -214,13 +219,14 @@
 
 
     /* =====================================================
-       ANIMACJA I SYNCHRONIZACJA ROZKŁADÓWEK
+       ANIMACJA I ZMIANA STRON
        ===================================================== */
 
-    function turnPage(direction) {
+    function turnPage(direction, onComplete) {
 
         // Telefon: bez animacji 3D.
         if (window.matchMedia("(max-width: 750px)").matches) {
+            if (onComplete) onComplete();
             return;
         }
 
@@ -228,33 +234,29 @@
 
         const originalPage = getPageToTurn(direction);
 
-        if (!originalPage) return;
+        if (!originalPage) {
+            if (onComplete) onComplete();
+            return;
+        }
 
         installAnimationStyles();
 
         const turningSheet =
             createTurningSheet(originalPage, direction);
 
-        if (!turningSheet) return;
+        if (!turningSheet) {
+            if (onComplete) onComplete();
+            return;
+        }
 
         isTurning = true;
 
-        const currentSpread = getVisibleSpread();
+        const originalVisibility =
+            originalPage.style.visibility;
 
-        const nextSpread = direction === "next"
-            ? document.getElementById("album-spread")
-            : document.getElementById("album-frontmatter");
-
-        let previousVisibility = null;
-
-        if (
-            nextSpread &&
-            nextSpread !== currentSpread &&
-            !nextSpread.hidden
-        ) {
-            previousVisibility = nextSpread.style.visibility;
-            nextSpread.style.visibility = "hidden";
-        }
+        // Ukrywamy oryginalną kartkę.
+        // Jej kopia pozostaje widoczna podczas animacji.
+        originalPage.style.visibility = "hidden";
 
         const sheet = turningSheet.sheet;
 
@@ -293,19 +295,34 @@
         );
 
         function finishAnimation() {
-            if (nextSpread && previousVisibility !== null) {
-                nextSpread.style.visibility = previousVisibility;
-            }
 
             turningSheet.stage.remove();
+
             isTurning = false;
+
+            // Dopiero po animacji zmieniamy zawartość albumu.
+            try {
+
+                if (onComplete) {
+                    onComplete();
+                }
+
+            } finally {
+
+                // Przywracamy widoczność oryginalnej kartki.
+                originalPage.style.visibility =
+                    originalVisibility;
+
+            }
         }
 
         animation.onfinish = function () {
+
             window.setTimeout(
                 finishAnimation,
                 CLEANUP_DELAY
             );
+
         };
 
         animation.oncancel = finishAnimation;
@@ -317,6 +334,7 @@
        ===================================================== */
 
     function getDirection(button) {
+
         if (button.matches("#album-frontmatter-next")) {
             return "next";
         }
@@ -326,6 +344,7 @@
         }
 
         if (button.matches("#album-pagination button")) {
+
             const text = button.textContent.trim();
 
             if (text.includes("NASTĘPNA")) {
@@ -342,10 +361,13 @@
 
 
     /* =====================================================
-       OBSŁUGA PRZYCISKÓW
+       OBSŁUGA PRZEWRACANIA I ZMIANY STRON
        ===================================================== */
 
     document.addEventListener("click", function (event) {
+
+        if (replayingClick) return;
+
         const target = event.target;
 
         if (!target || typeof target.closest !== "function") {
@@ -358,39 +380,51 @@
             "#album-pagination button"
         );
 
-        if (!button) return;
+        const link = target.closest("[data-country-jump]");
 
-        const direction = getDirection(button);
+        if (!button && !link) return;
+
+        const direction = button
+            ? getDirection(button)
+            : "next";
 
         if (!direction) return;
 
-        turnPage(direction);
-
-    }, true);
-
-
-    /* =====================================================
-       OBSŁUGA SPISU TREŚCI
-       ===================================================== */
-
-    document.addEventListener("click", function (event) {
-        const target = event.target;
-
-        if (!target || typeof target.closest !== "function") {
+        // Telefon działa bez animacji 3D.
+        if (window.matchMedia("(max-width: 750px)").matches) {
             return;
         }
 
-        const link = target.closest("[data-country-jump]");
+        // Blokujemy kolejne kliknięcia podczas animacji.
+        if (isTurning) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return;
+        }
 
-        if (!link) return;
+        // Zmiana strony nastąpi dopiero po animacji.
+        event.preventDefault();
+        event.stopImmediatePropagation();
 
-        turnPage("next");
+        const clickedElement = button || link;
+
+        turnPage(direction, function () {
+
+            replayingClick = true;
+
+            try {
+                clickedElement.click();
+            } finally {
+                replayingClick = false;
+            }
+
+        });
 
     }, true);
 
 
     console.log(
-        "Album 3.0 — mechanizm przewracania kartek v3 załadowany"
+        "Album 3.0 — mechanizm przewracania kartek v4 załadowany"
     );
 
 })();
