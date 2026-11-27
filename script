@@ -3646,11 +3646,19 @@ footerNumber.textContent =
     pagination.appendChild(nextButton);
     pagination.appendChild(tocButton);
 
-  const spread = document.getElementById("album-spread");
+const spread = document.getElementById("album-spread");
 
-pagination.hidden = spread.hidden;
+if (spread && spread.parentNode) {
 
-spread.parentNode.insertBefore(pagination, spread);
+    pagination.hidden = spread.hidden;
+
+    spread.parentNode.insertBefore(pagination, spread);
+
+} else {
+
+    console.error(
+        "Nie znaleziono kontenera album-spread."
+    );
 
 }
 
