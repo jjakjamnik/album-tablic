@@ -1,6 +1,6 @@
 /* =========================================================
    ALBUM 3.0 — PAPIER KOLEKCJONERSKI
-   Subtelna faktura, delikatne włókna i naturalne światło
+   Włókna, subtelne zagniecenia i naturalne załamania światła
    ========================================================= */
 
 .album-v3 .album-page {
@@ -10,21 +10,18 @@
     background-color: var(--page-color, var(--book-paper));
 
     background-image:
-        /* Delikatne światło w górnej części kartki */
         radial-gradient(
-            ellipse at 20% 12%,
-            rgba(255,255,255,.20),
+            ellipse at 18% 12%,
+            rgba(255,255,255,.22),
             transparent 55%
         ),
 
-        /* Naturalne przyciemnienie narożników */
         radial-gradient(
             ellipse at 100% 100%,
-            rgba(0,0,0,.055),
+            rgba(0,0,0,.07),
             transparent 55%
         ),
 
-        /* Bardzo delikatne nierówności powierzchni */
         repeating-linear-gradient(
             0deg,
             rgba(255,255,255,.025) 0px,
@@ -40,7 +37,7 @@
         );
 }
 
-/* DELIKATNA FAKTURA WŁÓKIEN PAPIERU */
+/* WŁÓKNA PAPIERU */
 
 .album-v3 .album-page::before {
     content: "";
@@ -49,7 +46,7 @@
     z-index: 0;
 
     pointer-events: none;
-    opacity: .16;
+    opacity: .17;
 
     background-image:
         radial-gradient(
@@ -83,7 +80,61 @@
     mix-blend-mode: multiply;
 }
 
-/* ZAWARTOŚĆ NAD FAKTURĄ */
+/* NATURALNE ZAGNIECENIA I ZAŁAMANIA ŚWIATŁA */
+
+.album-v3 .album-page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+
+    pointer-events: none;
+    opacity: .42;
+
+    background-image:
+        /* Delikatne zagięcie od górnego narożnika */
+        linear-gradient(
+            137deg,
+            transparent 0%,
+            transparent 47%,
+            rgba(70,55,35,.07) 48%,
+            rgba(255,255,255,.19) 48.4%,
+            transparent 49.2%
+        ),
+
+        /* Miękkie załamanie światła */
+        linear-gradient(
+            24deg,
+            transparent 0%,
+            transparent 61%,
+            rgba(70,55,35,.045) 61.5%,
+            rgba(255,255,255,.12) 62%,
+            transparent 63%
+        ),
+
+        /* Niewielka nierówność papieru */
+        radial-gradient(
+            ellipse at 78% 28%,
+            rgba(255,255,255,.12),
+            transparent 25%
+        ),
+
+        radial-gradient(
+            ellipse at 22% 76%,
+            rgba(65,50,35,.07),
+            transparent 28%
+        );
+
+    background-size:
+        100% 100%,
+        100% 100%,
+        100% 100%,
+        100% 100%;
+
+    mix-blend-mode: multiply;
+}
+
+/* ZAWARTOŚĆ NAD FAKTURĄ I ZAGNIECENIAMI */
 
 .album-v3 .album-page > * {
     position: relative;
