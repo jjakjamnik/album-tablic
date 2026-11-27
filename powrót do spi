@@ -3994,10 +3994,10 @@ function initializeAlbumNavigation() {
 
         const spread =
             document.getElementById("album-spread");
-       
-const frontmatterNavigation =
-    document.querySelector(".album-frontmatter-navigation");
-       
+
+        const frontmatterNavigation =
+            document.querySelector(".album-frontmatter-navigation");
+
         const pagination =
             document.getElementById("album-pagination");
 
@@ -4005,10 +4005,10 @@ const frontmatterNavigation =
             frontmatter.hidden = true;
         }
 
-       if (frontmatterNavigation) {
-    frontmatterNavigation.hidden = true;
-}
-       
+        if (frontmatterNavigation) {
+            frontmatterNavigation.hidden = true;
+        }
+
         if (spread) {
             spread.hidden = false;
         }
@@ -4029,7 +4029,7 @@ const frontmatterNavigation =
     });
 
 
-// PIERWSZA ROZKŁADÓWKA — NAWIGACJA MOBILNA
+    // PIERWSZA ROZKŁADÓWKA — NAWIGACJA MOBILNA
 
 setFrontmatterMobilePage("form");
 
