@@ -3356,15 +3356,19 @@ page.dataset.country =
         : (countryCode || "SPECIAL");
 
 /* KOLOR KARTKI — STAŁY DLA CAŁEGO KRAJU */
+
+/* Paleta ułożona tak, aby sąsiadujące kraje
+   miały możliwie różne kolory */
+
 const countryColors = [
-    "#55A9E8",
-    "#3567C8",
-    "#65B96A",
-    "#95613F",
-    "#E875A4",
-    "#E76B59",
-    "#36BDB3",
-    "#9299A3"
+    "#55A9E8", // jasny niebieski
+    "#65B96A", // zielony
+    "#3567C8", // głęboki niebieski
+    "#E875A4", // różowy
+    "#36BDB3", // turkusowy
+    "#95613F", // brązowy
+    "#E76B59", // czerwony
+    "#9299A3"  // szary
 ];
 
 let pageColor;
@@ -3374,16 +3378,21 @@ if (countryCode === "GUEST") {
 } else if (countryCode === "VIP") {
     pageColor = "#D5AE38";
 } else {
-    let colorIndex = 0;
+    const countryIndex =
+        Array.from(countryOffsets.keys()).indexOf(countryCode);
 
-    for (let i = 0; i < countryCode.length; i++) {
-        colorIndex += countryCode.charCodeAt(i);
-    }
-
-    pageColor = countryColors[colorIndex % countryColors.length];
+    pageColor =
+        countryColors[countryIndex % countryColors.length];
 }
 
 page.style.setProperty("--page-color", pageColor);
+
+/* Nagłówek — ten sam kolor, ale o 20% ciemniejszy */
+
+page.style.setProperty(
+    "--page-header-color",
+    `color-mix(in srgb, ${pageColor} 80%, black 20%)`
+);
 
         flag.textContent = emoji;
         title.textContent = name;
