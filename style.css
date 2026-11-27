@@ -2319,3 +2319,16 @@ main {
     color: #d9bd91;
     border-top-color: rgba(197,161,106,.45);
 }
+
+/* POLSKA — WIDOCZNA WARSTWA FAKTURY PAPIERU */
+
+.polska-album main::before {
+    z-index: 0;
+    opacity: .48;
+    mix-blend-mode: soft-light;
+}
+
+.polska-album main > * {
+    position: relative;
+    z-index: 1;
+}
