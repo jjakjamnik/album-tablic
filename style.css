@@ -3168,3 +3168,7 @@ main {
 .album-v3 #sticker-grid[hidden] {
     display: none !important;
 }
+/* ALBUM 3.0 — UKRYWANIE NIEAKTYWNEJ ROZKŁADÓWKI */
+.album-v3 .album-spread[hidden] {
+    display: none !important;
+}
