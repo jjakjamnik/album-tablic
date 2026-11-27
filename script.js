@@ -3040,6 +3040,7 @@ async function saveStickerToSupabaseOnly(
    ========================================================= */
 
 
+
 function renderCurrentCountry() {
     const stickerGrid = document.getElementById("sticker-grid");
     if (!stickerGrid) return;
@@ -3056,9 +3057,21 @@ function renderCurrentCountry() {
     const isMobileAlbum = window.matchMedia("(max-width: 750px)").matches;
     const pocketsPerPage = isMobileAlbum ? 30 : 60;
 
-    let albumSlots = [];
+    const isSpecialView =
+        albumView === "special" || albumView === "guest";
 
-    if (albumView === "special" || albumView === "guest") {
+    const viewKey = isSpecialView
+        ? albumView
+        : "country:" + (currentCountry || "");
+
+    let albumSlots = [];
+    let countryOffsets = new Map();
+
+    /* =====================================================
+       VIP / GUEST — OSOBNE ALBUMY
+       ===================================================== */
+
+    if (isSpecialView) {
         const stickers = allStickers
             .filter(function (sticker) {
                 return albumView === "special"
@@ -3074,29 +3087,43 @@ function renderCurrentCountry() {
             });
 
         albumSlots = stickers.map(function (sticker) {
-            return { sticker: sticker, country: sticker.country };
+            return {
+                sticker: sticker,
+                country: sticker.country
+            };
         });
+
+        if (renderCurrentCountry._activeViewKey !== viewKey) {
+            currentCountryPage = 1;
+        }
+
+        renderCurrentCountry._activeViewKey = viewKey;
 
         if (albumSlots.length === 0) {
             stickerGrid.innerHTML = "";
-            const oldPagination = document.getElementById("album-pagination");
+
+            const oldPagination =
+                document.getElementById("album-pagination");
+
             if (oldPagination) oldPagination.remove();
 
             const empty = document.createElement("div");
             empty.className = "album-empty";
             empty.textContent = "TEN ALBUM JEST OBECNIE PUSTY";
+
             stickerGrid.appendChild(empty);
             return;
         }
+    }
 
-        if (!renderCurrentCountry._specialPageInitialized) {
-            currentCountryPage = 1;
-            renderCurrentCountry._specialPageInitialized = true;
-        }
-    } else {
+    /* =====================================================
+       GŁÓWNY ALBUM — WSZYSTKIE KRAJE
+       ===================================================== */
+
+    else {
         if (!currentCountry) return;
 
-        /* Kolejność odpowiada kolejności krajów w indeksie albumu. */
+        /* Kolejność dokładnie taka jak w indeksie albumu. */
         const countryOrder = [
             "AL", "AD", "AM", "AT", "AZ",
             "BE", "BY", "BA", "BG",
@@ -3109,50 +3136,68 @@ function renderCurrentCountry() {
             "DE", "NO", "PL", "PT",
             "RU", "RO", "SM", "RS",
             "SK", "SI", "CH", "SE",
-            "UA", "VA", "HU", "GB",
-            "IT"
+            "TR", "UA", "VA", "HU",
+            "GB", "IT"
         ];
 
         const knownCountries = new Set(countryOrder);
-        const extraCountries = Array.from(
-            new Set(
-                allStickers
-                    .map(function (sticker) {
-                        return sticker.country;
-                    })
-                    .filter(function (country) {
-                        return country && !knownCountries.has(country);
-                    })
-            )
-        ).sort();
 
-        const completeCountryOrder = countryOrder.concat(extraCountries);
-        const countryOffsets = new Map();
+        /* Grupujemy naklejki według kraju. */
+        const stickersByCountry = new Map();
 
-        completeCountryOrder.forEach(function (countryCode) {
-            const countryStickers = allStickers
-                .filter(function (sticker) {
-                    return sticker.country === countryCode;
-                })
-                .sort(function (a, b) {
-                    return a.plate.localeCompare(
-                        b.plate,
-                        "pl",
-                        { numeric: true, sensitivity: "base" }
-                    );
-                });
+        allStickers.forEach(function (sticker) {
+            if (!sticker.country) return;
 
-            countryOffsets.set(countryCode, albumSlots.length);
-
-            /* Kraj z kartami zajmuje pełne strony po 30 miejsc.
-               Pusty kraj dostaje stronę tylko wtedy, gdy go otworzymy. */
-            if (
-                countryStickers.length === 0 &&
-                countryCode !== currentCountry
-            ) {
-                return;
+            if (!stickersByCountry.has(sticker.country)) {
+                stickersByCountry.set(sticker.country, []);
             }
 
+            stickersByCountry.get(sticker.country).push(sticker);
+        });
+
+        /* Dodatkowe kody, których nie ma w indeksie,
+           zachowujemy na końcu albumu. */
+        const extraCountries = Array.from(
+            stickersByCountry.keys()
+        )
+            .filter(function (country) {
+                return !knownCountries.has(country);
+            })
+            .sort();
+
+        const completeCountryOrder =
+            countryOrder.concat(extraCountries);
+
+        /* Aktywny kraj również musi mieć swoje miejsce. */
+        if (
+            !completeCountryOrder.includes(currentCountry)
+        ) {
+            completeCountryOrder.push(currentCountry);
+        }
+
+        /* =================================================
+           GLOBALNA NUMERACJA I REZERWACJA MIEJSC
+           ================================================= */
+
+        completeCountryOrder.forEach(function (countryCode) {
+            const countryStickers = (
+                stickersByCountry.get(countryCode) || []
+            ).slice().sort(function (a, b) {
+                return a.plate.localeCompare(
+                    b.plate,
+                    "pl",
+                    { numeric: true, sensitivity: "base" }
+                );
+            });
+
+            /* Zapamiętujemy pierwszą pozycję kraju. */
+            countryOffsets.set(
+                countryCode,
+                albumSlots.length
+            );
+
+            /* Każdy kraj zajmuje minimum 30 miejsc.
+               Większa kolekcja dostaje kolejne pełne bloki. */
             const countryCapacity = Math.max(
                 30,
                 Math.ceil(countryStickers.length / 30) * 30
@@ -3166,29 +3211,27 @@ function renderCurrentCountry() {
             }
         });
 
-        if (!countryOffsets.has(currentCountry)) {
-            countryOffsets.set(currentCountry, albumSlots.length);
+        /* Przy pierwszym wejściu otwieramy rozkładówkę,
+           na której zaczyna się wybrany kraj.
 
-            for (let i = 0; i < 30; i++) {
-                albumSlots.push({
-                    sticker: null,
-                    country: currentCountry
-                });
-            }
-        }
+           Przy klikaniu POPRZEDNIA / NASTĘPNA
+           nie zmieniamy aktywnego kraju. */
+        if (renderCurrentCountry._activeViewKey !== viewKey) {
+            const countryStart =
+                countryOffsets.get(currentCountry) || 0;
 
-        /* Pierwsze wejście otwiera rozkładówkę, na której
-           zaczyna się wybrany kraj. Kolejne kliknięcia nawigacji
-           zachowują już wybraną globalną stronę albumu. */
-        if (!renderCurrentCountry._countryPageInitialized) {
-            const countryStart = countryOffsets.get(currentCountry) || 0;
             currentCountryPage =
                 Math.floor(countryStart / pocketsPerPage) + 1;
-            renderCurrentCountry._countryPageInitialized = true;
         }
+
+        renderCurrentCountry._activeViewKey = viewKey;
     }
 
     stickerGrid.innerHTML = "";
+
+    /* =====================================================
+       LICZBA STRON
+       ===================================================== */
 
     const totalPages = Math.max(
         1,
@@ -3200,14 +3243,16 @@ function renderCurrentCountry() {
         Math.min(currentCountryPage, totalPages)
     );
 
-    const startIndex = (currentCountryPage - 1) * pocketsPerPage;
-    const pageSlots = albumSlots.slice(
-        startIndex,
-        startIndex + pocketsPerPage
-    );
+    const startIndex =
+        (currentCountryPage - 1) * pocketsPerPage;
 
-    /* NAWIGACJA */
-    const oldPagination = document.getElementById("album-pagination");
+    /* =====================================================
+       NAWIGACJA
+       ===================================================== */
+
+    const oldPagination =
+        document.getElementById("album-pagination");
+
     if (oldPagination) oldPagination.remove();
 
     const pagination = document.createElement("div");
@@ -3217,6 +3262,7 @@ function renderCurrentCountry() {
     const previousButton = document.createElement("button");
     previousButton.textContent = "← POPRZEDNIA";
     previousButton.disabled = currentCountryPage === 1;
+
     previousButton.addEventListener("click", function () {
         currentCountryPage--;
         renderCurrentCountry();
@@ -3225,6 +3271,7 @@ function renderCurrentCountry() {
     const nextButton = document.createElement("button");
     nextButton.textContent = "NASTĘPNA →";
     nextButton.disabled = currentCountryPage === totalPages;
+
     nextButton.addEventListener("click", function () {
         currentCountryPage++;
         renderCurrentCountry();
@@ -3233,28 +3280,77 @@ function renderCurrentCountry() {
     pagination.appendChild(previousButton);
     pagination.appendChild(nextButton);
 
-    stickerGrid.parentNode.insertBefore(pagination, stickerGrid);
+    stickerGrid.parentNode.insertBefore(
+        pagination,
+        stickerGrid
+    );
 
-    /* KAŻDA KIESZONKA MA STAŁY NUMER POZYCJI W ALBUMIE */
-    for (let i = 0; i < pocketsPerPage; i++) {
+    /* =====================================================
+       KOLEJNOŚĆ KIESZONEK NA ROZKŁADÓWCE
+       ===================================================== */
+
+    const renderOrder = [];
+
+    if (isMobileAlbum) {
+        /* Telefon: jedna strona, 30 miejsc. */
+        for (let i = 0; i < 30; i++) {
+            renderOrder.push(i);
+        }
+    } else {
+        /* Komputer:
+           lewa strona = 30 miejsc,
+           prawa strona = kolejne 30 miejsc.
+
+           Każda strona ma 3 kolumny i 10 rzędów.
+           Układ DOM przeplatamy rzędami, aby CSS
+           poprawnie rozłożył obie strony obok siebie. */
+
+        for (let row = 0; row < 10; row++) {
+
+            /* Lewa strona. */
+            for (let col = 0; col < 3; col++) {
+                renderOrder.push(row * 3 + col);
+            }
+
+            /* Prawa strona. */
+            for (let col = 0; col < 3; col++) {
+                renderOrder.push(30 + row * 3 + col);
+            }
+        }
+    }
+
+    /* =====================================================
+       RENDEROWANIE KIESZONEK I KART
+       ===================================================== */
+
+    renderOrder.forEach(function (pagePosition) {
+        const globalIndex = startIndex + pagePosition;
+
+        const slot = albumSlots[globalIndex] || null;
+        const sticker = slot ? slot.sticker : null;
+
+        /* Numer pozycji w całym albumie. */
+        const pocketNumber = globalIndex + 1;
+
         const pocket = document.createElement("div");
         pocket.className = "album-pocket";
-
-        const slot = pageSlots[i] || null;
-        const sticker = slot ? slot.sticker : null;
-        const pocketNumber = startIndex + i + 1;
 
         if (sticker) {
             pocket.classList.add("album-pocket-filled");
 
-            const article = createStickerCard(sticker, pocketNumber);
+            const article = createStickerCard(
+                sticker,
+                pocketNumber
+            );
+
             pocket.appendChild(article);
         } else {
             pocket.classList.add("album-pocket-empty");
 
             const number = document.createElement("span");
             number.className = "album-pocket-number";
-            number.textContent = String(pocketNumber).padStart(3, "0");
+            number.textContent =
+                String(pocketNumber).padStart(3, "0");
 
             const label = document.createElement("span");
             label.className = "album-pocket-label";
@@ -3265,9 +3361,8 @@ function renderCurrentCountry() {
         }
 
         stickerGrid.appendChild(pocket);
-    }
+    });
 }
-
 
 /* =========================================================
    TWORZENIE KARTY
