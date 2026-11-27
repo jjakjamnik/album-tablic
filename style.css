@@ -1884,3 +1884,566 @@ main {
         animation: none !important;
     }
 }
+
+/* =========================================================
+   EURO PLATES — THE COLLECTOR'S BOOK
+   DESKTOPOWA OPRAWA FIZYCZNEGO ALBUMU
+   ========================================================= */
+
+@media (min-width: 751px) {
+
+    /* TŁO WOKÓŁ KSIĘGI */
+
+    body:has(.album[data-country]) {
+        background:
+            radial-gradient(ellipse at 50% 35%,
+                #514337 0%,
+                #29221e 52%,
+                #100e0d 100%) !important;
+        background-attachment: fixed !important;
+    }
+
+    body:has(.album[data-country])::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: .22;
+        background-image:
+            repeating-linear-gradient(
+                90deg,
+                transparent 0,
+                rgba(255,255,255,.025) 2px,
+                transparent 5px,
+                transparent 11px
+            );
+    }
+
+    /* PALETA DOMYŚLNA */
+
+    .album[data-country] {
+        --book-cover: #382019;
+        --book-cover-light: #68402b;
+        --book-gold: #c6a15b;
+        --book-paper: #e8dcc0;
+        --book-paper-light: #f5ebd5;
+        --book-paper-dark: #cbb995;
+        --book-ink: #38291f;
+        --book-accent: #8d653e;
+
+        position: relative;
+        width: min(1740px, calc(100% - 70px));
+        max-width: 1740px;
+        min-height: 900px;
+        margin: 55px auto 85px;
+        padding: 17px;
+
+        box-sizing: border-box;
+        overflow: visible;
+
+        border: 3px solid var(--book-gold);
+        border-radius: 13px;
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--book-cover-light),
+                var(--book-cover) 35%,
+                #1c100d 100%
+            );
+
+        box-shadow:
+            0 35px 75px rgba(0,0,0,.75),
+            0 12px 25px rgba(0,0,0,.55),
+            inset 0 0 0 2px rgba(255,220,150,.13),
+            inset 0 0 35px rgba(0,0,0,.65);
+    }
+
+    /* ZŁOTA RAMKA OKŁADKI */
+
+    .album[data-country]::after {
+        content: "";
+        position: absolute;
+        inset: 7px;
+        z-index: 10;
+        pointer-events: none;
+
+        border: 1px solid rgba(220,184,111,.55);
+        border-radius: 7px;
+
+        box-shadow:
+            inset 0 0 0 2px rgba(0,0,0,.2),
+            0 0 0 1px rgba(0,0,0,.3);
+    }
+
+    /* GRZBIET KSIĘGI */
+
+    .album[data-country]::before {
+        content: "";
+        position: absolute;
+        z-index: 5;
+        top: 18px;
+        bottom: 18px;
+        left: 50%;
+        width: 30px;
+        transform: translateX(-50%);
+        pointer-events: none;
+
+        background:
+            linear-gradient(
+                90deg,
+                rgba(0,0,0,.48),
+                rgba(255,255,255,.12) 22%,
+                rgba(0,0,0,.08) 48%,
+                rgba(0,0,0,.42) 75%,
+                rgba(255,255,255,.08)
+            );
+
+        border-left: 1px solid rgba(0,0,0,.25);
+        border-right: 1px solid rgba(255,220,160,.2);
+        box-shadow:
+            0 0 15px rgba(0,0,0,.35);
+    }
+
+    /* PAPIER — GŁÓWNA POWIERZCHNIA */
+
+    .album[data-country] > .country-header,
+    .album[data-country] > main,
+    .album[data-country] > .album-footer {
+        position: relative;
+        z-index: 2;
+    }
+
+    .album[data-country] > .country-header,
+    .album[data-country] > main {
+        background-color: var(--book-paper);
+        color: var(--book-ink);
+    }
+
+    .album[data-country] > .country-header {
+        min-height: 125px;
+        margin: 0;
+        padding: 30px 55px;
+
+        background:
+            radial-gradient(
+                ellipse at 20% 20%,
+                rgba(255,255,255,.65),
+                transparent 55%
+            ),
+            linear-gradient(
+                110deg,
+                var(--book-paper-light),
+                var(--book-paper) 50%,
+                var(--book-paper-dark)
+            );
+
+        border: 0;
+        border-bottom: 3px double var(--book-accent);
+        box-shadow:
+            inset 0 0 25px rgba(104,69,35,.12),
+            0 5px 12px rgba(0,0,0,.15);
+    }
+
+    .album[data-country] .country-title {
+        color: var(--book-ink);
+        text-shadow: 0 1px 0 rgba(255,255,255,.7);
+    }
+
+    .album[data-country] .album-subtitle {
+        color: var(--book-accent);
+    }
+
+    /* STRONA ALBUMU */
+
+    .album[data-country] > main {
+        min-height: 750px;
+        padding: 30px 42px 45px;
+
+        background:
+            radial-gradient(
+                ellipse at 50% 40%,
+                rgba(255,255,255,.52),
+                transparent 75%
+            ),
+            repeating-linear-gradient(
+                0deg,
+                rgba(110,83,48,.025) 0,
+                rgba(110,83,48,.025) 1px,
+                transparent 1px,
+                transparent 5px
+            ),
+            linear-gradient(
+                90deg,
+                var(--book-paper-dark),
+                var(--book-paper-light) 7%,
+                var(--book-paper) 50%,
+                var(--book-paper-light) 93%,
+                var(--book-paper-dark)
+            );
+
+        box-shadow:
+            inset 0 0 35px rgba(92,64,34,.15);
+    }
+
+    /* DEKORACYJNA LINIA POD NAGŁÓWKIEM */
+
+    .album[data-country] > main::before {
+        content: "EUROPEAN REGISTRATION PLATES  •  COLLECTOR'S ARCHIVE";
+        display: block;
+        margin: 0 0 22px;
+        padding: 0 0 12px;
+
+        color: var(--book-accent);
+        border-bottom: 1px solid rgba(100,70,38,.35);
+
+        font-family: Georgia, serif;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-align: center;
+    }
+
+    /* ROZKŁADÓWKA — 3 KOLUMNY PO KAŻDEJ STRONIE */
+
+    .album[data-country] #sticker-grid {
+        display: grid !important;
+        grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+        grid-auto-flow: row;
+        align-items: stretch;
+
+        column-gap: 11px !important;
+        row-gap: 17px !important;
+
+        padding: 8px 5px 20px;
+        margin: 0;
+    }
+
+    /* WIĘKSZY ODSTĘP PRZY ŚRODKOWYM GRZBIECIE */
+
+    .album[data-country] #sticker-grid > .album-pocket:nth-child(6n + 4) {
+        margin-left: 25px;
+    }
+
+    /* KIESZONKI NA PAPIERZE */
+
+    .album[data-country] .album-pocket {
+        min-width: 0;
+        min-height: 273px;
+
+        border: 1px solid rgba(112,83,48,.48);
+        border-radius: 5px;
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(255,255,255,.56),
+                rgba(191,165,119,.18)
+            );
+
+        box-shadow:
+            inset 0 1px 4px rgba(255,255,255,.8),
+            inset 0 -3px 7px rgba(85,58,29,.12),
+            0 3px 7px rgba(70,48,25,.2);
+    }
+
+    .album[data-country] .album-pocket-filled::after {
+        border-color: rgba(255,255,255,.62);
+        border-radius: 4px;
+    }
+
+    .album[data-country] .album-pocket-empty {
+        background:
+            linear-gradient(
+                145deg,
+                rgba(255,255,255,.48),
+                rgba(156,126,83,.12)
+            );
+    }
+
+    .album[data-country] .album-pocket-number {
+        color: rgba(77,55,32,.65);
+    }
+
+    .album[data-country] .album-pocket-label {
+        color: rgba(77,55,32,.48);
+    }
+
+    /* NAWIGACJA STRON */
+
+    .album[data-country] .album-pagination {
+        position: relative;
+        z-index: 3;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 25px;
+
+        margin: 0 0 22px;
+        padding: 13px;
+
+        color: var(--book-ink);
+        background: rgba(120,88,49,.10);
+        border: 1px solid rgba(112,83,48,.25);
+        border-radius: 4px;
+    }
+
+    .album[data-country] .album-pagination button {
+        padding: 10px 18px;
+
+        color: #f5e8c9;
+        background:
+            linear-gradient(
+                135deg,
+                var(--book-cover-light),
+                var(--book-cover)
+            );
+
+        border: 1px solid var(--book-gold);
+        border-radius: 3px;
+
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+    .album[data-country] .album-pagination button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,.25);
+    }
+
+    .album[data-country] .album-pagination button:disabled {
+        opacity: .35;
+        cursor: not-allowed;
+    }
+
+    .album[data-country] .album-pagination span {
+        color: var(--book-accent);
+        font-family: Georgia, serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+
+    /* STOPKA */
+
+    .album[data-country] > .album-footer {
+        padding: 18px 25px;
+
+        color: #e8d7b2;
+        background:
+            linear-gradient(
+                90deg,
+                var(--book-cover),
+                var(--book-cover-light),
+                var(--book-cover)
+            );
+
+        border-top: 2px solid var(--book-gold);
+    }
+
+    /* =========================================
+       KOLORY KRAJÓW
+       ========================================= */
+
+    .album[data-country="PL"] {
+        --book-cover: #421b27;
+        --book-cover-light: #793b48;
+        --book-gold: #d1ad69;
+        --book-paper: #eadcc7;
+        --book-paper-light: #f6ead8;
+        --book-paper-dark: #cdb99c;
+        --book-ink: #45232c;
+        --book-accent: #8d3948;
+    }
+
+    .album[data-country="AL"] {
+        --book-cover: #481b29;
+        --book-cover-light: #793449;
+        --book-gold: #d8b66d;
+        --book-paper: #ead9c9;
+        --book-paper-light: #f5e8d9;
+        --book-paper-dark: #c9ad99;
+        --book-ink: #482431;
+        --book-accent: #9a4555;
+    }
+
+    .album[data-country="AD"] {
+        --book-cover: #172d4b;
+        --book-cover-light: #345477;
+        --book-gold: #c5a66a;
+        --book-accent: #355c82;
+    }
+
+    .album[data-country="AM"],
+    .album[data-country="GE"],
+    .album[data-country="MD"] {
+        --book-cover: #4b2029;
+        --book-cover-light: #80434a;
+        --book-gold: #c9a16a;
+        --book-accent: #93444c;
+    }
+
+    .album[data-country="AT"],
+    .album[data-country="CH"] {
+        --book-cover: #632329;
+        --book-cover-light: #93434a;
+        --book-gold: #e0cba5;
+        --book-accent: #a13d42;
+    }
+
+    .album[data-country="AZ"],
+    .album[data-country="KZ"] {
+        --book-cover: #124d50;
+        --book-cover-light: #287a78;
+        --book-gold: #d4b36c;
+        --book-accent: #287b78;
+    }
+
+    .album[data-country="BE"],
+    .album[data-country="DE"] {
+        --book-cover: #292a2b;
+        --book-cover-light: #55504a;
+        --book-gold: #c5a15d;
+        --book-accent: #725b43;
+    }
+
+    .album[data-country="BA"],
+    .album[data-country="GR"],
+    .album[data-country="UA"] {
+        --book-cover: #172f50;
+        --book-cover-light: #34577a;
+        --book-gold: #d4b15e;
+        --book-accent: #41658a;
+    }
+
+    .album[data-country="BG"],
+    .album[data-country="HU"],
+    .album[data-country="SI"] {
+        --book-cover: #214331;
+        --book-cover-light: #477052;
+        --book-gold: #c8ad72;
+        --book-accent: #547456;
+    }
+
+    .album[data-country="HR"],
+    .album[data-country="ME"],
+    .album[data-country="RS"] {
+        --book-cover: #591e2d;
+        --book-cover-light: #873c4b;
+        --book-gold: #d4b26d;
+        --book-accent: #91404d;
+    }
+
+    .album[data-country="CY"],
+    .album[data-country="MT"] {
+        --book-cover: #665039;
+        --book-cover-light: #927653;
+        --book-gold: #e0c58d;
+        --book-accent: #94734d;
+    }
+
+    .album[data-country="CZ"],
+    .album[data-country="SK"] {
+        --book-cover: #1d344b;
+        --book-cover-light: #45617b;
+        --book-gold: #b9c2c9;
+        --book-accent: #506b82;
+    }
+
+    .album[data-country="DK"],
+    .album[data-country="NO"],
+    .album[data-country="IS"] {
+        --book-cover: #172e4b;
+        --book-cover-light: #3b5676;
+        --book-gold: #d0b9a0;
+        --book-accent: #55708c;
+    }
+
+    .album[data-country="EE"],
+    .album[data-country="FI"],
+    .album[data-country="SE"] {
+        --book-cover: #203d57;
+        --book-cover-light: #52718a;
+        --book-gold: #c5cbd0;
+        --book-accent: #59788f;
+    }
+
+    .album[data-country="ES"],
+    .album[data-country="PT"] {
+        --book-cover: #713c27;
+        --book-cover-light: #a05d39;
+        --book-gold: #d6b16b;
+        --book-accent: #a05b36;
+    }
+
+    .album[data-country="FR"],
+    .album[data-country="GB"],
+    .album[data-country="IE"] {
+        --book-cover: #172c4c;
+        --book-cover-light: #3c5579;
+        --book-gold: #c9ad70;
+        --book-accent: #49668a;
+    }
+
+    .album[data-country="IT"],
+    .album[data-country="SM"],
+    .album[data-country="VA"] {
+        --book-cover: #35432b;
+        --book-cover-light: #63734a;
+        --book-gold: #c7a765;
+        --book-accent: #68764d;
+    }
+
+    .album[data-country="LT"],
+    .album[data-country="LV"],
+    .album[data-country="BY"] {
+        --book-cover: #34402b;
+        --book-cover-light: #687044;
+        --book-gold: #d0b16e;
+        --book-accent: #73764a;
+    }
+
+    .album[data-country="LU"],
+    .album[data-country="LI"],
+    .album[data-country="MC"] {
+        --book-cover: #4b3036;
+        --book-cover-light: #79515a;
+        --book-gold: #d4c3a5;
+        --book-accent: #8b5e67;
+    }
+
+    .album[data-country="MK"],
+    .album[data-country="RO"],
+    .album[data-country="TR"] {
+        --book-cover: #64252b;
+        --book-cover-light: #99454a;
+        --book-gold: #d9b76c;
+        --book-accent: #a44a4b;
+    }
+
+    .album[data-country="NL"] {
+        --book-cover: #63351f;
+        --book-cover-light: #a65d2e;
+        --book-gold: #d8b36c;
+        --book-accent: #a35c32;
+    }
+
+    .album[data-country="RU"],
+    .album[data-country="UA"] {
+        --book-cover: #1c3048;
+        --book-cover-light: #49627b;
+        --book-gold: #c8b58c;
+        --book-accent: #536c82;
+    }
+
+    /* KRAJE BEZ OSOBNEJ PALETY DOSTAJĄ MOTYW DOMYŚLNY */
+
+}
+
+/* TELEFONY — POZOSTAWIAMY DOTYCHCZASOWY WYGLĄD */
