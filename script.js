@@ -3542,15 +3542,19 @@ function renderCurrentCountry() {
     pagination.appendChild(nextButton);
     pagination.appendChild(tocButton);
 
-    const spread = document.getElementById("album-spread");
+  const spread = document.getElementById("album-spread");
 
-    pagination.hidden = spread.hidden;
+pagination.hidden = spread.hidden;
 
-    spread.parentNode.insertBefore(pagination, spread);
+spread.parentNode.insertBefore(pagination, spread);
+
+}
+
 /* =========================================================
    TWORZENIE KARTY
    ========================================================= */
 
+function createStickerCard(sticker, cardNumber) {
 
 function createStickerCard(sticker, cardNumber) {
 
