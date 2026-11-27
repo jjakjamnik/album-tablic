@@ -3519,13 +3519,6 @@ function renderCurrentCountry() {
 
     });
 
-    const pageInfo = document.createElement("span");
-    pageInfo.id = "album-page-info";
-    pageInfo.textContent =
-        "ROZKŁADÓWKA " +
-        currentCountryPage +
-        " / " +
-        totalPages;
 
     const nextButton = document.createElement("button");
     nextButton.textContent = "NASTĘPNA →";
@@ -3545,7 +3538,6 @@ function renderCurrentCountry() {
     });
 
     pagination.appendChild(previousButton);
-    pagination.appendChild(pageInfo);
     pagination.appendChild(nextButton);
     pagination.appendChild(tocButton);
 
