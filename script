@@ -3907,59 +3907,34 @@ function createStickerCard(sticker, cardNumber) {
 }
 
 
+
 /* =========================================================
    KOLOR KARTY
    ========================================================= */
 
-function getStickerColorClass(
-    sticker
-) {
+function getStickerColorClass(sticker) {
 
-    const stars =
-        Number(
-            sticker.stars
-        );
+    const stars = Number(sticker.stars);
 
-
-    if (
-        stars <= 1
-    ) {
-
+    if (stars <= 1) {
         return "sticker-brown";
-
     }
 
-
-    if (
-        stars === 2
-    ) {
-
+    if (stars === 2) {
         return "sticker-blue";
-
     }
 
-
-    if (
-        stars === 3
-    ) {
-
+    if (stars === 3) {
         return "sticker-green";
-
     }
 
-
-    if (
-        stars === 4
-    ) {
-
+    if (stars === 4) {
         return "sticker-red";
-
     }
-
 
     return "sticker-black";
-
 }
+
 
 /* =========================================================
    NAWIGACJA GŁÓWNEGO ALBUMU
@@ -3971,9 +3946,17 @@ function initializeAlbumNavigation() {
         return;
     }
 
+    // OBSŁUGA KLIKNIĘĆ W SPISIE TREŚCI
+
     document.addEventListener("click", function (event) {
 
-        const link = event.target.closest("[data-country-jump]");
+        const target = event.target;
+
+        if (!target || typeof target.closest !== "function") {
+            return;
+        }
+
+        const link = target.closest("[data-country-jump]");
 
         if (!link) {
             return;
@@ -4031,77 +4014,83 @@ function initializeAlbumNavigation() {
 
     // PIERWSZA ROZKŁADÓWKA — NAWIGACJA MOBILNA
 
-setFrontmatterMobilePage("form");
+    setFrontmatterMobilePage("form");
 
-const frontmatterPreviousButton =
-    document.querySelector(
-        ".album-frontmatter-navigation .album-page-nav:first-child"
-    );
+    const frontmatterPreviousButton =
+        document.querySelector(
+            ".album-frontmatter-navigation .album-page-nav:first-child"
+        );
 
-if (frontmatterPreviousButton) {
+    if (frontmatterPreviousButton) {
 
-    frontmatterPreviousButton.addEventListener("click", function () {
+        frontmatterPreviousButton.addEventListener("click", function () {
 
-        if (window.matchMedia("(max-width: 750px)").matches) {
-            setFrontmatterMobilePage("form");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
+            if (window.matchMedia("(max-width: 750px)").matches) {
+                setFrontmatterMobilePage("form");
 
-    });
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            }
+
+        });
+
+    }
+
+
+    // FORMULARZ → SPIS TREŚCI → PIERWSZY KRAJ
+
+    const frontmatterNextButton =
+        document.getElementById("album-frontmatter-next");
+
+    if (frontmatterNextButton) {
+
+        frontmatterNextButton.addEventListener("click", function () {
+
+            const isMobile =
+                window.matchMedia("(max-width: 750px)").matches;
+
+            if (
+                isMobile &&
+                currentFrontmatterPage === "form"
+            ) {
+
+                setFrontmatterMobilePage("toc");
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+                return;
+            }
+
+            const firstCountryLink =
+                document.querySelector(
+                    "#album-toc-countries [data-country-jump]"
+                );
+
+            if (firstCountryLink) {
+                firstCountryLink.click();
+            }
+
+        });
+
+    }
 
 }
 
-
-// FORMULARZ → SPIS TREŚCI → PIERWSZY KRAJ
-
-const frontmatterNextButton =
-    document.getElementById("album-frontmatter-next");
-
-if (frontmatterNextButton) {
-
-    frontmatterNextButton.addEventListener("click", function () {
-
-        const isMobile =
-            window.matchMedia("(max-width: 750px)").matches;
-
-        if (
-            isMobile &&
-            currentFrontmatterPage === "form"
-        ) {
-
-            setFrontmatterMobilePage("toc");
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-
-            return;
-        }
-
-        const firstCountryLink =
-            document.querySelector(
-                "#album-toc-countries [data-country-jump]"
-            );
-
-        if (firstCountryLink) {
-            firstCountryLink.click();
-        }
-
-    });
-
-}
-
-}
 
 /* =========================================================
    POWRÓT DO SPISU TREŚCI
    ========================================================= */
 
 function showAlbumFrontmatter() {
+
     // Na telefonie powrót prowadzi do spisu treści.
     setFrontmatterMobilePage("toc");
-   
+
     const frontmatter =
         document.getElementById("album-frontmatter");
 
@@ -4111,16 +4100,16 @@ function showAlbumFrontmatter() {
     const pagination =
         document.getElementById("album-pagination");
 
+    const frontmatterNavigation =
+        document.querySelector(".album-frontmatter-navigation");
+
     if (frontmatter) {
         frontmatter.hidden = false;
     }
 
-   const frontmatterNavigation =
-    document.querySelector(".album-frontmatter-navigation");
-
-if (frontmatterNavigation) {
-    frontmatterNavigation.hidden = false;
-}
+    if (frontmatterNavigation) {
+        frontmatterNavigation.hidden = false;
+    }
 
     if (spread) {
         spread.hidden = true;
@@ -4184,6 +4173,8 @@ function updateAlbumToc(countryOffsets, pocketsPerPage) {
     });
 
 }
+
+
 /* =========================================================
    AKTUALNY KRAJ
    ========================================================= */
@@ -4195,7 +4186,6 @@ function getCurrentCountry() {
             .split("/")
             .pop()
             .toLowerCase();
-
 
     const countries = {
         "ad.html": "AD",
@@ -4249,15 +4239,9 @@ function getCurrentCountry() {
         "ua.html": "UA",
         "va.html": "VA",
         "xk.html": "XK"
-
     };
 
-
-
-    return (
-        countries[file] ||
-        null
-    );
+    return countries[file] || null;
 
 }
 
@@ -4268,88 +4252,47 @@ function getCurrentCountry() {
 
 function updateCountryCounters() {
 
-    const stickers =
-        getStickers();
-
+    const stickers = getStickers();
 
     const countryCards =
-        document.querySelectorAll(
-            ".country-card"
+        document.querySelectorAll(".country-card");
+
+    countryCards.forEach(function (card) {
+
+        const href = card.getAttribute("href");
+
+        if (!href) {
+            return;
+        }
+
+        const match = href.match(
+            /countries\/([a-z]{2})\.html/i
         );
 
-
-    countryCards.forEach(
-        function (card) {
-
-            const href =
-                card.getAttribute(
-                    "href"
-                );
-
-
-            if (!href) {
-                return;
-            }
-
-
-            const match =
-                href.match(
-                    /countries\/([a-z]{2})\.html/i
-                );
-
-
-            if (!match) {
-                return;
-            }
-
-
-            const country =
-                match[1].toUpperCase();
-
-
-            const count =
-                stickers.filter(
-                    function (sticker) {
-
-                        return (
-                            sticker.country ===
-                            country
-                        );
-
-                    }
-                ).length;
-
-
-            const countElement =
-                card.querySelector(
-                    ".country-card-count"
-                );
-
-
-            if (!countElement) {
-                return;
-            }
-
-
-            if (
-                count === 1
-            ) {
-
-                countElement.textContent =
-                    "1 naklejka";
-
-            }
-
-            else {
-
-                countElement.textContent =
-                    count +
-                    " naklejek";
-
-            }
-
+        if (!match) {
+            return;
         }
-    );
+
+        const country = match[1].toUpperCase();
+
+        const count = stickers.filter(function (sticker) {
+            return sticker.country === country;
+        }).length;
+
+        const countElement =
+            card.querySelector(".country-card-count");
+
+        if (!countElement) {
+            return;
+        }
+
+        if (count === 1) {
+            countElement.textContent = "1 naklejka";
+        } else {
+            countElement.textContent = count + " naklejek";
+        }
+
+    });
 
 }
 
@@ -4360,88 +4303,45 @@ function updateCountryCounters() {
 
 function updateCountryCardStates() {
 
-    const stickers =
-        getStickers();
-
+    const stickers = getStickers();
 
     const countryCards =
-        document.querySelectorAll(
-            ".country-card"
+        document.querySelectorAll(".country-card");
+
+    countryCards.forEach(function (card) {
+
+        const href = card.getAttribute("href");
+
+        if (!href) {
+            return;
+        }
+
+        const match = href.match(
+            /countries\/([a-z]{2})\.html/i
         );
 
-
-    countryCards.forEach(
-        function (card) {
-
-            const href =
-                card.getAttribute(
-                    "href"
-                );
-
-
-            if (!href) {
-                return;
-            }
-
-
-            const match =
-                href.match(
-                    /countries\/([a-z]{2})\.html/i
-                );
-
-
-            if (!match) {
-                return;
-            }
-
-
-            const country =
-                match[1].toUpperCase();
-
-
-            const count =
-                stickers.filter(
-                    function (sticker) {
-
-                        return (
-                            sticker.country ===
-                            country
-                        );
-
-                    }
-                ).length;
-
-
-            card.classList.remove(
-                "country-empty"
-            );
-
-
-            card.classList.remove(
-                "country-active"
-            );
-
-
-            if (
-                count === 0
-            ) {
-
-                card.classList.add(
-                    "country-empty"
-                );
-
-            }
-
-            else {
-
-                card.classList.add(
-                    "country-active"
-                );
-
-            }
-
+        if (!match) {
+            return;
         }
-    );
+
+        const country = match[1].toUpperCase();
+
+        const count = stickers.filter(function (sticker) {
+            return sticker.country === country;
+        }).length;
+
+        card.classList.remove(
+            "country-empty",
+            "country-active"
+        );
+
+        if (count === 0) {
+            card.classList.add("country-empty");
+        } else {
+            card.classList.add("country-active");
+        }
+
+    });
 
 }
 
@@ -4450,68 +4350,36 @@ function updateCountryCardStates() {
    DUPLIKAT
    ========================================================= */
 
-function findDuplicateSticker(
-    country,
-    plate,
-    ignoreId
-) {
+function findDuplicateSticker(country, plate, ignoreId) {
 
-    const stickers =
-        getStickers();
+    const stickers = getStickers();
 
+    const cleanPlate = plate
+        .toUpperCase()
+        .replace(/[\s-]/g, "");
 
-    const cleanPlate =
-        plate
-            .toUpperCase()
-            .replace(
-                /[\s-]/g,
-                ""
-            );
+    return stickers.find(function (sticker) {
 
-
-    return stickers.find(
-        function (sticker) {
-
-            if (
-                ignoreId &&
-                String(sticker.id) ===
-                String(ignoreId)
-            ) {
-
-                return false;
-
-            }
-
-
-            if (
-                sticker.country !==
-                country
-            ) {
-
-                return false;
-
-            }
-
-
-            const existingPlate =
-                String(
-                    sticker.plate ||
-                    ""
-                )
-                    .toUpperCase()
-                    .replace(
-                        /[\s-]/g,
-                        ""
-                    );
-
-
-            return (
-                existingPlate ===
-                cleanPlate
-            );
-
+        if (
+            ignoreId &&
+            String(sticker.id) === String(ignoreId)
+        ) {
+            return false;
         }
-    ) || null;
+
+        if (sticker.country !== country) {
+            return false;
+        }
+
+        const existingPlate = String(
+            sticker.plate || ""
+        )
+            .toUpperCase()
+            .replace(/[\s-]/g, "");
+
+        return existingPlate === cleanPlate;
+
+    }) || null;
 
 }
 
@@ -4531,26 +4399,18 @@ function getStickers() {
    USUWANIE NAKLEJKI
    ========================================================= */
 
-async function deleteSticker(
-    stickerToDelete
-) {
+async function deleteSticker(stickerToDelete) {
 
-    await deleteStickerFromSupabase(
-        stickerToDelete
-    );
+    await deleteStickerFromSupabase(stickerToDelete);
 
+    stickersCache = stickersCache.filter(function (sticker) {
 
-    stickersCache =
-        stickersCache.filter(
-            function (sticker) {
-
-                return (
-                    String(sticker.id) !==
-                    String(stickerToDelete.id)
-                );
-
-            }
+        return (
+            String(sticker.id) !==
+            String(stickerToDelete.id)
         );
+
+    });
 
 }
 
