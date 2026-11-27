@@ -3271,3 +3271,160 @@ border: 1px solid rgba(255,255,255,.35);
 .album-toc-code {
     display: none !important;
 }
+/* =========================================================
+   ALBUM 3.0 — STAŁE ELEMENTY OPRAWY
+   ========================================================= */
+
+/* Neutralny obrys książki */
+
+.album-v3 {
+    border-color: #9da1a3 !important;
+    background: #777e82 !important;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.38),
+        inset 0 0 0 5px rgba(255,255,255,.10);
+}
+
+/* Neutralny obrys i oddzielenie nagłówka albumu */
+
+.album-v3-header {
+    border-bottom: 2px solid #9da1a3 !important;
+}
+
+/* PRZYCISKI: POPRZEDNIA, NASTĘPNA, SPIS TREŚCI, OKŁADKA */
+
+.album-v3 .album-pagination button,
+.album-v3-header .country-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 18px;
+
+    color: #41474b !important;
+    background: linear-gradient(
+        180deg,
+        #e2e4e5,
+        #c6cacc
+    ) !important;
+
+    border: 1px solid #858c90 !important;
+    border-radius: 4px;
+
+    font-family: "DM Sans", Arial, sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+
+    box-shadow:
+        0 2px 5px rgba(0,0,0,.13),
+        inset 0 1px 0 rgba(255,255,255,.8);
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+/* Wspólny efekt po najechaniu */
+
+.album-v3 .album-pagination button:hover:not(:disabled),
+.album-v3-header .country-back:hover {
+    color: #30363a !important;
+    background: linear-gradient(
+        180deg,
+        #eff0f1,
+        #d1d5d7
+    ) !important;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 9px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+/* Nieaktywna nawigacja */
+
+.album-v3 .album-pagination button:disabled {
+    opacity: .48;
+    cursor: not-allowed;
+}
+
+/* FORMULARZ I SPIS TREŚCI — MOCNIEJ PRZYCIEMNIONE NAGŁÓWKI */
+
+.album-v3 .album-frontmatter-page .album-page-header {
+    color: #fff !important;
+
+    background: linear-gradient(
+        110deg,
+        #303940,
+        #20282e 50%,
+        #303940
+    ) !important;
+
+    border: 1px solid #151c21 !important;
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,.24),
+        inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+.album-v3 .album-frontmatter-page .album-page-title {
+    color: #ffffff !important;
+}
+
+.album-v3 .album-frontmatter-page .album-page-subtitle {
+    color: #d4dadd !important;
+}
+
+.album-v3 .album-frontmatter-page .album-page-code {
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,.45) !important;
+}
+
+/* GRZBIET — JEDEN PRZEZ CAŁĄ WYSOKOŚĆ GŁÓWNEJ POWIERZCHNI */
+
+.album-v3 .album-v3-main {
+    position: relative;
+    isolation: isolate;
+}
+
+.album-v3 .album-v3-main::before {
+    content: "";
+    display: block !important;
+
+    position: absolute;
+    z-index: 5;
+
+    top: 0;
+    bottom: 0;
+    left: 50%;
+
+    width: 30px;
+
+    transform: translateX(-50%);
+    pointer-events: none;
+
+    background: linear-gradient(
+        90deg,
+        rgba(65,70,73,.34),
+        rgba(255,255,255,.42) 25%,
+        rgba(130,137,140,.18) 50%,
+        rgba(65,70,73,.34)
+    );
+
+    border-left: 1px solid rgba(75,82,86,.32);
+    border-right: 1px solid rgba(75,82,86,.32);
+}
+
+/* Wyłączamy stare, osobne grzbiety rozkładówek */
+
+.album-v3-main > #album-frontmatter::before,
+.album-v3-main > #album-spread::before {
+    display: none !important;
+}
