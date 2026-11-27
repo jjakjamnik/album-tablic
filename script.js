@@ -3039,150 +3039,176 @@ async function saveStickerToSupabaseOnly(
    RENDEROWANIE STRONY PAŃSTWA
    ========================================================= */
 
+
 function renderCurrentCountry() {
-
     const stickerGrid = document.getElementById("sticker-grid");
+    if (!stickerGrid) return;
 
-    if (!stickerGrid) {
-        return;
+    const albumView = document.body.dataset.albumView;
+    const currentCountry = getCurrentCountry();
+    const albumShell = document.querySelector(".album");
+
+    if (albumShell && currentCountry) {
+        albumShell.dataset.country = currentCountry;
     }
 
-const albumView = document.body.dataset.albumView;
-
-/* AUTOMATYCZNY MOTYW KRAJU */
-const albumShell = document.querySelector(".album");
-const themeCountry = getCurrentCountry();
-
-if (albumShell && themeCountry) {
-    albumShell.dataset.country = themeCountry;
-}
-
     const allStickers = getStickers();
-    let stickers = allStickers;
+    const isMobileAlbum = window.matchMedia("(max-width: 750px)").matches;
+    const pocketsPerPage = isMobileAlbum ? 30 : 60;
 
-    if (albumView === "special") {
+    let albumSlots = [];
 
-        stickers = stickers.filter(function (sticker) {
-            return sticker.owner === "special";
+    if (albumView === "special" || albumView === "guest") {
+        const stickers = allStickers
+            .filter(function (sticker) {
+                return albumView === "special"
+                    ? sticker.owner === "special"
+                    : sticker.owner === "guest";
+            })
+            .sort(function (a, b) {
+                return a.plate.localeCompare(
+                    b.plate,
+                    "pl",
+                    { numeric: true, sensitivity: "base" }
+                );
+            });
+
+        albumSlots = stickers.map(function (sticker) {
+            return { sticker: sticker, country: sticker.country };
         });
 
-    } else if (albumView === "guest") {
+        if (albumSlots.length === 0) {
+            stickerGrid.innerHTML = "";
+            const oldPagination = document.getElementById("album-pagination");
+            if (oldPagination) oldPagination.remove();
 
-        stickers = stickers.filter(function (sticker) {
-            return sticker.owner === "guest";
-        });
-
-    } else {
-
-        const currentCountry = getCurrentCountry();
-
-        if (!currentCountry) {
+            const empty = document.createElement("div");
+            empty.className = "album-empty";
+            empty.textContent = "TEN ALBUM JEST OBECNIE PUSTY";
+            stickerGrid.appendChild(empty);
             return;
         }
 
-        stickers = stickers.filter(function (sticker) {
-            return sticker.country === currentCountry;
-        });
-
-    }
-
-    /* NUMERACJA OSOBNO DLA KAŻDEGO KRAJU */
-
-    const countryNumbers = new Map();
-    const countryGroups = new Map();
-
-    allStickers.forEach(function (sticker) {
-
-        if (!countryGroups.has(sticker.country)) {
-            countryGroups.set(sticker.country, []);
+        if (!renderCurrentCountry._specialPageInitialized) {
+            currentCountryPage = 1;
+            renderCurrentCountry._specialPageInitialized = true;
         }
+    } else {
+        if (!currentCountry) return;
 
-        countryGroups.get(sticker.country).push(sticker);
+        /* Kolejność odpowiada kolejności krajów w indeksie albumu. */
+        const countryOrder = [
+            "AL", "AD", "AM", "AT", "AZ",
+            "BE", "BY", "BA", "BG",
+            "HR", "ME", "CY", "CZ",
+            "DK", "EE", "FI", "FR",
+            "GR", "GE", "ES", "NL",
+            "IE", "IS", "KZ", "XK",
+            "LI", "LT", "LU", "LV",
+            "MK", "MT", "MD", "MC",
+            "DE", "NO", "PL", "PT",
+            "RU", "RO", "SM", "RS",
+            "SK", "SI", "CH", "SE",
+            "UA", "VA", "HU", "GB",
+            "IT"
+        ];
 
-    });
+        const knownCountries = new Set(countryOrder);
+        const extraCountries = Array.from(
+            new Set(
+                allStickers
+                    .map(function (sticker) {
+                        return sticker.country;
+                    })
+                    .filter(function (country) {
+                        return country && !knownCountries.has(country);
+                    })
+            )
+        ).sort();
 
-    countryGroups.forEach(function (countryStickers) {
+        const completeCountryOrder = countryOrder.concat(extraCountries);
+        const countryOffsets = new Map();
 
-        countryStickers.sort(function (a, b) {
+        completeCountryOrder.forEach(function (countryCode) {
+            const countryStickers = allStickers
+                .filter(function (sticker) {
+                    return sticker.country === countryCode;
+                })
+                .sort(function (a, b) {
+                    return a.plate.localeCompare(
+                        b.plate,
+                        "pl",
+                        { numeric: true, sensitivity: "base" }
+                    );
+                });
 
-            return a.plate.localeCompare(
-                b.plate,
-                "pl",
-                {
-                    numeric: true,
-                    sensitivity: "base"
-                }
+            countryOffsets.set(countryCode, albumSlots.length);
+
+            /* Kraj z kartami zajmuje pełne strony po 30 miejsc.
+               Pusty kraj dostaje stronę tylko wtedy, gdy go otworzymy. */
+            if (
+                countryStickers.length === 0 &&
+                countryCode !== currentCountry
+            ) {
+                return;
+            }
+
+            const countryCapacity = Math.max(
+                30,
+                Math.ceil(countryStickers.length / 30) * 30
             );
 
-        });
-
-        countryStickers.forEach(function (sticker, index) {
-            countryNumbers.set(sticker, index + 1);
-        });
-
-    });
-
-    stickers.sort(function (a, b) {
-
-        return a.plate.localeCompare(
-            b.plate,
-            "pl",
-            {
-                numeric: true,
-                sensitivity: "base"
+            for (let i = 0; i < countryCapacity; i++) {
+                albumSlots.push({
+                    sticker: countryStickers[i] || null,
+                    country: countryCode
+                });
             }
-        );
+        });
 
-    });
+        if (!countryOffsets.has(currentCountry)) {
+            countryOffsets.set(currentCountry, albumSlots.length);
+
+            for (let i = 0; i < 30; i++) {
+                albumSlots.push({
+                    sticker: null,
+                    country: currentCountry
+                });
+            }
+        }
+
+        /* Pierwsze wejście otwiera rozkładówkę, na której
+           zaczyna się wybrany kraj. Kolejne kliknięcia nawigacji
+           zachowują już wybraną globalną stronę albumu. */
+        if (!renderCurrentCountry._countryPageInitialized) {
+            const countryStart = countryOffsets.get(currentCountry) || 0;
+            currentCountryPage =
+                Math.floor(countryStart / pocketsPerPage) + 1;
+            renderCurrentCountry._countryPageInitialized = true;
+        }
+    }
 
     stickerGrid.innerHTML = "";
 
-       /* PUSTE WIDOKI VIP I GUEST */
-
-    if (
-        stickers.length === 0 &&
-        (albumView === "special" || albumView === "guest")
-    ) {
-
-        const empty = document.createElement("div");
-        empty.className = "album-empty";
-        empty.textContent = "TEN ALBUM JEST OBECNIE PUSTY";
-
-        stickerGrid.appendChild(empty);
-        return;
-    }
-
-    /* STRONY ALBUMU — 50 KIESZONEK */
-
-/* PC: 60 miejsc na rozkładówce.
-   TELEFON: dotychczasowe 50 miejsc. */
-const isMobileAlbum = window.matchMedia("(max-width: 700px)").matches;
-const pocketsPerPage = isMobileAlbum ? 50 : 60;
     const totalPages = Math.max(
         1,
-        Math.ceil(stickers.length / pocketsPerPage)
+        Math.ceil(albumSlots.length / pocketsPerPage)
     );
 
     currentCountryPage = Math.max(
         1,
         Math.min(currentCountryPage, totalPages)
     );
-    const startIndex =
-        (currentCountryPage - 1) * pocketsPerPage;
 
-    const pageStickers = stickers.slice(
+    const startIndex = (currentCountryPage - 1) * pocketsPerPage;
+    const pageSlots = albumSlots.slice(
         startIndex,
         startIndex + pocketsPerPage
     );
 
-    /* NAWIGACJA STRON */
-
-    const oldPagination =
-        document.getElementById("album-pagination");
-
-    if (oldPagination) {
-        oldPagination.remove();
-    }
+    /* NAWIGACJA */
+    const oldPagination = document.getElementById("album-pagination");
+    if (oldPagination) oldPagination.remove();
 
     const pagination = document.createElement("div");
     pagination.id = "album-pagination";
@@ -3191,75 +3217,54 @@ const pocketsPerPage = isMobileAlbum ? 50 : 60;
     const previousButton = document.createElement("button");
     previousButton.textContent = "← POPRZEDNIA";
     previousButton.disabled = currentCountryPage === 1;
-
     previousButton.addEventListener("click", function () {
         currentCountryPage--;
         renderCurrentCountry();
     });
 
-    const pageInfo = document.createElement("span");
-    pageInfo.textContent =
-        "STRONA " + currentCountryPage + " / " + totalPages;
-
     const nextButton = document.createElement("button");
     nextButton.textContent = "NASTĘPNA →";
     nextButton.disabled = currentCountryPage === totalPages;
-
     nextButton.addEventListener("click", function () {
         currentCountryPage++;
         renderCurrentCountry();
     });
 
     pagination.appendChild(previousButton);
-    pagination.appendChild(pageInfo);
     pagination.appendChild(nextButton);
 
-    stickerGrid.parentNode.insertBefore(
-        pagination,
-        stickerGrid
-    );
+    stickerGrid.parentNode.insertBefore(pagination, stickerGrid);
 
-    /* 50 KIESZONEK NA KAŻDEJ STRONIE */
-
+    /* KAŻDA KIESZONKA MA STAŁY NUMER POZYCJI W ALBUMIE */
     for (let i = 0; i < pocketsPerPage; i++) {
-
         const pocket = document.createElement("div");
         pocket.className = "album-pocket";
 
-        const sticker = pageStickers[i];
+        const slot = pageSlots[i] || null;
+        const sticker = slot ? slot.sticker : null;
+        const pocketNumber = startIndex + i + 1;
 
         if (sticker) {
-
             pocket.classList.add("album-pocket-filled");
 
-            const article = createStickerCard(
-                sticker,
-                countryNumbers.get(sticker) || 1
-            );
-
+            const article = createStickerCard(sticker, pocketNumber);
             pocket.appendChild(article);
-
         } else {
-
             pocket.classList.add("album-pocket-empty");
 
-            const pocketNumber = document.createElement("span");
-            pocketNumber.className = "album-pocket-number";
-            pocketNumber.textContent = String(
-                startIndex + i + 1
-            ).padStart(3, "0");
+            const number = document.createElement("span");
+            number.className = "album-pocket-number";
+            number.textContent = String(pocketNumber).padStart(3, "0");
 
-            const pocketLabel = document.createElement("span");
-            pocketLabel.className = "album-pocket-label";
-            pocketLabel.textContent = "MIEJSCE NA KARTĘ";
+            const label = document.createElement("span");
+            label.className = "album-pocket-label";
+            label.textContent = "MIEJSCE NA KARTĘ";
 
-            pocket.appendChild(pocketNumber);
-            pocket.appendChild(pocketLabel);
-
+            pocket.appendChild(number);
+            pocket.appendChild(label);
         }
 
         stickerGrid.appendChild(pocket);
-
     }
 }
 
