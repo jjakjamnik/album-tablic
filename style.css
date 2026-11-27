@@ -3164,3 +3164,7 @@ main {
         letter-spacing: 1px;
     }
 }
+/* ALBUM 3.0 — UKRYCIE STAREJ SIATKI */
+.album-v3 #sticker-grid[hidden] {
+    display: none !important;
+}
