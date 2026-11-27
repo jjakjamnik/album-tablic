@@ -3128,28 +3128,33 @@ function renderCurrentCountry() {
 
     stickerGrid.innerHTML = "";
 
-    if (stickers.length === 0) {
+       /* PUSTE WIDOKI VIP I GUEST */
+
+    if (
+        stickers.length === 0 &&
+        (albumView === "special" || albumView === "guest")
+    ) {
 
         const empty = document.createElement("div");
-
         empty.className = "album-empty";
         empty.textContent = "TEN ALBUM JEST OBECNIE PUSTY";
 
         stickerGrid.appendChild(empty);
-
         return;
     }
 
-       /* STRONY ALBUMU — 50 KIESZONEK NA STRONĘ */
+    /* STRONY ALBUMU — 50 KIESZONEK */
 
     const pocketsPerPage = 50;
-    const totalPages = Math.ceil(stickers.length / pocketsPerPage);
-
-    currentCountryPage = Math.min(
-        currentCountryPage,
-        totalPages
+    const totalPages = Math.max(
+        1,
+        Math.ceil(stickers.length / pocketsPerPage)
     );
 
+    currentCountryPage = Math.max(
+        1,
+        Math.min(currentCountryPage, totalPages)
+    );
     const startIndex =
         (currentCountryPage - 1) * pocketsPerPage;
 
