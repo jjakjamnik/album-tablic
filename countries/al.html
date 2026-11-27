@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Albania — Album tablic</title>
+    <title>Album tablic — Europa</title>
 
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../stickers.css">
@@ -13,39 +13,110 @@
 
 <body>
 
-<div class="album albania-album">
+<div class="album album-v3" data-country="AL">
 
-    <header class="country-header">
+    <!-- GŁÓWNY NAGŁÓWEK ALBUMU -->
+    <header class="country-header album-v3-header">
         <div>
-            <div class="country-title">🇦🇱 ALBANIA</div>
+            <div class="country-title">ALBUM TABLIC</div>
             <div class="album-subtitle">
-                ALBUM TABLIC REJESTRACYJNYCH · EUROPA
+                EUROPEJSKA KOLEKCJA · ALBUM 3.0
             </div>
         </div>
 
         <a href="../index.html" class="country-back">
-            ← ALBUM
+            ← SPIS TREŚCI
         </a>
     </header>
 
-    <main>
+    <main class="album-v3-main">
 
-  
+        <!-- ROZKŁADÓWKA -->
+        <div id="album-spread" class="album-spread">
 
-        <section id="sticker-grid" class="sticker-grid"></section>
+            <!-- LEWA STRONA -->
+            <section class="album-page album-page-left"
+                     data-page-side="left">
 
-        <div class="albania-page-footer">
-            ALBUM TABLIC REJESTRACYJNYCH · ALBANIA
+                <header class="album-page-header">
+                    <div class="album-page-identity">
+                        <span id="left-country-flag"
+                              class="album-page-flag">🇦🇱</span>
+
+                        <div>
+                            <div id="left-country-title"
+                                 class="album-page-title">ALBANIA</div>
+
+                            <div class="album-page-subtitle">
+                                EUROPEAN REGISTRATION PLATES
+                            </div>
+                        </div>
+                    </div>
+
+                    <span class="album-page-code"
+                          id="left-country-code">AL</span>
+                </header>
+
+                <section id="left-sticker-grid"
+                         class="sticker-grid album-page-grid"></section>
+
+                <footer class="album-page-footer">
+                    <span id="left-page-country">ALBANIA</span>
+                    <span>·</span>
+                    <span id="left-page-number">001–030</span>
+                </footer>
+
+            </section>
+
+            <!-- PRAWA STRONA -->
+            <section class="album-page album-page-right"
+                     data-page-side="right">
+
+                <header class="album-page-header">
+                    <div class="album-page-identity">
+                        <span id="right-country-flag"
+                              class="album-page-flag">🇦🇱</span>
+
+                        <div>
+                            <div id="right-country-title"
+                                 class="album-page-title">ALBANIA</div>
+
+                            <div class="album-page-subtitle">
+                                EUROPEAN REGISTRATION PLATES
+                            </div>
+                        </div>
+                    </div>
+
+                    <span class="album-page-code"
+                          id="right-country-code">AL</span>
+                </header>
+
+                <section id="right-sticker-grid"
+                         class="sticker-grid album-page-grid"></section>
+
+                <footer class="album-page-footer">
+                    <span id="right-page-country">ALBANIA</span>
+                    <span>·</span>
+                    <span id="right-page-number">031–060</span>
+                </footer>
+
+            </section>
+
         </div>
+
+        <!-- KONTENER ZGODNOŚCI ZE STARYMI WIDOKAMI -->
+        <section id="sticker-grid"
+                 class="sticker-grid album-legacy-grid"
+                 hidden></section>
 
     </main>
 
     <footer class="album-footer">
         ALBUM TABLIC REJESTRACYJNYCH
         <span>·</span>
-        ALBANIA
+        EUROPA
         <span>·</span>
-        01
+        3.0
     </footer>
 
 </div>
