@@ -3656,16 +3656,15 @@ function renderCurrentCountry() {
 
         spread.parentNode.insertBefore(pagination, spread);
 
-    } else {
+} else {
 
-        console.error(
-            "Nie znaleziono kontenera album-spread."
-        );
+    console.error(
+        "Nie znaleziono kontenera album-spread."
+    );
 
-    }
+}
 
 } // KONIEC renderCurrentCountry()
-
 
 /* =========================================================
    TWORZENIE KARTY
