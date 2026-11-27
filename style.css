@@ -3428,3 +3428,45 @@ border: 1px solid rgba(255,255,255,.35);
 .album-v3-main > #album-spread::before {
     display: none !important;
 }
+/* FORMULARZ — PRZYCISKI W STYLU NAWIGACJI ALBUMU */
+
+.album-v3 #add-sticker-btn,
+.album-v3 #save-sticker-btn {
+    color: #41474b !important;
+    background: linear-gradient(180deg, #e2e4e5, #c6cacc) !important;
+    border: 1px solid #858c90 !important;
+    border-radius: 4px !important;
+
+    font-family: "DM Sans", Arial, sans-serif !important;
+    font-size: 9px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+
+    box-shadow:
+        0 2px 5px rgba(0,0,0,.13),
+        inset 0 1px 0 rgba(255,255,255,.8) !important;
+
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+/* Usunięcie starych ozdobników przycisku formularza */
+.album-v3 #add-sticker-btn::before,
+.album-v3 #add-sticker-btn::after {
+    display: none !important;
+    content: none !important;
+}
+
+.album-v3 #add-sticker-btn:hover,
+.album-v3 #save-sticker-btn:hover {
+    color: #30363a !important;
+    background: linear-gradient(180deg, #eff0f1, #d1d5d7) !important;
+    transform: translateY(-2px);
+    box-shadow:
+        0 5px 9px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+
+.album-v3 #add-sticker-btn:active,
+.album-v3 #save-sticker-btn:active {
+    transform: translateY(0);
+}
