@@ -16,11 +16,11 @@
             display: none !important;
         }
 
-        .album-frontmatter-spread {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0;
-        }
+.album-frontmatter-spread {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px;
+}
 
         .album-frontmatter-page {
             min-width: 0;
@@ -116,14 +116,8 @@
         }
         
 .album-frontmatter-navigation {
-    grid-column: 1 / -1;
-    grid-row: 1;
     position: relative;
     z-index: 6;
-}
-
-.album-frontmatter-page {
-    grid-row: 2;
 }
         
         .album-frontmatter-page .album-page-footer {
@@ -188,7 +182,15 @@
              PIERWSZA ROZKŁADÓWKA
              FORMULARZ + SPIS TREŚCI
              ========================================= -->
+<nav class="album-pagination album-frontmatter-navigation" aria-label="Nawigacja pierwszej rozkładówki">
+    <button type="button" class="album-page-nav" disabled>
+        ← POPRZEDNIA
+    </button>
 
+    <button type="button" id="album-frontmatter-next" class="album-page-nav">
+        NASTĘPNA →
+    </button>
+</nav>
         <div
             id="album-frontmatter"
             class="album-spread album-frontmatter-spread"
@@ -702,19 +704,6 @@
                 </footer>
 
             </section>
-<nav class="album-pagination album-frontmatter-navigation" aria-label="Nawigacja pierwszej rozkładówki">
-    <button type="button" class="album-page-nav" disabled>
-        ← POPRZEDNIA
-    </button>
-
-    <span class="album-frontmatter-page-info">
-        ROZKŁADÓWKA 1
-    </span>
-
-    <button type="button" id="album-frontmatter-next" class="album-page-nav">
-        NASTĘPNA →
-    </button>
-</nav>
         </div>
 
 
