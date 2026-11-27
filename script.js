@@ -3889,7 +3889,10 @@ function initializeAlbumNavigation() {
 
         const spread =
             document.getElementById("album-spread");
-
+       
+const frontmatterNavigation =
+    document.querySelector(".album-frontmatter-navigation");
+       
         const pagination =
             document.getElementById("album-pagination");
 
@@ -3897,6 +3900,10 @@ function initializeAlbumNavigation() {
             frontmatter.hidden = true;
         }
 
+       if (frontmatterNavigation) {
+    frontmatterNavigation.hidden = true;
+}
+       
         if (spread) {
             spread.hidden = false;
         }
@@ -3960,6 +3967,13 @@ function showAlbumFrontmatter() {
     if (frontmatter) {
         frontmatter.hidden = false;
     }
+
+   const frontmatterNavigation =
+    document.querySelector(".album-frontmatter-navigation");
+
+if (frontmatterNavigation) {
+    frontmatterNavigation.hidden = false;
+}
 
     if (spread) {
         spread.hidden = true;
