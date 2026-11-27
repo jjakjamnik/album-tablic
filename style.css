@@ -3178,46 +3178,48 @@ main {
 }
 
 /* =========================================================
-   ALBUM 3.0 — FAKTURA PRAWDZIWEGO PAPIERU
+   ALBUM 3.0 — WYRAŹNIEJSZA FAKTURA PAPIERU
    ========================================================= */
 
 .album-v3 .album-page {
+    position: relative;
+
     background-image:
         radial-gradient(
             ellipse at 12% 10%,
-            rgba(255,255,255,.62),
-            transparent 32%
+            rgba(255,255,255,.72),
+            transparent 38%
         ),
         radial-gradient(
             ellipse at 88% 85%,
-            rgba(105,75,43,.12),
-            transparent 30%
+            rgba(105,75,43,.16),
+            transparent 36%
         ),
         radial-gradient(
-            ellipse at 52% 48%,
-            rgba(255,255,255,.20),
-            transparent 48%
+            ellipse at 50% 48%,
+            rgba(255,255,255,.24),
+            transparent 55%
         ),
         repeating-linear-gradient(
             137deg,
             transparent 0,
-            transparent 46px,
-            rgba(92,67,40,.025) 47px,
-            transparent 49px
+            transparent 31px,
+            rgba(92,67,40,.045) 32px,
+            transparent 34px
         ),
         repeating-linear-gradient(
             28deg,
             transparent 0,
-            transparent 73px,
-            rgba(255,255,255,.12) 74px,
-            transparent 76px
+            transparent 53px,
+            rgba(255,255,255,.18) 54px,
+            transparent 57px
         ),
         repeating-linear-gradient(
             0deg,
-            rgba(110,83,48,.025) 0,
-            rgba(110,83,48,.025) 1px,
+            rgba(110,83,48,.045) 0,
+            rgba(110,83,48,.045) 1px,
             transparent 1px,
-            transparent 5px
+            transparent 4px
         ),
         linear-gradient(
             145deg,
@@ -3227,8 +3229,91 @@ main {
         );
 }
 
+/* DROBNE WŁÓKNA I NIEREGULARNOŚCI PAPIERU */
+
+.album-v3 .album-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+
+    pointer-events: none;
+    opacity: .42;
+
+    background-image:
+        radial-gradient(
+            rgba(105,77,43,.20) .7px,
+            transparent 1.2px
+        ),
+        radial-gradient(
+            rgba(255,255,255,.48) .8px,
+            transparent 1.3px
+        ),
+        repeating-linear-gradient(
+            91deg,
+            transparent 0,
+            rgba(105,77,43,.045) 1px,
+            transparent 2px,
+            transparent 9px
+        );
+
+    background-size:
+        9px 9px,
+        13px 13px,
+        100% 100%;
+
+    background-position:
+        1px 2px,
+        5px 4px,
+        0 0;
+
+    mix-blend-mode: multiply;
+}
+
+/* ZAWARTOŚĆ STRON NAD FAKTURĄ */
+
+.album-v3 .album-page > * {
+    position: relative;
+    z-index: 1;
+}
+
+
 /* =========================================================
-   ALBUM 3.0 — SPIS TREŚCI PO PRAWEJ STRONIE
+   ALBUM 3.0 — IDENTYCZNY GRZBIET KAŻDEJ ROZKŁADÓWKI
+   ========================================================= */
+
+.album-v3-main > #album-frontmatter::before,
+.album-v3-main > #album-spread::before {
+    content: "";
+
+    position: absolute;
+    z-index: 5;
+
+    top: 0;
+    bottom: 0;
+    left: 50%;
+
+    width: 30px;
+
+    transform: translateX(-50%);
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(65,45,28,.38),
+            rgba(255,255,255,.30) 25%,
+            rgba(100,75,48,.16) 50%,
+            rgba(55,38,25,.38)
+        );
+
+    border-left: 1px solid rgba(100,70,38,.25);
+    border-right: 1px solid rgba(100,70,38,.25);
+}
+
+
+/* =========================================================
+   ALBUM 3.0 — NAWIGACJA
    ========================================================= */
 
 .album-v3 .album-pagination {
@@ -3247,12 +3332,14 @@ main {
     transform: translateY(calc(-50% - 2px));
 }
 
-/* WYGODNE ROZMIESZCZENIE NA TELEFONACH */
+
+/* TELEFONY */
 
 @media (max-width: 750px) {
     .album-v3 .album-pagination {
         display: grid;
-        grid-template-columns: 1fr auto 1fr;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
     }
 
     .album-v3 .album-pagination button:first-child {
