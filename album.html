@@ -11,10 +11,129 @@
     <link rel="stylesheet" href="stickers.css">
     <link rel="stylesheet" href="plates.css">
 
-    <!-- W albumie globalnym karty są tylko do oglądania -->
     <style>
         body[data-page-type="album"] .sticker-actions {
             display: none !important;
+        }
+
+        .album-frontmatter-spread {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0;
+        }
+
+        .album-frontmatter-page {
+            min-width: 0;
+        }
+
+        .album-add-form {
+            display: grid;
+            gap: 14px;
+            padding: 18px 4px;
+        }
+
+        .album-form-field {
+            display: grid;
+            gap: 6px;
+        }
+
+        .album-form-field label {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .album-form-field input,
+        .album-form-field select {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            padding: 11px 12px;
+            border: 1px solid #c9b995;
+            border-radius: 5px;
+            background: rgba(255,255,255,.55);
+            color: #302719;
+            font: inherit;
+        }
+
+        .album-form-submit,
+        .album-form-toggle {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1px solid #8e754d;
+            border-radius: 5px;
+            background: #35452f;
+            color: #fff8e9;
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        .album-form-toggle {
+            margin-bottom: 12px;
+            background: #725b3c;
+        }
+
+        .album-toc-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 5px 16px;
+            padding: 12px 0;
+        }
+
+        .album-toc-link {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 3px;
+            border-bottom: 1px dotted #b8a783;
+            color: #463a29;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .album-toc-link:hover {
+            color: #94703b;
+        }
+
+        .album-toc-code {
+            font-size: 10px;
+            opacity: .65;
+        }
+
+        .album-toc-special {
+            margin-top: 16px;
+            padding-top: 10px;
+            border-top: 2px solid #b8a783;
+        }
+
+        .album-toc-heading {
+            margin: 8px 0;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .album-frontmatter-page .album-page-footer {
+            margin-top: auto;
+        }
+
+        @media (max-width: 750px) {
+            .album-frontmatter-spread {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .album-toc-list {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .album-toc-list {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -23,7 +142,10 @@
 
 <div class="album album-v3" data-country="AL">
 
-    <!-- NAGŁÓWEK -->
+    <!-- =========================================
+         GŁÓWNY NAGŁÓWEK ALBUMU
+         ========================================= -->
+
     <header class="country-header album-v3-header">
 
         <div>
@@ -37,7 +159,7 @@
         </div>
 
         <a href="index.html" class="country-back">
-            ← SPIS TREŚCI
+            ← OKŁADKA
         </a>
 
     </header>
@@ -45,10 +167,544 @@
 
     <main class="album-v3-main">
 
-        <!-- ROZKŁADÓWKA -->
-        <div id="album-spread" class="album-spread">
+        <!-- =========================================
+             PIERWSZA ROZKŁADÓWKA
+             FORMULARZ + SPIS TREŚCI
+             ========================================= -->
+
+        <div
+            id="album-frontmatter"
+            class="album-spread album-frontmatter-spread"
+        >
+
+            <!-- =====================================
+                 LEWA STRONA — DODAWANIE TABLIC
+                 ===================================== -->
+
+            <section
+                class="album-page album-page-left album-frontmatter-page"
+                data-page-side="left"
+            >
+
+                <header class="album-page-header">
+
+                    <div class="album-page-identity">
+
+                        <span class="album-page-flag">
+                            🏁
+                        </span>
+
+                        <div>
+                            <div class="album-page-title">
+                                NOWA TABLICA
+                            </div>
+
+                            <div class="album-page-subtitle">
+                                DODAJ EGZEMPLARZ DO KOLEKCJI
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <span class="album-page-code">
+                        ADD
+                    </span>
+
+                </header>
+
+
+                <div class="album-form-intro">
+                    <p>
+                        Każda tablica to kolejna historia
+                        i kolejny egzemplarz w europejskiej kolekcji.
+                    </p>
+                </div>
+
+
+                <button
+                    type="button"
+                    id="add-sticker-btn"
+                    class="album-form-toggle"
+                >
+                    − ZAMKNIJ FORMULARZ
+                </button>
+
+
+                <form
+                    id="sticker-form"
+                    class="album-add-form"
+                    autocomplete="off"
+                >
+
+                    <!-- KRAJ -->
+
+                    <div class="album-form-field">
+
+                        <label for="sticker-country">
+                            KRAJ POCHODZENIA
+                        </label>
+
+                        <select
+                            id="sticker-country"
+                            name="country"
+                            required
+                        >
+                            <option value="">— WYBIERZ KRAJ —</option>
+
+                            <option value="AL">🇦🇱 Albania</option>
+                            <option value="AD">🇦🇩 Andora</option>
+                            <option value="AM">🇦🇲 Armenia</option>
+                            <option value="AT">🇦🇹 Austria</option>
+                            <option value="AZ">🇦🇿 Azerbejdżan</option>
+                            <option value="BE">🇧🇪 Belgia</option>
+                            <option value="BY">🇧🇾 Białoruś</option>
+                            <option value="BA">🇧🇦 Bośnia i Hercegowina</option>
+                            <option value="BG">🇧🇬 Bułgaria</option>
+                            <option value="HR">🇭🇷 Chorwacja</option>
+                            <option value="ME">🇲🇪 Czarnogóra</option>
+                            <option value="CY">🇨🇾 Cypr</option>
+                            <option value="CZ">🇨🇿 Czechy</option>
+                            <option value="DK">🇩🇰 Dania</option>
+                            <option value="EE">🇪🇪 Estonia</option>
+                            <option value="FI">🇫🇮 Finlandia</option>
+                            <option value="FR">🇫🇷 Francja</option>
+                            <option value="GR">🇬🇷 Grecja</option>
+                            <option value="GE">🇬🇪 Gruzja</option>
+                            <option value="ES">🇪🇸 Hiszpania</option>
+                            <option value="NL">🇳🇱 Holandia</option>
+                            <option value="IE">🇮🇪 Irlandia</option>
+                            <option value="IS">🇮🇸 Islandia</option>
+                            <option value="KZ">🇰🇿 Kazachstan</option>
+                            <option value="XK">🇽🇰 Kosowo</option>
+                            <option value="LI">🇱🇮 Liechtenstein</option>
+                            <option value="LT">🇱🇹 Litwa</option>
+                            <option value="LU">🇱🇺 Luksemburg</option>
+                            <option value="LV">🇱🇻 Łotwa</option>
+                            <option value="MK">🇲🇰 Macedonia Północna</option>
+                            <option value="MT">🇲🇹 Malta</option>
+                            <option value="MD">🇲🇩 Mołdawia</option>
+                            <option value="MC">🇲🇨 Monako</option>
+                            <option value="DE">🇩🇪 Niemcy</option>
+                            <option value="NO">🇳🇴 Norwegia</option>
+                            <option value="PL">🇵🇱 Polska</option>
+                            <option value="PT">🇵🇹 Portugalia</option>
+                            <option value="RU">🇷🇺 Rosja</option>
+                            <option value="RO">🇷🇴 Rumunia</option>
+                            <option value="SM">🇸🇲 San Marino</option>
+                            <option value="RS">🇷🇸 Serbia</option>
+                            <option value="SK">🇸🇰 Słowacja</option>
+                            <option value="SI">🇸🇮 Słowenia</option>
+                            <option value="CH">🇨🇭 Szwajcaria</option>
+                            <option value="SE">🇸🇪 Szwecja</option>
+                            <option value="TR">🇹🇷 Turcja</option>
+                            <option value="UA">🇺🇦 Ukraina</option>
+                            <option value="VA">🇻🇦 Watykan</option>
+                            <option value="HU">🇭🇺 Węgry</option>
+                            <option value="GB">🇬🇧 Wielka Brytania</option>
+                            <option value="IT">🇮🇹 Włochy</option>
+                        </select>
+
+                    </div>
+
+
+                    <!-- NUMER TABLICY -->
+
+                    <div class="album-form-field">
+
+                        <label for="sticker-plate">
+                            NUMER TABLICY
+                        </label>
+
+                        <input
+                            type="text"
+                            id="sticker-plate"
+                            name="plate"
+                            placeholder="NP. ZS 12345"
+                            maxlength="30"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- MIEJSCE ZNALEZIENIA -->
+
+                    <div class="album-form-field">
+
+                        <label for="sticker-location">
+                            MIEJSCE ZNALEZIENIA
+                        </label>
+
+                        <input
+                            type="text"
+                            id="sticker-location"
+                            name="location"
+                            placeholder="Miasto lub miejscowość"
+                            maxlength="120"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- WŁAŚCICIEL -->
+
+                    <div class="album-form-field">
+
+                        <label for="sticker-owner">
+                            WŁAŚCICIEL KOLEKCJI
+                        </label>
+
+                        <select
+                            id="sticker-owner"
+                            name="owner"
+                        >
+                            <option value="green">
+                                🟢 Moja kolekcja
+                            </option>
+
+                            <option value="pink">
+                                🌸 Kolekcja Viki
+                            </option>
+
+                            <option value="guest">
+                                👥 Karta gościnna
+                            </option>
+
+                            <option value="special">
+                                ⭐ Kolekcja specjalna VIP
+                            </option>
+                        </select>
+
+                    </div>
+
+
+                    <!-- DYNAMICZNY DEPARTAMENT FRANCJI
+                         TWORZONY PRZEZ script.js -->
+
+                    <div id="french-department-container"></div>
+
+
+                    <!-- ZAPIS -->
+
+                    <button
+                        type="button"
+                        id="save-sticker-btn"
+                        class="album-form-submit"
+                    >
+                        + DODAJ DO KOLEKCJI
+                    </button>
+
+                </form>
+
+
+                <footer class="album-page-footer">
+                    <span>NOWY EGZEMPLARZ</span>
+                    <span>·</span>
+                    <span>001</span>
+                </footer>
+
+            </section>
+
+
+            <!-- =====================================
+                 PRAWA STRONA — SPIS TREŚCI
+                 ===================================== -->
+
+            <section
+                class="album-page album-page-right album-frontmatter-page"
+                data-page-side="right"
+            >
+
+                <header class="album-page-header">
+
+                    <div class="album-page-identity">
+
+                        <span class="album-page-flag">
+                            🌍
+                        </span>
+
+                        <div>
+                            <div class="album-page-title">
+                                SPIS TREŚCI
+                            </div>
+
+                            <div class="album-page-subtitle">
+                                EUROPEJSKA KOLEKCJA TABLIC
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <span class="album-page-code">
+                        TOC
+                    </span>
+
+                </header>
+
+
+                <div class="album-toc-intro">
+                    Wybierz państwo, aby przejść bezpośrednio
+                    do jego stron w albumie.
+                </div>
+
+
+                <div
+                    id="album-toc-countries"
+                    class="album-toc-list"
+                >
+
+                    <a href="#country-AL" class="album-toc-link" data-country-jump="AL">
+                        <span>Albania</span><span class="album-toc-code">AL</span>
+                    </a>
+
+                    <a href="#country-AD" class="album-toc-link" data-country-jump="AD">
+                        <span>Andora</span><span class="album-toc-code">AD</span>
+                    </a>
+
+                    <a href="#country-AM" class="album-toc-link" data-country-jump="AM">
+                        <span>Armenia</span><span class="album-toc-code">AM</span>
+                    </a>
+
+                    <a href="#country-AT" class="album-toc-link" data-country-jump="AT">
+                        <span>Austria</span><span class="album-toc-code">AT</span>
+                    </a>
+
+                    <a href="#country-AZ" class="album-toc-link" data-country-jump="AZ">
+                        <span>Azerbejdżan</span><span class="album-toc-code">AZ</span>
+                    </a>
+
+                    <a href="#country-BE" class="album-toc-link" data-country-jump="BE">
+                        <span>Belgia</span><span class="album-toc-code">BE</span>
+                    </a>
+
+                    <a href="#country-BY" class="album-toc-link" data-country-jump="BY">
+                        <span>Białoruś</span><span class="album-toc-code">BY</span>
+                    </a>
+
+                    <a href="#country-BA" class="album-toc-link" data-country-jump="BA">
+                        <span>Bośnia i Hercegowina</span><span class="album-toc-code">BA</span>
+                    </a>
+
+                    <a href="#country-BG" class="album-toc-link" data-country-jump="BG">
+                        <span>Bułgaria</span><span class="album-toc-code">BG</span>
+                    </a>
+
+                    <a href="#country-HR" class="album-toc-link" data-country-jump="HR">
+                        <span>Chorwacja</span><span class="album-toc-code">HR</span>
+                    </a>
+
+                    <a href="#country-ME" class="album-toc-link" data-country-jump="ME">
+                        <span>Czarnogóra</span><span class="album-toc-code">ME</span>
+                    </a>
+
+                    <a href="#country-CY" class="album-toc-link" data-country-jump="CY">
+                        <span>Cypr</span><span class="album-toc-code">CY</span>
+                    </a>
+
+                    <a href="#country-CZ" class="album-toc-link" data-country-jump="CZ">
+                        <span>Czechy</span><span class="album-toc-code">CZ</span>
+                    </a>
+
+                    <a href="#country-DK" class="album-toc-link" data-country-jump="DK">
+                        <span>Dania</span><span class="album-toc-code">DK</span>
+                    </a>
+
+                    <a href="#country-EE" class="album-toc-link" data-country-jump="EE">
+                        <span>Estonia</span><span class="album-toc-code">EE</span>
+                    </a>
+
+                    <a href="#country-FI" class="album-toc-link" data-country-jump="FI">
+                        <span>Finlandia</span><span class="album-toc-code">FI</span>
+                    </a>
+
+                    <a href="#country-FR" class="album-toc-link" data-country-jump="FR">
+                        <span>Francja</span><span class="album-toc-code">FR</span>
+                    </a>
+
+                    <a href="#country-GR" class="album-toc-link" data-country-jump="GR">
+                        <span>Grecja</span><span class="album-toc-code">GR</span>
+                    </a>
+
+                    <a href="#country-GE" class="album-toc-link" data-country-jump="GE">
+                        <span>Gruzja</span><span class="album-toc-code">GE</span>
+                    </a>
+
+                    <a href="#country-ES" class="album-toc-link" data-country-jump="ES">
+                        <span>Hiszpania</span><span class="album-toc-code">ES</span>
+                    </a>
+
+                    <a href="#country-NL" class="album-toc-link" data-country-jump="NL">
+                        <span>Holandia</span><span class="album-toc-code">NL</span>
+                    </a>
+
+                    <a href="#country-IE" class="album-toc-link" data-country-jump="IE">
+                        <span>Irlandia</span><span class="album-toc-code">IE</span>
+                    </a>
+
+                    <a href="#country-IS" class="album-toc-link" data-country-jump="IS">
+                        <span>Islandia</span><span class="album-toc-code">IS</span>
+                    </a>
+
+                    <a href="#country-KZ" class="album-toc-link" data-country-jump="KZ">
+                        <span>Kazachstan</span><span class="album-toc-code">KZ</span>
+                    </a>
+
+                    <a href="#country-XK" class="album-toc-link" data-country-jump="XK">
+                        <span>Kosowo</span><span class="album-toc-code">XK</span>
+                    </a>
+
+                    <a href="#country-LI" class="album-toc-link" data-country-jump="LI">
+                        <span>Liechtenstein</span><span class="album-toc-code">LI</span>
+                    </a>
+
+                    <a href="#country-LT" class="album-toc-link" data-country-jump="LT">
+                        <span>Litwa</span><span class="album-toc-code">LT</span>
+                    </a>
+
+                    <a href="#country-LU" class="album-toc-link" data-country-jump="LU">
+                        <span>Luksemburg</span><span class="album-toc-code">LU</span>
+                    </a>
+
+                    <a href="#country-LV" class="album-toc-link" data-country-jump="LV">
+                        <span>Łotwa</span><span class="album-toc-code">LV</span>
+                    </a>
+
+                    <a href="#country-MK" class="album-toc-link" data-country-jump="MK">
+                        <span>Macedonia Północna</span><span class="album-toc-code">MK</span>
+                    </a>
+
+                    <a href="#country-MT" class="album-toc-link" data-country-jump="MT">
+                        <span>Malta</span><span class="album-toc-code">MT</span>
+                    </a>
+
+                    <a href="#country-MD" class="album-toc-link" data-country-jump="MD">
+                        <span>Mołdawia</span><span class="album-toc-code">MD</span>
+                    </a>
+
+                    <a href="#country-MC" class="album-toc-link" data-country-jump="MC">
+                        <span>Monako</span><span class="album-toc-code">MC</span>
+                    </a>
+
+                    <a href="#country-DE" class="album-toc-link" data-country-jump="DE">
+                        <span>Niemcy</span><span class="album-toc-code">DE</span>
+                    </a>
+
+                    <a href="#country-NO" class="album-toc-link" data-country-jump="NO">
+                        <span>Norwegia</span><span class="album-toc-code">NO</span>
+                    </a>
+
+                    <a href="#country-PL" class="album-toc-link" data-country-jump="PL">
+                        <span>Polska</span><span class="album-toc-code">PL</span>
+                    </a>
+
+                    <a href="#country-PT" class="album-toc-link" data-country-jump="PT">
+                        <span>Portugalia</span><span class="album-toc-code">PT</span>
+                    </a>
+
+                    <a href="#country-RU" class="album-toc-link" data-country-jump="RU">
+                        <span>Rosja</span><span class="album-toc-code">RU</span>
+                    </a>
+
+                    <a href="#country-RO" class="album-toc-link" data-country-jump="RO">
+                        <span>Rumunia</span><span class="album-toc-code">RO</span>
+                    </a>
+
+                    <a href="#country-SM" class="album-toc-link" data-country-jump="SM">
+                        <span>San Marino</span><span class="album-toc-code">SM</span>
+                    </a>
+
+                    <a href="#country-RS" class="album-toc-link" data-country-jump="RS">
+                        <span>Serbia</span><span class="album-toc-code">RS</span>
+                    </a>
+
+                    <a href="#country-SK" class="album-toc-link" data-country-jump="SK">
+                        <span>Słowacja</span><span class="album-toc-code">SK</span>
+                    </a>
+
+                    <a href="#country-SI" class="album-toc-link" data-country-jump="SI">
+                        <span>Słowenia</span><span class="album-toc-code">SI</span>
+                    </a>
+
+                    <a href="#country-CH" class="album-toc-link" data-country-jump="CH">
+                        <span>Szwajcaria</span><span class="album-toc-code">CH</span>
+                    </a>
+
+                    <a href="#country-SE" class="album-toc-link" data-country-jump="SE">
+                        <span>Szwecja</span><span class="album-toc-code">SE</span>
+                    </a>
+
+                    <a href="#country-TR" class="album-toc-link" data-country-jump="TR">
+                        <span>Turcja</span><span class="album-toc-code">TR</span>
+                    </a>
+
+                    <a href="#country-UA" class="album-toc-link" data-country-jump="UA">
+                        <span>Ukraina</span><span class="album-toc-code">UA</span>
+                    </a>
+
+                    <a href="#country-VA" class="album-toc-link" data-country-jump="VA">
+                        <span>Watykan</span><span class="album-toc-code">VA</span>
+                    </a>
+
+                    <a href="#country-HU" class="album-toc-link" data-country-jump="HU">
+                        <span>Węgry</span><span class="album-toc-code">HU</span>
+                    </a>
+
+                    <a href="#country-GB" class="album-toc-link" data-country-jump="GB">
+                        <span>Wielka Brytania</span><span class="album-toc-code">GB</span>
+                    </a>
+
+                    <a href="#country-IT" class="album-toc-link" data-country-jump="IT">
+                        <span>Włochy</span><span class="album-toc-code">IT</span>
+                    </a>
+
+                </div>
+
+
+                <!-- KOLEKCJE SPECJALNE -->
+
+                <div class="album-toc-special">
+
+                    <div class="album-toc-heading">
+                        KOLEKCJE SPECJALNE
+                    </div>
+
+                    <a href="#country-GUEST" class="album-toc-link" data-country-jump="GUEST">
+                        <span>👥 Karty gościnne</span>
+                        <span class="album-toc-code">GUEST</span>
+                    </a>
+
+                    <a href="#country-VIP" class="album-toc-link" data-country-jump="VIP">
+                        <span>⭐ Kolekcja VIP</span>
+                        <span class="album-toc-code">VIP</span>
+                    </a>
+
+                </div>
+
+
+                <footer class="album-page-footer">
+                    <span>SPIS TREŚCI</span>
+                    <span>·</span>
+                    <span>002</span>
+                </footer>
+
+            </section>
+
+        </div>
+
+
+        <!-- =========================================
+             WŁAŚCIWY ALBUM — STRONY KRAJÓW
+             ========================================= -->
+
+        <div
+            id="album-spread"
+            class="album-spread"
+            hidden
+        >
 
             <!-- LEWA STRONA -->
+
             <section
                 class="album-page album-page-left"
                 data-page-side="left"
@@ -83,10 +739,12 @@
 
                 </header>
 
+
                 <section
                     id="left-sticker-grid"
                     class="sticker-grid album-page-grid"
                 ></section>
+
 
                 <footer class="album-page-footer">
                     <span id="left-page-country">ALBANIA</span>
@@ -98,6 +756,7 @@
 
 
             <!-- PRAWA STRONA -->
+
             <section
                 class="album-page album-page-right"
                 data-page-side="right"
@@ -132,10 +791,12 @@
 
                 </header>
 
+
                 <section
                     id="right-sticker-grid"
                     class="sticker-grid album-page-grid"
                 ></section>
+
 
                 <footer class="album-page-footer">
                     <span id="right-page-country">ALBANIA</span>
@@ -148,15 +809,51 @@
         </div>
 
 
-        <!-- KONTENER ZGODNOŚCI ZE STARYM SYSTEMEM -->
+        <!-- =========================================
+             ZGODNOŚĆ ZE STARYM SYSTEMEM
+             ========================================= -->
+
         <section
             id="sticker-grid"
             class="sticker-grid album-legacy-grid"
             hidden
         ></section>
 
+
+        <!-- =========================================
+             NAWIGACJA ALBUMU
+             ========================================= -->
+
+        <nav
+            id="album-pagination"
+            class="album-pagination"
+            aria-label="Nawigacja albumu"
+        >
+
+            <button
+                type="button"
+                id="album-previous"
+                class="album-page-nav"
+            >
+                ← POPRZEDNIA
+            </button>
+
+            <button
+                type="button"
+                id="album-next"
+                class="album-page-nav"
+            >
+                NASTĘPNA →
+            </button>
+
+        </nav>
+
     </main>
 
+
+    <!-- =========================================
+         STOPKA
+         ========================================= -->
 
     <footer class="album-footer">
         ALBUM TABLIC REJESTRACYJNYCH
@@ -169,11 +866,26 @@
 </div>
 
 
-<!-- SKRYPTY ALBUMU -->
+<!-- =============================================
+     SKRYPTY KRAJOWE I OBSŁUGA ALBUMU
+     ============================================= -->
+
+<script src="austria.js"></script>
+<script src="bialorus.js"></script>
+<script src="czechy.js"></script>
+<script src="francja.js"></script>
+<script src="irlandia.js"></script>
 <script src="polska.js"></script>
 <script src="niemcy.js"></script>
+<script src="slowacja.js"></script>
+<script src="rumunia.js"></script>
+<script src="szwajcaria.js"></script>
+<script src="turcja.js?v=20261126"></script>
+<script src="ukraina.js"></script>
+<script src="wielkabrytania.js"></script>
 <script src="distance.js"></script>
 <script src="cards.js"></script>
+<script src="uzbekistan.js"></script>
 <script src="script.js"></script>
 
 </body>
