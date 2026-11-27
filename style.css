@@ -2179,3 +2179,143 @@ main {
     color: #d9bd91;
     border-top-color: rgba(197,161,106,.45);
 }
+
+
+/* =========================================================
+   ALBUM 2.0 — POLSKA
+   BORDOWY PAPIER KOLEKCJONERSKI
+   ========================================================= */
+
+.polska-album {
+    --country-paper: #702632;
+    --country-paper-light: #843440;
+    --country-paper-dark: #481923;
+    --country-gold: #c5a16a;
+    --country-ink: #fff1dc;
+
+    background: var(--country-paper-dark);
+    border: 2px solid var(--country-gold);
+
+    box-shadow:
+        0 24px 55px rgba(0,0,0,.52),
+        0 5px 15px rgba(0,0,0,.28),
+        inset 0 0 35px rgba(0,0,0,.2);
+}
+
+/* PAPIER STRONY */
+
+.polska-album main {
+    position: relative;
+    isolation: isolate;
+
+    background:
+        radial-gradient(
+            ellipse at 20% 15%,
+            rgba(255,220,190,.10),
+            transparent 45%
+        ),
+        radial-gradient(
+            ellipse at 85% 80%,
+            rgba(20,0,0,.13),
+            transparent 50%
+        ),
+        linear-gradient(
+            135deg,
+            var(--country-paper-light),
+            var(--country-paper) 48%,
+            var(--country-paper-dark)
+        );
+}
+
+/* WŁÓKNA I ZIARNISTOŚĆ PAPIERU */
+
+.polska-album main::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    opacity: .24;
+
+    background-image:
+        repeating-linear-gradient(
+            8deg,
+            transparent 0px,
+            rgba(255,255,255,.045) 1px,
+            transparent 2px,
+            transparent 5px
+        ),
+        radial-gradient(
+            rgba(255,255,255,.18) .7px,
+            transparent 1px
+        ),
+        radial-gradient(
+            rgba(0,0,0,.20) .7px,
+            transparent 1px
+        );
+
+    background-size:
+        100% 9px,
+        7px 7px,
+        11px 11px;
+
+    background-position:
+        0 0,
+        0 0,
+        4px 5px;
+}
+
+/* NAGŁÓWEK */
+
+.polska-album .country-header {
+    background:
+        linear-gradient(
+            120deg,
+            #762936,
+            #48141f
+        );
+
+    border-bottom: 2px solid var(--country-gold);
+}
+
+/* TYTUŁ I NAPISY */
+
+.polska-album .country-title {
+    color: var(--country-ink);
+}
+
+.polska-album .album-subtitle {
+    color: #d9bd91;
+}
+
+.polska-album .index-heading {
+    color: var(--country-ink);
+}
+
+.polska-album .index-heading-line {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--country-gold),
+        transparent
+    );
+}
+
+.polska-album #country-sticker-count {
+    color: #d9bd91;
+}
+
+/* POWRÓT DO ALBUMU */
+
+.polska-album .country-back {
+    color: #f5dfbd;
+    border-color: rgba(197,161,106,.55);
+}
+
+/* STOPKA */
+
+.polska-album .album-footer {
+    color: #d9bd91;
+    border-top-color: rgba(197,161,106,.45);
+}
