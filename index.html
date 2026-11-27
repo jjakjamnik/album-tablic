@@ -1,27 +1,30 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Album tablic — Europa</title>
+    <title>Album Tablic – Europejska Kolekcja</title>
 
-    <link href="https://fonts.cdnfonts.com/css/keep-calm" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="stickers.css">
     <link rel="stylesheet" href="plates.css">
+    <link href="https://fonts.cdnfonts.com/css/keep-calm" rel="stylesheet">
 
     <style>
-        /* =========================================
-           OKŁADKA I SPIS TREŚCI — ALBUM 3.0
-           ========================================= */
-
         body.album-index {
+            min-height: 100vh;
+            margin: 0;
+            padding: 1px 0;
             background:
-                radial-gradient(ellipse at 50% 0%, #51402d 0%, transparent 55%),
-                #171512;
-            color: #eee4d2;
+                radial-gradient(
+                    circle at 50% 20%,
+                    #51402d 0%,
+                    #30251b 48%,
+                    #17120e 100%
+                );
+            color: #eadfc8;
+            font-family: Arial, sans-serif;
         }
 
         .index-v3 {
@@ -29,186 +32,163 @@
             margin: 35px auto;
         }
 
+        /* OKŁADKA */
+
         .index-cover {
             position: relative;
-            overflow: hidden;
-            min-height: 390px;
-            padding: 55px 35px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            border: 1px solid rgba(220, 190, 130, .45);
-            border-radius: 12px;
-            background:
-                linear-gradient(145deg, rgba(255,255,255,.07), transparent 40%),
-                linear-gradient(135deg, #60442d, #30251d 55%, #1c1916);
-            box-shadow:
-                0 25px 60px rgba(0,0,0,.45),
-                inset 0 0 0 8px rgba(220,190,130,.05),
-                inset 0 0 0 9px rgba(220,190,130,.15);
-        }
+            justify-content: center;
+            min-height: 390px;
+            padding: 55px 35px;
+            box-sizing: border-box;
+            overflow: hidden;
 
-        .index-cover::before,
-        .index-cover::after {
-            content: "";
-            position: absolute;
-            pointer-events: none;
-            border: 1px solid rgba(220,190,130,.22);
+            background:
+                linear-gradient(
+                    145deg,
+                    #6b5236 0%,
+                    #3d2c1e 48%,
+                    #241a12 100%
+                );
+
+            border: 3px double #b99b68;
+            border-radius: 12px;
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.55),
+                inset 0 0 35px rgba(0, 0, 0, 0.35);
+
+            text-align: center;
         }
 
         .index-cover::before {
-            inset: 18px;
-            border-radius: 5px;
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border: 1px solid rgba(218, 190, 139, 0.45);
+            border-radius: 6px;
+            pointer-events: none;
         }
 
         .index-cover::after {
-            inset: 25px;
-            border-radius: 3px;
+            content: "";
+            position: absolute;
+            inset: 19px;
+            border: 1px solid rgba(218, 190, 139, 0.18);
+            border-radius: 4px;
+            pointer-events: none;
         }
 
         .cover-edition {
             position: relative;
             z-index: 1;
-            color: #d6bd8b;
-            font-size: 11px;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            margin-bottom: 25px;
+            margin-bottom: 22px;
+            color: #d3b77f;
+            font-size: 12px;
+            letter-spacing: 4px;
+            font-weight: bold;
         }
 
         .cover-title {
             position: relative;
             z-index: 1;
-            font-family: Georgia, serif;
-            font-size: clamp(42px, 8vw, 82px);
-            line-height: 1;
-            letter-spacing: 3px;
-            color: #f0dfbd;
-            text-shadow: 0 5px 15px rgba(0,0,0,.5);
+            margin: 0;
+            color: #f1dfb8;
+            font-family: "Keep Calm", Georgia, serif;
+            font-size: clamp(38px, 7vw, 76px);
+            line-height: 1.15;
+            letter-spacing: 5px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
         }
 
         .cover-subtitle {
             position: relative;
             z-index: 1;
-            margin-top: 20px;
-            color: #d5c4a5;
-            font-size: 13px;
-            letter-spacing: 4px;
+            margin-top: 15px;
+            color: #d4bd91;
+            font-size: 17px;
+            letter-spacing: 6px;
         }
 
         .cover-divider {
             position: relative;
             z-index: 1;
-            width: 110px;
+            width: 150px;
             height: 1px;
-            margin: 30px 0;
-            background: #b99b68;
+            margin: 28px auto;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                #c6a66c,
+                transparent
+            );
         }
 
         .cover-description {
             position: relative;
             z-index: 1;
-            max-width: 470px;
-            color: #c8b99f;
-            font-size: 13px;
+            max-width: 650px;
+            margin: 0 auto 30px;
+            color: #e0d1b5;
+            font-size: 15px;
             line-height: 1.8;
         }
+
+        /* PRZYCISK OTWIERANIA ALBUMU */
 
         .open-album-button {
             position: relative;
             z-index: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            margin-top: 32px;
-            padding: 15px 32px;
-            border: 1px solid #d0b27e;
-            border-radius: 4px;
-            background: linear-gradient(135deg, #d0b27e, #a9824c);
-            color: #211a13;
-            font-size: 12px;
+            display: inline-block;
+            padding: 15px 34px;
+
+            background: linear-gradient(
+                180deg,
+                #d6bd89,
+                #a98a55
+            );
+
+            color: #261b11;
+            border: 1px solid #e6d3a9;
+            border-radius: 5px;
+
+            font-size: 14px;
             font-weight: bold;
             letter-spacing: 2px;
             text-decoration: none;
-            transition: .25s ease;
-            box-shadow: 0 7px 20px rgba(0,0,0,.25);
+
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
         }
 
         .open-album-button:hover {
             transform: translateY(-3px);
-            background: #e4c997;
-            box-shadow: 0 12px 25px rgba(0,0,0,.35);
+            background: linear-gradient(
+                180deg,
+                #ead7ac,
+                #c4a46d
+            );
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
         }
 
-        .toc-section {
-            margin-top: 55px;
-        }
-
-        .toc-heading {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 12px;
-            color: #e3d1ae;
-            font-family: Georgia, serif;
-            font-size: 27px;
-            letter-spacing: 2px;
-        }
-
-        .toc-heading::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, #94764e, transparent);
-        }
-
-        .toc-description {
-            margin-bottom: 25px;
-            color: #a99c87;
-            font-size: 12px;
-            letter-spacing: 1px;
-        }
-
-        .countries-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 14px;
-        }
-
-        /* Zachowujemy wygląd i mechanikę istniejących kart */
-        .countries-grid .country-card {
-            min-width: 0;
-        }
-
-        .special-toc {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px;
-            margin-top: 35px;
-        }
-
-        .special-toc .country-card {
-            min-width: 0;
-        }
+        /* STOPKA */
 
         .index-footer {
-            margin-top: 55px;
-            padding: 25px 10px;
-            border-top: 1px solid rgba(210,180,130,.2);
-            color: #9c8b72;
+            margin-top: 25px;
+            padding: 15px;
+            color: #a99779;
+            font-size: 11px;
+            letter-spacing: 2px;
             text-align: center;
-            font-size: 10px;
-            letter-spacing: 3px;
         }
 
-        @media (max-width: 850px) {
-            .countries-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
+        /* TELEFONY */
 
         @media (max-width: 520px) {
             .index-v3 {
@@ -223,38 +203,26 @@
 
             .cover-edition {
                 font-size: 9px;
-                letter-spacing: 3px;
-            }
-
-            .cover-subtitle {
-                font-size: 10px;
                 letter-spacing: 2px;
             }
 
+            .cover-title {
+                font-size: 38px;
+                letter-spacing: 2px;
+            }
+
+            .cover-subtitle {
+                font-size: 12px;
+                letter-spacing: 3px;
+            }
+
             .cover-description {
-                font-size: 11px;
+                font-size: 13px;
             }
 
             .open-album-button {
-                padding: 14px 22px;
-                font-size: 11px;
-            }
-
-            .toc-section {
-                margin-top: 38px;
-            }
-
-            .toc-heading {
-                font-size: 22px;
-            }
-
-            .countries-grid {
-                grid-template-columns: 1fr;
-                gap: 11px;
-            }
-
-            .special-toc {
-                grid-template-columns: 1fr;
+                padding: 13px 22px;
+                font-size: 12px;
             }
         }
     </style>
@@ -262,499 +230,41 @@
 
 <body class="album-index">
 
-<div class="album index-v3">
+    <main class="album index-v3">
 
-    <!-- =========================================
-         OKŁADKA
-         ========================================= -->
+        <header class="index-cover">
 
-    <header class="index-cover">
+            <div class="cover-edition">
+                EUROPEAN REGISTRATION PLATES COLLECTION
+            </div>
 
-        <div class="cover-edition">
+            <h1 class="cover-title">
+                ALBUM TABLIC
+            </h1>
+
+            <div class="cover-subtitle">
+                EUROPEJSKA KOLEKCJA
+            </div>
+
+            <div class="cover-divider"></div>
+
+            <p class="cover-description">
+                Prywatna kolekcja europejskich tablic rejestracyjnych.
+                Każda znaleziona tablica to kolejna historia,
+                kolejne miejsce i kolejna strona albumu.
+            </p>
+
+            <a href="album.html" class="open-album-button">
+                OTWÓRZ ALBUM →
+            </a>
+
+        </header>
+
+        <footer class="index-footer">
             EUROPEAN REGISTRATION PLATES COLLECTION
-        </div>
-
-        <div class="cover-title">
-            ALBUM TABLIC
-        </div>
-
-        <div class="cover-subtitle">
-            EUROPEJSKA KOLEKCJA
-        </div>
-
-        <div class="cover-divider"></div>
-
-        <div class="cover-description">
-            Prywatna kolekcja europejskich tablic rejestracyjnych.
-            Każda znaleziona tablica to kolejna historia,
-            kolejne miejsce i kolejna strona albumu.
-        </div>
-
-        <a href="album.html" class="open-album-button">
-            <span>OTWÓRZ ALBUM</span>
-            <span>→</span>
-        </a>
-
-    </header>
-
-    <!-- =========================================
-         SPIS TREŚCI
-         ========================================= -->
-
-    <main class="toc-section">
-
-        <div class="toc-heading">
-            SPIS TREŚCI
-        </div>
-
-        <div class="toc-description">
-            WYBIERZ KRAJ, ABY OTWORZYĆ JEGO STRONĘ I ZARZĄDZAĆ KOLEKCJĄ
-        </div>
-
-        <section class="countries-grid">
-
-            <a href="countries/al.html" class="country-card country-al country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">AL</span></div>
-                <div class="country-card-background">AL</div>
-                <div class="country-card-content"><div class="country-card-name">Albania</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>AL</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/ad.html" class="country-card country-ad country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">AD</span></div>
-                <div class="country-card-background">AD</div>
-                <div class="country-card-content"><div class="country-card-name">Andora</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>AD</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/am.html" class="country-card country-am country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">AM</span></div>
-                <div class="country-card-background">AM</div>
-                <div class="country-card-content"><div class="country-card-name">Armenia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>AM</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/at.html" class="country-card country-at">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">AT</span></div>
-                <div class="country-card-background">AT</div>
-                <div class="country-card-content"><div class="country-card-name">Austria</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>AT</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/az.html" class="country-card country-az country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">AZ</span></div>
-                <div class="country-card-background">AZ</div>
-                <div class="country-card-content"><div class="country-card-name">Azerbejdżan</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>AZ</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/be.html" class="country-card country-be">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">BE</span></div>
-                <div class="country-card-background">BE</div>
-                <div class="country-card-content"><div class="country-card-name">Belgia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>BE</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/by.html" class="country-card country-by">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">BY</span></div>
-                <div class="country-card-background">BY</div>
-                <div class="country-card-content"><div class="country-card-name">Białoruś</div><div class="country-card-count">1 naklejka</div></div>
-                <div class="country-card-bottom"><span>BY</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/ba.html" class="country-card country-ba country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">BA</span></div>
-                <div class="country-card-background">BA</div>
-                <div class="country-card-content"><div class="country-card-name">Bośnia i Hercegowina</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>BA</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/bg.html" class="country-card country-bg">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">BG</span></div>
-                <div class="country-card-background">BG</div>
-                <div class="country-card-content"><div class="country-card-name">Bułgaria</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>BG</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/hr.html" class="country-card country-hr">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">HR</span></div>
-                <div class="country-card-background">HR</div>
-                <div class="country-card-content"><div class="country-card-name">Chorwacja</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>HR</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/cy.html" class="country-card country-cy country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">CY</span></div>
-                <div class="country-card-background">CY</div>
-                <div class="country-card-content"><div class="country-card-name">Cypr</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>CY</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/me.html" class="country-card country-me country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">ME</span></div>
-                <div class="country-card-background">ME</div>
-                <div class="country-card-content"><div class="country-card-name">Czarnogóra</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>ME</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/cz.html" class="country-card country-cz">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">CZ</span></div>
-                <div class="country-card-background">CZ</div>
-                <div class="country-card-content"><div class="country-card-name">Czechy</div><div class="country-card-count">2 naklejki</div></div>
-                <div class="country-card-bottom"><span>CZ</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/dk.html" class="country-card country-dk">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">DK</span></div>
-                <div class="country-card-background">DK</div>
-                <div class="country-card-content"><div class="country-card-name">Dania</div><div class="country-card-count">2 naklejki</div></div>
-                <div class="country-card-bottom"><span>DK</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/ee.html" class="country-card country-ee">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">EE</span></div>
-                <div class="country-card-background">EE</div>
-                <div class="country-card-content"><div class="country-card-name">Estonia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>EE</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/fi.html" class="country-card country-fi">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">FI</span></div>
-                <div class="country-card-background">FI</div>
-                <div class="country-card-content"><div class="country-card-name">Finlandia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>FI</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/fr.html" class="country-card country-fr">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">FR</span></div>
-                <div class="country-card-background">FR</div>
-                <div class="country-card-content"><div class="country-card-name">Francja</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>FR</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/gr.html" class="country-card country-gr country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">GR</span></div>
-                <div class="country-card-background">GR</div>
-                <div class="country-card-content"><div class="country-card-name">Grecja</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>GR</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/ge.html" class="country-card country-ge country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">GE</span></div>
-                <div class="country-card-background">GE</div>
-                <div class="country-card-content"><div class="country-card-name">Gruzja</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>GE</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/es.html" class="country-card country-es">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">ES</span></div>
-                <div class="country-card-background">ES</div>
-                <div class="country-card-content"><div class="country-card-name">Hiszpania</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>ES</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/nl.html" class="country-card country-nl">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">NL</span></div>
-                <div class="country-card-background">NL</div>
-                <div class="country-card-content"><div class="country-card-name">Holandia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>NL</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/ie.html" class="country-card country-ie">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">IRL</span></div>
-                <div class="country-card-background">IRL</div>
-                <div class="country-card-content"><div class="country-card-name">Irlandia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>IRL</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/is.html" class="country-card country-is country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">IS</span></div>
-                <div class="country-card-background">IS</div>
-                <div class="country-card-content"><div class="country-card-name">Islandia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>IS</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/kz.html" class="country-card country-kz country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">KZ</span></div>
-                <div class="country-card-background">KZ</div>
-                <div class="country-card-content"><div class="country-card-name">Kazachstan</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>KZ</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/xk.html" class="country-card country-xk country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">XK</span></div>
-                <div class="country-card-background">XK</div>
-                <div class="country-card-content"><div class="country-card-name">Kosowo</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>XK</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/li.html" class="country-card country-li country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">LI</span></div>
-                <div class="country-card-background">LI</div>
-                <div class="country-card-content"><div class="country-card-name">Liechtenstein</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>LI</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/lt.html" class="country-card country-lt">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">LT</span></div>
-                <div class="country-card-background">LT</div>
-                <div class="country-card-content"><div class="country-card-name">Litwa</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>LT</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/lu.html" class="country-card country-lu">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">LU</span></div>
-                <div class="country-card-background">LU</div>
-                <div class="country-card-content"><div class="country-card-name">Luksemburg</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>LU</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/lv.html" class="country-card country-lv country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">LV</span></div>
-                <div class="country-card-background">LV</div>
-                <div class="country-card-content"><div class="country-card-name">Łotwa</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>LV</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/mk.html" class="country-card country-mk country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">MK</span></div>
-                <div class="country-card-background">MK</div>
-                <div class="country-card-content"><div class="country-card-name">Macedonia Północna</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>MK</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/mt.html" class="country-card country-mt country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">MT</span></div>
-                <div class="country-card-background">MT</div>
-                <div class="country-card-content"><div class="country-card-name">Malta</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>MT</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/md.html" class="country-card country-md country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">MD</span></div>
-                <div class="country-card-background">MD</div>
-                <div class="country-card-content"><div class="country-card-name">Mołdawia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>MD</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/mc.html" class="country-card country-mc country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">MC</span></div>
-                <div class="country-card-background">MC</div>
-                <div class="country-card-content"><div class="country-card-name">Monako</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>MC</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/de.html" class="country-card country-de">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">DE</span></div>
-                <div class="country-card-background">DE</div>
-                <div class="country-card-content"><div class="country-card-name">Niemcy</div><div class="country-card-count">1 naklejka</div></div>
-                <div class="country-card-bottom"><span>DE</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/no.html" class="country-card country-no">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">NO</span></div>
-                <div class="country-card-background">NO</div>
-                <div class="country-card-content"><div class="country-card-name">Norwegia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>NO</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/pl.html" class="country-card country-pl">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">PL</span></div>
-                <div class="country-card-background">PL</div>
-                <div class="country-card-content"><div class="country-card-name">Polska</div><div class="country-card-count">2 naklejki</div></div>
-                <div class="country-card-bottom"><span>PL</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/pt.html" class="country-card country-pt">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">PT</span></div>
-                <div class="country-card-background">PT</div>
-                <div class="country-card-content"><div class="country-card-name">Portugalia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>PT</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/ru.html" class="country-card country-ru country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">RU</span></div>
-                <div class="country-card-background">RU</div>
-                <div class="country-card-content"><div class="country-card-name">Rosja</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>RU</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/ro.html" class="country-card country-ro">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">RO</span></div>
-                <div class="country-card-background">RO</div>
-                <div class="country-card-content"><div class="country-card-name">Rumunia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>RO</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/sm.html" class="country-card country-sm country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">SM</span></div>
-                <div class="country-card-background">SM</div>
-                <div class="country-card-content"><div class="country-card-name">San Marino</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>SM</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/rs.html" class="country-card country-rs country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">RS</span></div>
-                <div class="country-card-background">RS</div>
-                <div class="country-card-content"><div class="country-card-name">Serbia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>RS</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/sk.html" class="country-card country-sk">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">SK</span></div>
-                <div class="country-card-background">SK</div>
-                <div class="country-card-content"><div class="country-card-name">Słowacja</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>SK</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/si.html" class="country-card country-si">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">SI</span></div>
-                <div class="country-card-background">SI</div>
-                <div class="country-card-content"><div class="country-card-name">Słowenia</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>SI</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/ch.html" class="country-card country-ch">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">CH</span></div>
-                <div class="country-card-background">CH</div>
-                <div class="country-card-content"><div class="country-card-name">Szwajcaria</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>CH</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/se.html" class="country-card country-se">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">SE</span></div>
-                <div class="country-card-background">SE</div>
-                <div class="country-card-content"><div class="country-card-name">Szwecja</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>SE</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/tr.html?v=20261126" class="country-card country-tr">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">TR</span></div>
-                <div class="country-card-background">TR</div>
-                <div class="country-card-content"><div class="country-card-name">Turcja</div><div class="country-card-count">1 naklejka</div></div>
-                <div class="country-card-bottom"><span>TR</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/ua.html" class="country-card country-ua">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">UA</span></div>
-                <div class="country-card-background">UA</div>
-                <div class="country-card-content"><div class="country-card-name">Ukraina</div><div class="country-card-count">1 naklejka</div></div>
-                <div class="country-card-bottom"><span>UA</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/va.html" class="country-card country-va country-empty">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">VA</span></div>
-                <div class="country-card-background">VA</div>
-                <div class="country-card-content"><div class="country-card-name">Watykan</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>VA</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/hu.html" class="country-card country-hu">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">HU</span></div>
-                <div class="country-card-background">HU</div>
-                <div class="country-card-content"><div class="country-card-name">Węgry</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>HU</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/gb.html" class="country-card country-gb">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">GB</span></div>
-                <div class="country-card-background">GB</div>
-                <div class="country-card-content"><div class="country-card-name">Wielka Brytania</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>GB</span><span>OTWÓRZ →</span></div>
-            </a>
-
-            <a href="countries/it.html" class="country-card country-it">
-                <div class="country-card-top"><span class="country-card-label">EUROPA</span><span class="country-card-code">IT</span></div>
-                <div class="country-card-background">IT</div>
-                <div class="country-card-content"><div class="country-card-name">Włochy</div><div class="country-card-count">0 naklejek</div></div>
-                <div class="country-card-bottom"><span>IT</span><span>OTWÓRZ →</span></div>
-            </a>
-
-        </section>
-
-        <!-- =========================================
-             KOLEKCJE SPECJALNE
-             ========================================= -->
-
-        <div class="toc-heading" style="margin-top:45px;">
-            KOLEKCJE SPECJALNE
-        </div>
-
-        <div class="toc-description">
-            KARTY OTRZYMANE ORAZ WYJĄTKOWE EGZEMPLARZE
-        </div>
-
-        <section class="special-toc">
-
-            <a href="guest.html" class="country-card guest-card-tile">
-                <div class="country-card-top">
-                    <span class="country-card-label">ALBUM • KOLEKCJA</span>
-                    <span class="country-card-code">GUEST</span>
-                </div>
-                <div class="country-card-background">G</div>
-                <div class="country-card-content">
-                    <div class="country-card-name">Karty otrzymane</div>
-                    <div class="country-card-count">OD INNYCH KOLEKCJONERÓW</div>
-                </div>
-                <div class="country-card-bottom">
-                    <span>GUEST</span><span>OTWÓRZ →</span>
-                </div>
-            </a>
-
-            <a href="vip.html" class="country-card special-card-tile">
-                <div class="country-card-top">
-                    <span class="country-card-label">ALBUM • KOLEKCJA</span>
-                    <span class="country-card-code">VIP</span>
-                </div>
-                <div class="country-card-background">VIP</div>
-                <div class="country-card-content">
-                    <div class="country-card-name">Karty specjalne</div>
-                    <div class="country-card-count">WYJĄTKOWE EGZEMPLARZE</div>
-                </div>
-                <div class="country-card-bottom">
-                    <span>VIP</span><span>OTWÓRZ →</span>
-                </div>
-            </a>
-
-        </section>
+        </footer>
 
     </main>
-
-    <!-- =========================================
-         STOPKA
-         ========================================= -->
-
-    <footer class="index-footer">
-        ALBUM TABLIC REJESTRACYJNYCH
-        <span> · </span>
-        EUROPA
-        <span> · </span>
-        ALBUM 3.0
-    </footer>
-
-</div>
-
-<!-- =========================================
-     SKRYPTY — ZACHOWUJEMY OBSŁUGĘ DANYCH
-     ========================================= -->
-
-<script src="austria.js"></script>
-<script src="bialorus.js"></script>
-<script src="czechy.js"></script>
-<script src="francja.js"></script>
-<script src="irlandia.js"></script>
-<script src="polska.js"></script>
-<script src="niemcy.js"></script>
-<script src="slowacja.js"></script>
-<script src="rumunia.js"></script>
-<script src="szwajcaria.js"></script>
-<script src="turcja.js?v=20261126"></script>
-<script src="ukraina.js"></script>
-<script src="wielkabrytania.js"></script>
-<script src="distance.js"></script>
-<script src="cards.js"></script>
-<script src="uzbekistan.js"></script>
-<script src="script.js"></script>
 
 </body>
 </html>
