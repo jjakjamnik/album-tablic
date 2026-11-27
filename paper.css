@@ -1,61 +1,46 @@
-
 /* =========================================================
-   ALBUM 3.0 — SYSTEM PAPIERU
-   Wygląd kartek niezależny od kieszonek i naklejek
+   ALBUM 3.0 — PAPIER KOLEKCJONERSKI
+   Subtelna faktura, delikatne włókna i naturalne światło
    ========================================================= */
 
 .album-v3 .album-page {
     position: relative;
     isolation: isolate;
 
-background-color: var(--page-color, var(--book-paper));
+    background-color: var(--page-color, var(--book-paper));
 
     background-image:
+        /* Delikatne światło w górnej części kartki */
         radial-gradient(
-            ellipse at 12% 10%,
-            rgba(255,255,255,.72),
-            transparent 38%
-        ),
-        radial-gradient(
-            ellipse at 88% 85%,
-            rgba(105,75,43,.16),
-            transparent 36%
-        ),
-        radial-gradient(
-            ellipse at 50% 48%,
-            rgba(255,255,255,.24),
+            ellipse at 20% 12%,
+            rgba(255,255,255,.20),
             transparent 55%
         ),
-        repeating-linear-gradient(
-            137deg,
-            transparent 0,
-            transparent 31px,
-            rgba(92,67,40,.045) 32px,
-            transparent 34px
+
+        /* Naturalne przyciemnienie narożników */
+        radial-gradient(
+            ellipse at 100% 100%,
+            rgba(0,0,0,.055),
+            transparent 55%
         ),
-        repeating-linear-gradient(
-            28deg,
-            transparent 0,
-            transparent 53px,
-            rgba(255,255,255,.18) 54px,
-            transparent 57px
-        ),
+
+        /* Bardzo delikatne nierówności powierzchni */
         repeating-linear-gradient(
             0deg,
-            rgba(110,83,48,.045) 0,
-            rgba(110,83,48,.045) 1px,
+            rgba(255,255,255,.025) 0px,
             transparent 1px,
-            transparent 4px
+            transparent 5px
         ),
-linear-gradient(
-    145deg,
-    rgba(255,255,255,.30),
-    rgba(255,255,255,.04) 48%,
-    rgba(0,0,0,.16)
-);
+
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.10),
+            transparent 45%,
+            rgba(0,0,0,.045)
+        );
 }
 
-/* WŁÓKNA I NIEREGULARNOŚCI PAPIERU */
+/* DELIKATNA FAKTURA WŁÓKIEN PAPIERU */
 
 .album-v3 .album-page::before {
     content: "";
@@ -64,33 +49,35 @@ linear-gradient(
     z-index: 0;
 
     pointer-events: none;
-    opacity: .42;
+    opacity: .16;
 
     background-image:
         radial-gradient(
-            rgba(105,77,43,.20) .7px,
-            transparent 1.2px
+            rgba(70,55,35,.22) .45px,
+            transparent .9px
         ),
+
         radial-gradient(
-            rgba(255,255,255,.48) .8px,
-            transparent 1.3px
+            rgba(255,255,255,.55) .5px,
+            transparent 1px
         ),
+
         repeating-linear-gradient(
-            91deg,
-            transparent 0,
-            rgba(105,77,43,.045) 1px,
+            92deg,
+            transparent 0px,
+            rgba(80,65,45,.035) 1px,
             transparent 2px,
-            transparent 9px
+            transparent 13px
         );
 
     background-size:
-        9px 9px,
-        13px 13px,
+        7px 7px,
+        11px 11px,
         100% 100%;
 
     background-position:
         1px 2px,
-        5px 4px,
+        4px 5px,
         0 0;
 
     mix-blend-mode: multiply;
