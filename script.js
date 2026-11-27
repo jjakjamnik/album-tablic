@@ -3503,13 +3503,20 @@ function renderCurrentCountry() {
     pagination.id = "album-pagination";
     pagination.className = "album-pagination";
 
-    const previousButton = document.createElement("button");
+      const previousButton = document.createElement("button");
     previousButton.textContent = "← POPRZEDNIA";
-    previousButton.disabled = currentCountryPage === 1;
+    previousButton.disabled = false;
 
     previousButton.addEventListener("click", function () {
+
+        if (currentCountryPage === 1) {
+            showAlbumFrontmatter();
+            return;
+        }
+
         currentCountryPage--;
         renderCurrentCountry();
+
     });
 
     const pageInfo = document.createElement("span");
