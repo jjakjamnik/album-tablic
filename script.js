@@ -202,6 +202,9 @@ document.addEventListener(
 
         initializeAlbum();
 
+        // Nawigacja działa niezależnie od połączenia z Supabase.
+        initializeAlbumNavigation();
+
 
         /* =================================================
            WCZYTANIE BAZY SUPABASE
@@ -246,8 +249,6 @@ document.addEventListener(
         updateCountryCardStates();
 
         renderCurrentCountry();
-
-        initializeAlbumNavigation();
 
 
         /* =================================================
@@ -468,11 +469,11 @@ document.addEventListener(
 
 
                     const owner =
-    country === "UZ"
-        ? "special"
-        : ownerSelect
-            ? ownerSelect.value
-            : "green";
+                        country === "UZ"
+                            ? "special"
+                            : ownerSelect
+                                ? ownerSelect.value
+                                : "green";
 
 
                     /* -------------------------------------
@@ -1219,8 +1220,6 @@ function supabaseHeaders(
         "apikey":
             SUPABASE_KEY,
 
-      
-
         "Content-Type":
             "application/json",
 
@@ -1872,9 +1871,10 @@ function findCity(
     if (!cleanPlate) {
         return null;
     }
-   if (country === "UZ") {
-    return findUzbekistanCity(cleanPlate);
-   }
+
+    if (country === "UZ") {
+        return findUzbekistanCity(cleanPlate);
+    }
 
 
     const databases = {
@@ -2038,10 +2038,12 @@ function findCity(
             typeof BIALORUS_KODY !== "undefined"
                 ? BIALORUS_KODY
                 : null,
-"TR":
-    typeof TURCJA_KODY !== "undefined"
-        ? TURCJA_KODY
-        : null,
+
+        "TR":
+            typeof TURCJA_KODY !== "undefined"
+                ? TURCJA_KODY
+                : null,
+
     };
 
 
@@ -2054,7 +2056,7 @@ function findCity(
     }
 
 
-    /* =====================================================
+       /* =====================================================
        CZECHY — KOD REGIONU
        ===================================================== */
 
@@ -2073,7 +2075,7 @@ function findCity(
 
     }
 
-   
+
     /* =====================================================
        FRANCJA
        ===================================================== */
@@ -2402,11 +2404,10 @@ async function calculateStickerDistance(
         "LT": "Lithuania",
         "IS": "Iceland",
         "IE": "Ireland",
-"GB": "United Kingdom",
-"BY": "Belarus",
-"TR": "Turkey",
-"UZ": "Uzbekistan"
-       
+        "GB": "United Kingdom",
+        "BY": "Belarus",
+        "TR": "Turkey",
+        "UZ": "Uzbekistan"
 
     };
 
@@ -3107,7 +3108,6 @@ async function saveStickerToSupabaseOnly(
    ========================================================= */
 
 
-
 function renderCurrentCountry() {
     const legacyGrid = document.getElementById("sticker-grid");
     const leftGrid = document.getElementById("left-sticker-grid");
@@ -3354,6 +3354,7 @@ function renderCurrentCountry() {
 
         renderCurrentCountry._activeViewKey = viewKey;
     }
+
     /* =====================================================
        DYNAMICZNE NUMERY STRON W SPISIE TREŚCI
        ===================================================== */
@@ -3361,6 +3362,7 @@ function renderCurrentCountry() {
     if (!isSpecialView) {
         updateAlbumToc(countryOffsets, pocketsPerPage);
     }
+
     /* =====================================================
        LICZBA STRON I AKTUALNA POZYCJA
        ===================================================== */
@@ -3415,60 +3417,60 @@ function renderCurrentCountry() {
         const emoji = data[1];
         const displayCode = countryCode || "EU";
 
-page.dataset.country =
-    countryCode === "GUEST" || countryCode === "VIP"
-        ? countryCode
-        : (countryCode || "SPECIAL");
+        page.dataset.country =
+            countryCode === "GUEST" || countryCode === "VIP"
+                ? countryCode
+                : (countryCode || "SPECIAL");
 
-/* KOLOR KARTKI — STAŁY DLA CAŁEGO KRAJU */
+        /* KOLOR KARTKI — STAŁY DLA CAŁEGO KRAJU */
 
-/* Paleta ułożona tak, aby sąsiadujące kraje
-   miały możliwie różne kolory */
+        /* Paleta ułożona tak, aby sąsiadujące kraje
+           miały możliwie różne kolory */
 
-const countryColors = [
-    "#55A9E8", // jasny niebieski
-    "#65B96A", // zielony
-    "#3567C8", // głęboki niebieski
-    "#E875A4", // różowy
-    "#36BDB3", // turkusowy
-    "#95613F", // brązowy
-    "#E76B59", // czerwony
-    "#9299A3"  // szary
-];
+        const countryColors = [
+            "#55A9E8", // jasny niebieski
+            "#65B96A", // zielony
+            "#3567C8", // głęboki niebieski
+            "#E875A4", // różowy
+            "#36BDB3", // turkusowy
+            "#95613F", // brązowy
+            "#E76B59", // czerwony
+            "#9299A3"  // szary
+        ];
 
-let pageColor;
+        let pageColor;
 
-if (countryCode === "GUEST") {
-    pageColor = "#9870D8";
-} else if (countryCode === "VIP") {
-    pageColor = "#D5AE38";
-} else {
-    const countryIndex =
-        Array.from(countryOffsets.keys()).indexOf(countryCode);
+        if (countryCode === "GUEST") {
+            pageColor = "#9870D8";
+        } else if (countryCode === "VIP") {
+            pageColor = "#D5AE38";
+        } else {
+            const countryIndex =
+                Array.from(countryOffsets.keys()).indexOf(countryCode);
 
-    pageColor =
-        countryColors[countryIndex % countryColors.length];
-}
+            pageColor =
+                countryColors[countryIndex % countryColors.length];
+        }
 
-page.style.setProperty("--page-color", pageColor);
+        page.style.setProperty("--page-color", pageColor);
 
-/* Nagłówek — ten sam kolor, ale o 20% ciemniejszy */
+        /* Nagłówek — ten sam kolor, ale o 20% ciemniejszy */
 
-page.style.setProperty(
-    "--page-header-color",
-    `color-mix(in srgb, ${pageColor} 80%, black 20%)`
-);
+        page.style.setProperty(
+            "--page-header-color",
+            `color-mix(in srgb, ${pageColor} 80%, black 20%)`
+        );
 
         flag.textContent = emoji;
         title.textContent = name;
         code.textContent = displayCode;
         footerCountry.textContent = name;
 
-const physicalPageNumber =
-    Math.floor(pageStart / 30) + 3;
+        const physicalPageNumber =
+            Math.floor(pageStart / 30) + 3;
 
-footerNumber.textContent =
-    String(physicalPageNumber).padStart(3, "0");
+        footerNumber.textContent =
+            String(physicalPageNumber).padStart(3, "0");
 
         page.hidden = false;
     }
@@ -3595,7 +3597,7 @@ footerNumber.textContent =
                 : (currentCountry || "AL");
     }
 
-      /* =====================================================
+    /* =====================================================
        NAWIGACJA
        ===================================================== */
 
@@ -3608,7 +3610,7 @@ footerNumber.textContent =
     pagination.id = "album-pagination";
     pagination.className = "album-pagination";
 
-      const previousButton = document.createElement("button");
+    const previousButton = document.createElement("button");
     previousButton.textContent = "← POPRZEDNIA";
     previousButton.disabled = false;
 
@@ -3646,21 +3648,24 @@ footerNumber.textContent =
     pagination.appendChild(nextButton);
     pagination.appendChild(tocButton);
 
-const spread = document.getElementById("album-spread");
+    const spread = document.getElementById("album-spread");
 
-if (spread && spread.parentNode) {
+    if (spread && spread.parentNode) {
 
-    pagination.hidden = spread.hidden;
+        pagination.hidden = spread.hidden;
 
-    spread.parentNode.insertBefore(pagination, spread);
+        spread.parentNode.insertBefore(pagination, spread);
 
-} else {
+    } else {
 
-    console.error(
-        "Nie znaleziono kontenera album-spread."
-    );
+        console.error(
+            "Nie znaleziono kontenera album-spread."
+        );
 
-}
+    }
+
+} // KONIEC renderCurrentCountry()
+
 
 /* =========================================================
    TWORZENIE KARTY
@@ -3899,7 +3904,7 @@ function createStickerCard(sticker, cardNumber) {
 
     const sleeve = document.createElement("div");
     sleeve.className = "sticker-sleeve";
-   
+
     /* SKŁADANIE KARTY */
 
     article.appendChild(header);
@@ -3913,7 +3918,6 @@ function createStickerCard(sticker, cardNumber) {
 
     return article;
 }
-
 
 
 /* =========================================================
