@@ -3470,3 +3470,13 @@ border: 1px solid rgba(255,255,255,.35);
 .album-v3 #save-sticker-btn:active {
     transform: translateY(0);
 }
+/* TELEFON — UKRYCIE ŚRODKOWEGO GRZBIETU */
+
+@media (max-width: 750px) {
+
+    .album-v3 .album-v3-main::before {
+        display: none !important;
+        content: none !important;
+    }
+
+}
