@@ -4029,27 +4029,27 @@ const frontmatterNavigation =
     });
 
 
-    // PRZEJŚCIE Z PIERWSZEJ ROZKŁADÓWKI DO PIERWSZEGO KRAJU
+// PRZEJŚCIE Z PIERWSZEJ ROZKŁADÓWKI DO PIERWSZEGO KRAJU
 
-    const frontmatterNextButton =
-        document.getElementById("album-frontmatter-next");
+const frontmatterNextButton =
+    document.getElementById("album-frontmatter-next");
 
-    if (frontmatterNextButton) {
+if (frontmatterNextButton) {
 
-        frontmatterNextButton.addEventListener("click", function () {
+    frontmatterNextButton.addEventListener("click", function () {
 
-            const firstCountryLink =
-                document.querySelector(
-                    "#album-toc-countries [data-country-jump]"
-                );
+        const firstCountryLink =
+            document.querySelector(
+                "#album-toc-countries [data-country-jump]"
+            );
 
-            if (firstCountryLink) {
-                firstCountryLink.click();
-            }
+        if (firstCountryLink) {
+            firstCountryLink.click();
+        }
 
-        });
+    });
 
-    }
+}
 
 }
 
