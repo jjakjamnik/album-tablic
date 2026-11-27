@@ -3041,7 +3041,6 @@ async function saveStickerToSupabaseOnly(
 
 
 
-
 function renderCurrentCountry() {
     const legacyGrid = document.getElementById("sticker-grid");
     const leftGrid = document.getElementById("left-sticker-grid");
@@ -3118,7 +3117,8 @@ function renderCurrentCountry() {
         HU: ["WĘGRY", "🇭🇺"],
         GB: ["WIELKA BRYTANIA", "🇬🇧"],
         IT: ["WŁOCHY", "🇮🇹"],
-        UZ: ["UZBEKISTAN", "🇺🇿"]
+        GUEST: ["GUEST", "👥"],
+        VIP: ["VIP", "⭐"]
     };
 
     const allStickers = getStickers();
@@ -3126,7 +3126,7 @@ function renderCurrentCountry() {
     const countryOffsets = new Map();
 
     /* =====================================================
-       VIP / GOŚCIE — OSOBNE KOLEKCJE
+       OSOBNE WIDOKI VIP / GUEST
        ===================================================== */
 
     if (isSpecialView) {
@@ -3147,7 +3147,7 @@ function renderCurrentCountry() {
         albumSlots = stickers.map(function (sticker) {
             return {
                 sticker: sticker,
-                country: sticker.country
+                country: sticker.owner === "special" ? "VIP" : "GUEST"
             };
         });
 
@@ -3159,12 +3159,10 @@ function renderCurrentCountry() {
     }
 
     /* =====================================================
-       GŁÓWNY ALBUM — GLOBALNY INDEKS KRAJÓW
+       GŁÓWNY ALBUM — 51 KRAJÓW + GUEST + VIP
        ===================================================== */
 
     else {
-        if (!currentCountry) return;
-
         const countryOrder = [
             "AL", "AD", "AM", "AT", "AZ",
             "BE", "BY", "BA", "BG",
@@ -3181,11 +3179,23 @@ function renderCurrentCountry() {
             "GB", "IT"
         ];
 
-        const knownCountries = new Set(countryOrder);
         const stickersByCountry = new Map();
 
         allStickers.forEach(function (sticker) {
             if (!sticker.country) return;
+
+            // GUEST i VIP są dodawane osobno na końcu albumu.
+            if (
+                sticker.owner === "guest" ||
+                sticker.owner === "special"
+            ) {
+                return;
+            }
+
+            // Nieznane kraje nie dostają własnych stron.
+            if (!countryOrder.includes(sticker.country)) {
+                return;
+            }
 
             if (!stickersByCountry.has(sticker.country)) {
                 stickersByCountry.set(sticker.country, []);
@@ -3194,20 +3204,9 @@ function renderCurrentCountry() {
             stickersByCountry.get(sticker.country).push(sticker);
         });
 
-        const extraCountries = Array.from(stickersByCountry.keys())
-            .filter(function (country) {
-                return !knownCountries.has(country);
-            })
-            .sort();
+        /* KRAJE — W USTALONEJ KOLEJNOŚCI */
 
-        const completeCountryOrder =
-            countryOrder.concat(extraCountries);
-
-        if (!completeCountryOrder.includes(currentCountry)) {
-            completeCountryOrder.push(currentCountry);
-        }
-
-        completeCountryOrder.forEach(function (countryCode) {
+        countryOrder.forEach(function (countryCode) {
             const countryStickers = (
                 stickersByCountry.get(countryCode) || []
             ).slice().sort(function (a, b) {
@@ -3229,6 +3228,51 @@ function renderCurrentCountry() {
                 albumSlots.push({
                     sticker: countryStickers[i] || null,
                     country: countryCode
+                });
+            }
+        });
+
+        /* KOLEKCJE SPECJALNE — GUEST, A NASTĘPNIE VIP */
+
+        const specialCollections = [
+            {
+                code: "GUEST",
+                owner: "guest"
+            },
+            {
+                code: "VIP",
+                owner: "special"
+            }
+        ];
+
+        specialCollections.forEach(function (collection) {
+            const specialStickers = allStickers
+                .filter(function (sticker) {
+                    return sticker.owner === collection.owner;
+                })
+                .slice()
+                .sort(function (a, b) {
+                    return a.plate.localeCompare(
+                        b.plate,
+                        "pl",
+                        { numeric: true, sensitivity: "base" }
+                    );
+                });
+
+            const specialCapacity = Math.max(
+                30,
+                Math.ceil(specialStickers.length / 30) * 30
+            );
+
+            countryOffsets.set(
+                collection.code,
+                albumSlots.length
+            );
+
+            for (let i = 0; i < specialCapacity; i++) {
+                albumSlots.push({
+                    sticker: specialStickers[i] || null,
+                    country: collection.code
                 });
             }
         });
@@ -3267,7 +3311,6 @@ function renderCurrentCountry() {
 
     function updatePageMetadata(side, countryCode, pageStart) {
         const isLeft = side === "left";
-
         const page = isLeft ? leftPage : rightPage;
 
         const flag = document.getElementById(
@@ -3290,26 +3333,19 @@ function renderCurrentCountry() {
             isLeft ? "left-page-number" : "right-page-number"
         );
 
-        let name;
-        let emoji;
-        let displayCode;
+        const data = countryData[countryCode] || [
+            countryCode || "EUROPA",
+            "🌍"
+        ];
 
-        if (isSpecialView) {
-            name = albumView === "special" ? "VIP" : "GOŚCIE";
-            emoji = albumView === "special" ? "⭐" : "👥";
-            displayCode = albumView === "special" ? "VIP" : "GUEST";
-        } else {
-            const data = countryData[countryCode] || [
-                countryCode || "EUROPA",
-                "🌍"
-            ];
+        const name = data[0];
+        const emoji = data[1];
+        const displayCode = countryCode || "EU";
 
-            name = data[0];
-            emoji = data[1];
-            displayCode = countryCode || "EU";
-        }
-
-        page.dataset.country = countryCode || "SPECIAL";
+        page.dataset.country =
+            countryCode === "GUEST" || countryCode === "VIP"
+                ? "SPECIAL"
+                : (countryCode || "SPECIAL");
 
         flag.textContent = emoji;
         title.textContent = name;
@@ -3336,7 +3372,7 @@ function renderCurrentCountry() {
     rightPage.hidden = isMobileAlbum;
 
     /* =====================================================
-       POMOCNICZA FUNKCJA TWORZENIA KIESZONKI
+       TWORZENIE KIESZONEK
        ===================================================== */
 
     function createPocket(globalIndex) {
@@ -3402,21 +3438,27 @@ function renderCurrentCountry() {
         const rightStart = startIndex + 30;
         const rightCountrySlot = albumSlots[rightStart];
 
-        updatePageMetadata(
-            "right",
-            rightCountrySlot ? rightCountrySlot.country : currentCountry,
-            rightStart
-        );
-
-        for (let i = 0; i < 30; i++) {
-            rightGrid.appendChild(
-                createPocket(rightStart + i)
+        if (rightCountrySlot) {
+            updatePageMetadata(
+                "right",
+                rightCountrySlot.country,
+                rightStart
             );
+
+            for (let i = 0; i < 30; i++) {
+                rightGrid.appendChild(
+                    createPocket(rightStart + i)
+                );
+            }
+
+            rightPage.hidden = false;
+        } else {
+            rightPage.hidden = true;
         }
     }
 
     /* =====================================================
-       SPECJALNY WIDOK PUSTEJ KOLEKCJI
+       PUSTA KOLEKCJA W WIDOKU SPECJALNYM
        ===================================================== */
 
     if (isSpecialView && albumSlots.length === 0) {
@@ -3486,7 +3528,6 @@ function renderCurrentCountry() {
 
     spread.parentNode.insertBefore(pagination, spread);
 }
-
 
 /* =========================================================
    TWORZENIE KARTY
