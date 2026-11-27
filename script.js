@@ -4029,7 +4029,30 @@ const frontmatterNavigation =
     });
 
 
-// PRZEJŚCIE Z PIERWSZEJ ROZKŁADÓWKI DO PIERWSZEGO KRAJU
+// PIERWSZA ROZKŁADÓWKA — NAWIGACJA MOBILNA
+
+setFrontmatterMobilePage("form");
+
+const frontmatterPreviousButton =
+    document.querySelector(
+        ".album-frontmatter-navigation .album-page-nav:first-child"
+    );
+
+if (frontmatterPreviousButton) {
+
+    frontmatterPreviousButton.addEventListener("click", function () {
+
+        if (window.matchMedia("(max-width: 750px)").matches) {
+            setFrontmatterMobilePage("form");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+    });
+
+}
+
+
+// FORMULARZ → SPIS TREŚCI → PIERWSZY KRAJ
 
 const frontmatterNextButton =
     document.getElementById("album-frontmatter-next");
@@ -4037,6 +4060,24 @@ const frontmatterNextButton =
 if (frontmatterNextButton) {
 
     frontmatterNextButton.addEventListener("click", function () {
+
+        const isMobile =
+            window.matchMedia("(max-width: 750px)").matches;
+
+        if (
+            isMobile &&
+            currentFrontmatterPage === "form"
+        ) {
+
+            setFrontmatterMobilePage("toc");
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+            return;
+        }
 
         const firstCountryLink =
             document.querySelector(
@@ -4050,9 +4091,6 @@ if (frontmatterNextButton) {
     });
 
 }
-
-}
-
 
 /* =========================================================
    POWRÓT DO SPISU TREŚCI
