@@ -4097,7 +4097,9 @@ if (frontmatterNextButton) {
    ========================================================= */
 
 function showAlbumFrontmatter() {
-
+    // Na telefonie powrót prowadzi do spisu treści.
+    setFrontmatterMobilePage("toc");
+   
     const frontmatter =
         document.getElementById("album-frontmatter");
 
