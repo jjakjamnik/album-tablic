@@ -9,7 +9,8 @@
 
     let isTurning = false;
 
-    const ANIMATION_DURATION = 850;
+    const ANIMATION_DURATION = 1400;
+    const CLEANUP_DELAY = 250;
 
     function getMain() {
         return document.querySelector(".album-v3-main");
@@ -36,14 +37,10 @@
         if (!spread) return null;
 
         if (direction === "next") {
-            return spread.querySelector(
-                '[data-page-side="right"]'
-            );
+            return spread.querySelector('[data-page-side="right"]');
         }
 
-        return spread.querySelector(
-            '[data-page-side="left"]'
-        );
+        return spread.querySelector('[data-page-side="left"]');
     }
 
     function removeCloneIds(element) {
@@ -95,11 +92,13 @@
 
         main.appendChild(page);
 
-        // Wymuszenie przeliczenia stylów przed animacją
+        // Przygotowanie początkowej pozycji kartki
         page.getBoundingClientRect();
 
         requestAnimationFrame(function () {
-            page.classList.add("paper-turn-active");
+            requestAnimationFrame(function () {
+                page.classList.add("paper-turn-active");
+            });
         });
 
         let finished = false;
@@ -108,17 +107,25 @@
             if (finished) return;
 
             finished = true;
+
             page.remove();
             isTurning = false;
         }
 
         page.addEventListener("transitionend", function (event) {
-            if (event.propertyName === "transform") {
-                cleanup();
+            if (
+                event.target === page &&
+                event.propertyName === "transform"
+            ) {
+                window.setTimeout(cleanup, CLEANUP_DELAY);
             }
         });
 
-        window.setTimeout(cleanup, ANIMATION_DURATION + 250);
+        // Zabezpieczenie, gdyby przeglądarka nie zgłosiła transitionend
+        window.setTimeout(
+            cleanup,
+            ANIMATION_DURATION + CLEANUP_DELAY + 500
+        );
     }
 
     function getDirection(button) {
@@ -162,7 +169,7 @@
         turnPage(direction);
     }, true);
 
-    // Obsługa przejścia z formularza i spisu treści do kraju
+    // Obsługa przejścia ze spisu treści do kraju
     document.addEventListener("click", function (event) {
         const link = event.target.closest("[data-country-jump]");
 
