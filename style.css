@@ -3257,3 +3257,9 @@ main {
         transform: none;
     }
 }
+
+/* SPIS TREŚCI — UKRYCIE KODÓW PAŃSTW */
+
+.album-toc-code {
+    display: none !important;
+}
