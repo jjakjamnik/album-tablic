@@ -276,3 +276,26 @@
         transition-duration: 1ms;
     }
 }
+/* =========================================================
+   TELEFON — USUNIĘCIE GRZBIETU KSIĄŻKI
+   ========================================================= */
+
+@media (max-width: 750px) {
+
+    .album-v3-main {
+        perspective: none !important;
+        transform-style: flat !important;
+        background-image: none !important;
+        box-shadow: none !important;
+    }
+
+    .album-v3 .album-spread {
+        box-shadow: none !important;
+        background-image: none !important;
+    }
+
+    .album-v3 .album-page {
+        box-shadow: none !important;
+    }
+
+}
