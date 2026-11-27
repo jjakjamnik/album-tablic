@@ -1,7 +1,7 @@
 
 /* =========================================================
    ALBUM 3.0 — PAPER.JS
-   Przewracanie kartek — wersja 2
+   Przewracanie kartek — wersja 3
    ========================================================= */
 
 (function () {
@@ -217,72 +217,7 @@
 
 
     /* =====================================================
-       ANIMACJA
-       ===================================================== */
-
-    function animateTurningSheet(turningSheet) {
-        const sheet = turningSheet.sheet;
-
-        const isNext = turningSheet.direction === "next";
-
-        const startRotation = "rotateY(0deg)";
-
-        const endRotation = isNext
-            ? "rotateY(-180deg)"
-            : "rotateY(180deg)";
-
-        if (typeof sheet.animate !== "function") {
-            turningSheet.stage.remove();
-            isTurning = false;
-            return;
-        }
-
-        const animation = sheet.animate(
-            [
-                {
-                    transform: startRotation,
-                    filter:
-                        "drop-shadow(0 2px 3px rgba(0,0,0,.12))"
-                },
-                {
-                    offset: 0.35,
-                    filter:
-                        "drop-shadow(0 8px 12px rgba(0,0,0,.22))"
-                },
-                {
-                    offset: 0.65,
-                    filter:
-                        "drop-shadow(0 10px 14px rgba(0,0,0,.26))"
-                },
-                {
-                    transform: endRotation,
-                    filter:
-                        "drop-shadow(0 3px 5px rgba(0,0,0,.12))"
-                }
-            ],
-            {
-                duration: ANIMATION_DURATION,
-                easing: "cubic-bezier(.45,.05,.2,1)",
-                fill: "forwards"
-            }
-        );
-
-        animation.onfinish = function () {
-            window.setTimeout(function () {
-                turningSheet.stage.remove();
-                isTurning = false;
-            }, CLEANUP_DELAY);
-        };
-
-        animation.oncancel = function () {
-            turningSheet.stage.remove();
-            isTurning = false;
-        };
-    }
-
-
-    /* =====================================================
-       GŁÓWNA FUNKCJA PRZEWRACANIA
+       ANIMACJA I SYNCHRONIZACJA ROZKŁADÓWEK
        ===================================================== */
 
     function turnPage(direction) {
@@ -301,7 +236,79 @@
 
         isTurning = true;
 
-        animateTurningSheet(turningSheet);
+        // Aktualna i kolejna rozkładówka
+        const currentSpread = getVisibleSpread();
+
+        const nextSpread = direction === "next"
+            ? document.getElementById("album-spread")
+            : document.getElementById("album-frontmatter");
+
+        // Zapamiętujemy poprzednią widoczność
+        let previousVisibility = null;
+
+        // Ukrywamy kolejną rozkładówkę podczas obrotu
+        if (
+            nextSpread &&
+            nextSpread !== currentSpread &&
+            !nextSpread.hidden
+        ) {
+            previousVisibility = nextSpread.style.visibility;
+            nextSpread.style.visibility = "hidden";
+        }
+
+        const sheet = turningSheet.sheet;
+
+        const isNext = direction === "next";
+
+        const animation = sheet.animate(
+            [
+                {
+                    transform: "rotateY(0deg)",
+                    filter:
+                        "drop-shadow(0 2px 3px rgba(0,0,0,.12))"
+                },
+                {
+                    offset: 0.35,
+                    filter:
+                        "drop-shadow(0 8px 12px rgba(0,0,0,.22))"
+                },
+                {
+                    offset: 0.65,
+                    filter:
+                        "drop-shadow(0 10px 14px rgba(0,0,0,.26))"
+                },
+                {
+                    transform: isNext
+                        ? "rotateY(-180deg)"
+                        : "rotateY(180deg)",
+                    filter:
+                        "drop-shadow(0 3px 5px rgba(0,0,0,.12))"
+                }
+            ],
+            {
+                duration: ANIMATION_DURATION,
+                easing: "cubic-bezier(.45,.05,.2,1)",
+                fill: "forwards"
+            }
+        );
+
+        function finishAnimation() {
+            if (nextSpread && previousVisibility !== null) {
+                nextSpread.style.visibility = previousVisibility;
+            }
+
+            turningSheet.stage.remove();
+            isTurning = false;
+        }
+
+        animation.onfinish = function () {
+            window.setTimeout(
+                finishAnimation,
+                CLEANUP_DELAY
+            );
+        };
+
+        animation.oncancel = finishAnimation;
     }
 
 
@@ -371,7 +378,7 @@
 
 
     console.log(
-        "Album 3.0 — nowy mechanizm przewracania kartek załadowany"
+        "Album 3.0 — mechanizm przewracania kartek v3 załadowany"
     );
 
 })();
