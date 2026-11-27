@@ -3289,21 +3289,19 @@ function renderCurrentCountry() {
        KOLEJNOŚĆ KIESZONEK NA ROZKŁADÓWCE
        ===================================================== */
 
+ 
     const renderOrder = [];
 
-    if (isMobileAlbum) {
-        /* Telefon: jedna strona, 30 miejsc. */
-        for (let i = 0; i < 30; i++) {
+    if (isMobileAlbum || isSpecialView) {
+        /* Telefon oraz VIP/GUEST:
+           zachowujemy zwykłą kolejność kart. */
+        for (let i = 0; i < pocketsPerPage; i++) {
             renderOrder.push(i);
         }
     } else {
-        /* Komputer:
-           lewa strona = 30 miejsc,
-           prawa strona = kolejne 30 miejsc.
-
-           Każda strona ma 3 kolumny i 10 rzędów.
-           Układ DOM przeplatamy rzędami, aby CSS
-           poprawnie rozłożył obie strony obok siebie. */
+        /* Główny album na komputerze:
+           30 miejsc po lewej i 30 po prawej.
+           Trzy kolumny na każdej stronie. */
 
         for (let row = 0; row < 10; row++) {
 
