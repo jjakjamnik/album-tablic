@@ -1,7 +1,7 @@
 
 /* =========================================================
    ALBUM 3.0 — PAPER.JS
-   Silnik animacji przewracania kartek
+   Realistyczne przewracanie kartek
    ========================================================= */
 
 (function () {
@@ -9,8 +9,8 @@
 
     let isTurning = false;
 
-    const ANIMATION_DURATION = 1400;
-    const CLEANUP_DELAY = 250;
+    const ANIMATION_DURATION = 1500;
+    const CLEANUP_DELAY = 180;
 
     function getMain() {
         return document.querySelector(".album-v3-main");
@@ -36,11 +36,11 @@
 
         if (!spread) return null;
 
-        if (direction === "next") {
-            return spread.querySelector('[data-page-side="right"]');
-        }
-
-        return spread.querySelector('[data-page-side="left"]');
+        return spread.querySelector(
+            direction === "next"
+                ? '[data-page-side="right"]'
+                : '[data-page-side="left"]'
+        );
     }
 
     function removeCloneIds(element) {
@@ -66,38 +66,48 @@
 
         isTurning = true;
 
-        const page = originalPage.cloneNode(true);
+        // Zewnętrzna konstrukcja obracanej kartki
+        const sheet = document.createElement("div");
+        sheet.className = "paper-turn-sheet";
 
-        removeCloneIds(page);
+        sheet.style.left = (pageRect.left - mainRect.left) + "px";
+        sheet.style.top = (pageRect.top - mainRect.top) + "px";
+        sheet.style.width = pageRect.width + "px";
+        sheet.style.height = pageRect.height + "px";
 
-        page.inert = true;
-        page.setAttribute("aria-hidden", "true");
-        page.classList.add("paper-turning-page");
+        // Przednia strona kartki — kopia aktualnej strony
+        const front = originalPage.cloneNode(true);
 
-        page.style.position = "absolute";
-        page.style.left = (pageRect.left - mainRect.left) + "px";
-        page.style.top = (pageRect.top - mainRect.top) + "px";
-        page.style.width = pageRect.width + "px";
-        page.style.height = pageRect.height + "px";
-        page.style.margin = "0";
-        page.style.pointerEvents = "none";
+        removeCloneIds(front);
+
+        front.inert = true;
+        front.setAttribute("aria-hidden", "true");
+        front.classList.add("paper-turn-front");
+
+        // Tylna strona kartki
+        const back = document.createElement("div");
+        back.className = "paper-turn-back";
+
+        back.setAttribute("aria-hidden", "true");
+
+        // Obie strony trafiają do obracanej kartki
+        sheet.appendChild(front);
+        sheet.appendChild(back);
 
         if (direction === "next") {
-            page.style.transformOrigin = "left center";
-            page.classList.add("paper-turn-next");
+            sheet.classList.add("paper-turn-next");
         } else {
-            page.style.transformOrigin = "right center";
-            page.classList.add("paper-turn-previous");
+            sheet.classList.add("paper-turn-previous");
         }
 
-        main.appendChild(page);
+        main.appendChild(sheet);
 
-        // Przygotowanie początkowej pozycji kartki
-        page.getBoundingClientRect();
+        // Przeliczenie początkowej pozycji
+        sheet.getBoundingClientRect();
 
         requestAnimationFrame(function () {
             requestAnimationFrame(function () {
-                page.classList.add("paper-turn-active");
+                sheet.classList.add("paper-turn-active");
             });
         });
 
@@ -108,20 +118,20 @@
 
             finished = true;
 
-            page.remove();
+            sheet.remove();
             isTurning = false;
         }
 
-        page.addEventListener("transitionend", function (event) {
+        sheet.addEventListener("transitionend", function (event) {
             if (
-                event.target === page &&
+                event.target === sheet &&
                 event.propertyName === "transform"
             ) {
                 window.setTimeout(cleanup, CLEANUP_DELAY);
             }
         });
 
-        // Zabezpieczenie, gdyby przeglądarka nie zgłosiła transitionend
+        // Awaryjne zakończenie animacji
         window.setTimeout(
             cleanup,
             ANIMATION_DURATION + CLEANUP_DELAY + 500
@@ -152,7 +162,7 @@
         return null;
     }
 
-    // Obsługa przycisków nawigacji
+    // Nawigacja przyciskami
     document.addEventListener("click", function (event) {
         const button = event.target.closest(
             "#album-frontmatter-next, " +
@@ -169,7 +179,7 @@
         turnPage(direction);
     }, true);
 
-    // Obsługa przejścia ze spisu treści do kraju
+    // Przejście ze spisu treści do wybranego kraju
     document.addEventListener("click", function (event) {
         const link = event.target.closest("[data-country-jump]");
 
@@ -178,5 +188,5 @@
         turnPage("next");
     }, true);
 
-    console.log("Album 3.0 — paper.js załadowany");
+    console.log("Album 3.0 — realistyczny paper.js załadowany");
 })();
