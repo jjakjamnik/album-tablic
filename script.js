@@ -3917,6 +3917,29 @@ function initializeAlbumNavigation() {
 
     });
 
+
+    // PRZEJŚCIE Z PIERWSZEJ ROZKŁADÓWKI DO PIERWSZEGO KRAJU
+
+    const frontmatterNextButton =
+        document.getElementById("album-frontmatter-next");
+
+    if (frontmatterNextButton) {
+
+        frontmatterNextButton.addEventListener("click", function () {
+
+            const firstCountryLink =
+                document.querySelector(
+                    "#album-toc-countries [data-country-jump]"
+                );
+
+            if (firstCountryLink) {
+                firstCountryLink.click();
+            }
+
+        });
+
+    }
+
 }
 
 
