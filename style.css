@@ -3172,3 +3172,7 @@ main {
 .album-v3 .album-spread[hidden] {
     display: none !important;
 }
+/* ALBUM 3.0 — UKRYWANIE NIEAKTYWNEJ NAWIGACJI */
+.album-v3 .album-pagination[hidden] {
+    display: none !important;
+}
