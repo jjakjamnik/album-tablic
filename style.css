@@ -2654,17 +2654,17 @@ main {
     margin-bottom: 18px;
     padding: 10px 12px;
 
-    color: #f8edda;
+color: #ffffff;
 
-    background:
-        linear-gradient(
-            110deg,
-            var(--page-cover),
-            var(--page-cover-light),
-            var(--page-cover)
-        );
+background:
+    linear-gradient(
+        110deg,
+        var(--page-header-color),
+        color-mix(in srgb, var(--page-header-color) 90%, white 10%),
+        var(--page-header-color)
+    );
 
-    border: 1px solid var(--page-gold);
+border: 1px solid rgba(255,255,255,.35);
     border-radius: 3px;
 
     box-shadow:
@@ -2697,7 +2697,7 @@ main {
 .album-page-subtitle {
     margin-top: 5px;
 
-    color: var(--page-gold);
+   color: rgba(255,255,255,.85);
 
     font-size: 7px;
     font-weight: 800;
@@ -2712,7 +2712,7 @@ main {
     color: #f8edda;
     background: rgba(0,0,0,.18);
 
-    border: 1px solid var(--page-gold);
+    border: 1px solid rgba(255,255,255,.45);
 
     font-family: Georgia, serif;
     font-size: 12px;
