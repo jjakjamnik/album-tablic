@@ -159,7 +159,6 @@
         sheet.style.width = rect.width + "px";
         sheet.style.height = rect.height + "px";
 
-        // Przednia strona — kopia oryginalnej kartki
         const front = originalPage.cloneNode(true);
 
         removeCloneIds(front);
@@ -172,7 +171,6 @@
         front.inert = true;
         front.setAttribute("aria-hidden", "true");
 
-        // Zachowanie koloru i tła oryginalnej strony
         const originalStyle = getComputedStyle(originalPage);
 
         front.style.backgroundColor =
@@ -185,7 +183,6 @@
         front.style.backfaceVisibility = "hidden";
         front.style.webkitBackfaceVisibility = "hidden";
 
-        // Tylna strona — nieprzezroczysty papier
         const back = document.createElement("div");
 
         back.className =
@@ -221,6 +218,12 @@
        ===================================================== */
 
     function turnPage(direction) {
+
+        // Telefon: bez animacji 3D.
+        if (window.matchMedia("(max-width: 750px)").matches) {
+            return;
+        }
+
         if (isTurning) return;
 
         const originalPage = getPageToTurn(direction);
@@ -236,17 +239,14 @@
 
         isTurning = true;
 
-        // Aktualna i kolejna rozkładówka
         const currentSpread = getVisibleSpread();
 
         const nextSpread = direction === "next"
             ? document.getElementById("album-spread")
             : document.getElementById("album-frontmatter");
 
-        // Zapamiętujemy poprzednią widoczność
         let previousVisibility = null;
 
-        // Ukrywamy kolejną rozkładówkę podczas obrotu
         if (
             nextSpread &&
             nextSpread !== currentSpread &&
@@ -346,7 +346,13 @@
        ===================================================== */
 
     document.addEventListener("click", function (event) {
-        const button = event.target.closest(
+        const target = event.target;
+
+        if (!target || typeof target.closest !== "function") {
+            return;
+        }
+
+        const button = target.closest(
             "#album-frontmatter-next, " +
             "#album-toc-return, " +
             "#album-pagination button"
@@ -368,7 +374,13 @@
        ===================================================== */
 
     document.addEventListener("click", function (event) {
-        const link = event.target.closest("[data-country-jump]");
+        const target = event.target;
+
+        if (!target || typeof target.closest !== "function") {
+            return;
+        }
+
+        const link = target.closest("[data-country-jump]");
 
         if (!link) return;
 
