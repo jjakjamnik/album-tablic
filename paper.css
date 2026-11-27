@@ -140,3 +140,55 @@
     position: relative;
     z-index: 1;
 }
+
+/* =========================================================
+   ALBUM 3.0 — ANIMACJA PRZEWRACANIA KARTEK
+   ========================================================= */
+
+.album-v3-main {
+    perspective: 2200px;
+    transform-style: preserve-3d;
+}
+
+.paper-turning-page {
+    z-index: 100;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d;
+    box-shadow:
+        0 0 12px rgba(0, 0, 0, 0.18),
+        5px 3px 12px rgba(0, 0, 0, 0.12);
+    will-change: transform;
+    transition:
+        transform 850ms cubic-bezier(0.65, 0, 0.35, 1),
+        box-shadow 850ms ease;
+}
+
+.paper-turn-next {
+    transform: rotateY(0deg);
+}
+
+.paper-turn-previous {
+    transform: rotateY(0deg);
+}
+
+.paper-turn-next.paper-turn-active {
+    transform: rotateY(-180deg);
+    box-shadow:
+        -12px 0 24px rgba(0, 0, 0, 0.22),
+        -3px 2px 8px rgba(0, 0, 0, 0.16);
+}
+
+.paper-turn-previous.paper-turn-active {
+    transform: rotateY(180deg);
+    box-shadow:
+        12px 0 24px rgba(0, 0, 0, 0.22),
+        3px 2px 8px rgba(0, 0, 0, 0.16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .paper-turning-page {
+        transition-duration: 1ms;
+    }
+}
