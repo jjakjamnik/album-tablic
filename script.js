@@ -3360,10 +3360,11 @@ function renderCurrentCountry() {
         code.textContent = displayCode;
         footerCountry.textContent = name;
 
-        footerNumber.textContent =
-            String(pageStart + 1).padStart(3, "0") +
-            "–" +
-            String(pageStart + 30).padStart(3, "0");
+const physicalPageNumber =
+    Math.floor(pageStart / 30) + 3;
+
+footerNumber.textContent =
+    String(physicalPageNumber).padStart(3, "0");
 
         page.hidden = false;
     }
