@@ -64,6 +64,71 @@ let stickersLoaded = false;
 
 let currentCountryPage = 1;
 
+// Mobilna pozycja na pierwszej rozkładówce.
+let currentFrontmatterPage = "form";
+
+function setFrontmatterMobilePage(pageName) {
+
+    const frontmatter =
+        document.getElementById("album-frontmatter");
+
+    if (!frontmatter) return;
+
+    const isMobile =
+        window.matchMedia("(max-width: 750px)").matches;
+
+    const leftPage =
+        frontmatter.querySelector('[data-page-side="left"]');
+
+    const rightPage =
+        frontmatter.querySelector('[data-page-side="right"]');
+
+    const previousButton =
+        document.querySelector(
+            ".album-frontmatter-navigation .album-page-nav:first-child"
+        );
+
+    const nextButton =
+        document.getElementById("album-frontmatter-next");
+
+    currentFrontmatterPage = pageName;
+
+    // Komputer: nadal dwie strony obok siebie.
+    if (!isMobile) {
+
+        if (leftPage) leftPage.hidden = false;
+        if (rightPage) rightPage.hidden = false;
+
+        if (previousButton) previousButton.disabled = true;
+
+        if (nextButton) {
+            nextButton.textContent = "NASTĘPNA →";
+        }
+
+        return;
+    }
+
+    // Telefon: tylko jedna strona.
+    if (leftPage) {
+        leftPage.hidden = pageName !== "form";
+    }
+
+    if (rightPage) {
+        rightPage.hidden = pageName !== "toc";
+    }
+
+    if (previousButton) {
+        previousButton.disabled = pageName === "form";
+    }
+
+    if (nextButton) {
+        nextButton.textContent =
+            pageName === "form"
+                ? "NASTĘPNA →"
+                : "OTWÓRZ ALBUM →";
+    }
+}
+
 /* =========================================================
    AKTUALNIE EDYTOWANA KARTA
    ========================================================= */
