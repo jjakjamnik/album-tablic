@@ -1,7 +1,8 @@
 
 /* =========================================================
    ALBUM 3.0 — PAPER.JS
-   Przewracanie kartek — wersja 4
+   Przewracanie kartek — wersja 5
+   Nowa strona przygotowywana pod kartką
    ========================================================= */
 
 (function () {
@@ -11,20 +12,21 @@
     const CLEANUP_DELAY = 120;
 
     let isTurning = false;
-    let replayingClick = false;
     let animationStyle = null;
 
 
     /* =====================================================
-       STYLE — NIEZALEŻNY OD paper.css
+       STYLE
        ===================================================== */
 
     function installAnimationStyles() {
+
         if (animationStyle) return;
 
         animationStyle = document.createElement("style");
 
         animationStyle.textContent = `
+
             .album-page-turn-stage {
                 position: fixed;
                 inset: 0;
@@ -66,6 +68,7 @@
             .album-page-turn-back {
                 transform: rotateY(180deg) translateZ(0.7px);
                 background-color: #eee5d2;
+
                 background-image:
                     radial-gradient(
                         ellipse at 20% 15%,
@@ -83,8 +86,18 @@
                         transparent 1px,
                         transparent 5px
                     );
+
                 border: 1px solid rgba(100,80,55,.2);
             }
+
+            .album-page-turn-overlay {
+                position: fixed !important;
+                z-index: 2147482999 !important;
+                margin: 0 !important;
+                pointer-events: none !important;
+                overflow: hidden !important;
+            }
+
         `;
 
         document.head.appendChild(animationStyle);
@@ -131,8 +144,24 @@
     }
 
 
+    function getPageToPreserve(direction) {
+
+        const spread = getVisibleSpread();
+
+        if (!spread) return null;
+
+        const side = direction === "next"
+            ? "left"
+            : "right";
+
+        return spread.querySelector(
+            '[data-page-side="' + side + '"]'
+        );
+    }
+
+
     /* =====================================================
-       PRZYGOTOWANIE KOPII KARTKI
+       USUWANIE ID Z KOPII
        ===================================================== */
 
     function removeCloneIds(element) {
@@ -145,26 +174,76 @@
     }
 
 
-    function createTurningSheet(originalPage, direction) {
+    /* =====================================================
+       KOPIA STRONY, KTÓRA NIE JEST PRZEWRACANA
+       ===================================================== */
 
-        const rect = originalPage.getBoundingClientRect();
+    function createPageOverlay(originalPage) {
+
+        if (!originalPage) return null;
+
+        const rect =
+            originalPage.getBoundingClientRect();
 
         if (!rect.width || !rect.height) {
             return null;
         }
 
-        const stage = document.createElement("div");
-        stage.className = "album-page-turn-stage";
+        const overlay =
+            originalPage.cloneNode(true);
 
-        const sheet = document.createElement("div");
-        sheet.className = "album-page-turn-sheet";
+        removeCloneIds(overlay);
+
+        overlay.classList.add(
+            "album-page-turn-overlay"
+        );
+
+        overlay.inert = true;
+        overlay.setAttribute("aria-hidden", "true");
+
+        overlay.style.left = rect.left + "px";
+        overlay.style.top = rect.top + "px";
+        overlay.style.width = rect.width + "px";
+        overlay.style.height = rect.height + "px";
+
+        document.body.appendChild(overlay);
+
+        return overlay;
+    }
+
+
+    /* =====================================================
+       PRZYGOTOWANIE PRZEWRACANEJ KARTKI
+       ===================================================== */
+
+    function createTurningSheet(originalPage, direction) {
+
+        const rect =
+            originalPage.getBoundingClientRect();
+
+        if (!rect.width || !rect.height) {
+            return null;
+        }
+
+        const stage =
+            document.createElement("div");
+
+        stage.className =
+            "album-page-turn-stage";
+
+        const sheet =
+            document.createElement("div");
+
+        sheet.className =
+            "album-page-turn-sheet";
 
         sheet.style.left = rect.left + "px";
         sheet.style.top = rect.top + "px";
         sheet.style.width = rect.width + "px";
         sheet.style.height = rect.height + "px";
 
-        const front = originalPage.cloneNode(true);
+        const front =
+            originalPage.cloneNode(true);
 
         removeCloneIds(front);
 
@@ -176,7 +255,8 @@
         front.inert = true;
         front.setAttribute("aria-hidden", "true");
 
-        const originalStyle = getComputedStyle(originalPage);
+        const originalStyle =
+            getComputedStyle(originalPage);
 
         front.style.backgroundColor =
             originalStyle.backgroundColor;
@@ -185,10 +265,15 @@
             originalStyle.backgroundImage;
 
         front.style.opacity = "1";
-        front.style.backfaceVisibility = "hidden";
-        front.style.webkitBackfaceVisibility = "hidden";
 
-        const back = document.createElement("div");
+        front.style.backfaceVisibility =
+            "hidden";
+
+        front.style.webkitBackfaceVisibility =
+            "hidden";
+
+        const back =
+            document.createElement("div");
 
         back.className =
             "album-page-turn-face album-page-turn-back";
@@ -196,13 +281,18 @@
         back.setAttribute("aria-hidden", "true");
 
         back.style.opacity = "1";
-        back.style.backfaceVisibility = "hidden";
-        back.style.webkitBackfaceVisibility = "hidden";
+
+        back.style.backfaceVisibility =
+            "hidden";
+
+        back.style.webkitBackfaceVisibility =
+            "hidden";
 
         sheet.appendChild(front);
         sheet.appendChild(back);
 
         stage.appendChild(sheet);
+
         document.body.appendChild(stage);
 
         sheet.style.transformOrigin =
@@ -212,27 +302,70 @@
 
         return {
             stage: stage,
-            sheet: sheet,
-            direction: direction
+            sheet: sheet
         };
     }
 
 
     /* =====================================================
-       ANIMACJA I ZMIANA STRON
+       PRZYGOTOWANIE NOWEJ ROZKŁADÓWKI POD KARTKĄ
        ===================================================== */
 
-    function turnPage(direction, onComplete) {
+    function showCountrySpread(targetPage) {
 
-        // Telefon: bez animacji 3D.
-        if (window.matchMedia("(max-width: 750px)").matches) {
+        const frontmatter =
+            document.getElementById("album-frontmatter");
+
+        const frontmatterNavigation =
+            document.querySelector(
+                ".album-frontmatter-navigation"
+            );
+
+        const spread =
+            document.getElementById("album-spread");
+
+        if (frontmatter) {
+            frontmatter.hidden = true;
+        }
+
+        if (frontmatterNavigation) {
+            frontmatterNavigation.hidden = true;
+        }
+
+        if (spread) {
+            spread.hidden = false;
+        }
+
+        currentCountryPage = targetPage;
+
+        renderCurrentCountry();
+
+        const pagination =
+            document.getElementById("album-pagination");
+
+        if (pagination) {
+            pagination.hidden = false;
+        }
+    }
+
+
+    /* =====================================================
+       ANIMACJA
+       ===================================================== */
+
+    function turnPage(direction, prepareDestination, onComplete) {
+
+        if (
+            window.matchMedia("(max-width: 750px)").matches
+        ) {
             if (onComplete) onComplete();
             return;
         }
 
         if (isTurning) return;
 
-        const originalPage = getPageToTurn(direction);
+        const originalPage =
+            getPageToTurn(direction);
 
         if (!originalPage) {
             if (onComplete) onComplete();
@@ -241,6 +374,7 @@
 
         installAnimationStyles();
 
+        // Najpierw kopiujemy starą kartkę.
         const turningSheet =
             createTurningSheet(originalPage, direction);
 
@@ -249,14 +383,19 @@
             return;
         }
 
+        // Zachowujemy stronę, która nie będzie przewracana.
+        const preservedPage =
+            getPageToPreserve(direction);
+
+        const overlay =
+            createPageOverlay(preservedPage);
+
         isTurning = true;
 
-        const originalVisibility =
-            originalPage.style.visibility;
-
-        // Ukrywamy oryginalną kartkę.
-        // Jej kopia pozostaje widoczna podczas animacji.
-        originalPage.style.visibility = "hidden";
+        // Przygotowujemy nową zawartość POD przewracaną kartką.
+        if (prepareDestination) {
+            prepareDestination();
+        }
 
         const sheet = turningSheet.sheet;
 
@@ -294,25 +433,24 @@
             }
         );
 
+        let finished = false;
+
         function finishAnimation() {
+
+            if (finished) return;
+
+            finished = true;
 
             turningSheet.stage.remove();
 
+            if (overlay) {
+                overlay.remove();
+            }
+
             isTurning = false;
 
-            // Dopiero po animacji zmieniamy zawartość albumu.
-            try {
-
-                if (onComplete) {
-                    onComplete();
-                }
-
-            } finally {
-
-                // Przywracamy widoczność oryginalnej kartki.
-                originalPage.style.visibility =
-                    originalVisibility;
-
+            if (onComplete) {
+                onComplete();
             }
         }
 
@@ -335,17 +473,24 @@
 
     function getDirection(button) {
 
-        if (button.matches("#album-frontmatter-next")) {
+        if (
+            button.matches("#album-frontmatter-next")
+        ) {
             return "next";
         }
 
-        if (button.matches("#album-toc-return")) {
+        if (
+            button.matches("#album-toc-return")
+        ) {
             return "previous";
         }
 
-        if (button.matches("#album-pagination button")) {
+        if (
+            button.matches("#album-pagination button")
+        ) {
 
-            const text = button.textContent.trim();
+            const text =
+                button.textContent.trim();
 
             if (text.includes("NASTĘPNA")) {
                 return "next";
@@ -361,16 +506,17 @@
 
 
     /* =====================================================
-       OBSŁUGA PRZEWRACANIA I ZMIANY STRON
+       OBSŁUGA KLIKNIĘĆ
        ===================================================== */
 
     document.addEventListener("click", function (event) {
 
-        if (replayingClick) return;
-
         const target = event.target;
 
-        if (!target || typeof target.closest !== "function") {
+        if (
+            !target ||
+            typeof target.closest !== "function"
+        ) {
             return;
         }
 
@@ -380,7 +526,8 @@
             "#album-pagination button"
         );
 
-        const link = target.closest("[data-country-jump]");
+        const link =
+            target.closest("[data-country-jump]");
 
         if (!button && !link) return;
 
@@ -390,41 +537,152 @@
 
         if (!direction) return;
 
-        // Telefon działa bez animacji 3D.
-        if (window.matchMedia("(max-width: 750px)").matches) {
+        // Telefon: zwykła, natychmiastowa nawigacja.
+        if (
+            window.matchMedia("(max-width: 750px)").matches
+        ) {
             return;
         }
 
-        // Blokujemy kolejne kliknięcia podczas animacji.
-        if (isTurning) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            return;
-        }
-
-        // Zmiana strony nastąpi dopiero po animacji.
         event.preventDefault();
         event.stopImmediatePropagation();
 
-        const clickedElement = button || link;
+        if (isTurning) return;
 
-        turnPage(direction, function () {
 
-            replayingClick = true;
+        /* ================================================
+           POWRÓT DO SPISU TREŚCI
+           ================================================ */
 
-            try {
-                clickedElement.click();
-            } finally {
-                replayingClick = false;
+        if (
+            button &&
+            button.matches("#album-toc-return")
+        ) {
+
+            turnPage(
+                "previous",
+                null,
+                function () {
+                    showAlbumFrontmatter();
+                }
+            );
+
+            return;
+        }
+
+
+        /* ================================================
+           PRZEJŚCIE ZE STRONY 1 DO ALBUMU
+           ================================================ */
+
+        if (
+            button &&
+            button.matches("#album-frontmatter-next")
+        ) {
+
+            const firstCountryLink =
+                document.querySelector(
+                    "#album-toc-countries [data-country-jump]"
+                );
+
+            if (!firstCountryLink) return;
+
+            const spreadIndex = Number(
+                firstCountryLink.dataset.albumSpreadIndex
+            );
+
+            const targetPage =
+                Number.isFinite(spreadIndex)
+                    ? spreadIndex + 1
+                    : 1;
+
+            turnPage(
+                "next",
+                function () {
+                    showCountrySpread(targetPage);
+                }
+            );
+
+            return;
+        }
+
+
+        /* ================================================
+           PRZEJŚCIE Z POZIOMU SPISU TREŚCI
+           ================================================ */
+
+        if (link) {
+
+            const spreadIndex = Number(
+                link.dataset.albumSpreadIndex
+            );
+
+            if (!Number.isFinite(spreadIndex)) {
+                return;
             }
 
-        });
+            const targetPage =
+                spreadIndex + 1;
+
+            turnPage(
+                "next",
+                function () {
+                    showCountrySpread(targetPage);
+                }
+            );
+
+            return;
+        }
+
+
+        /* ================================================
+           POPRZEDNIA / NASTĘPNA ROZKŁADÓWKA
+           ================================================ */
+
+        if (
+            button &&
+            button.matches("#album-pagination button")
+        ) {
+
+            const currentPage =
+                currentCountryPage;
+
+            let targetPage;
+
+            if (direction === "next") {
+                targetPage = currentPage + 1;
+            } else {
+                targetPage = currentPage - 1;
+            }
+
+            // Powrót z pierwszej rozkładówki do spisu.
+            if (targetPage < 1) {
+
+                turnPage(
+                    "previous",
+                    null,
+                    function () {
+                        showAlbumFrontmatter();
+                    }
+                );
+
+                return;
+            }
+
+            turnPage(
+                direction,
+                function () {
+                    showCountrySpread(targetPage);
+                }
+            );
+
+        }
 
     }, true);
 
 
     console.log(
-        "Album 3.0 — mechanizm przewracania kartek v4 załadowany"
+        "Album 3.0 — mechanizm przewracania kartek v5 załadowany"
     );
 
 })();
