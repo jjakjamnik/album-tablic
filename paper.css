@@ -8,7 +8,7 @@
     position: relative;
     isolation: isolate;
 
-    background-color: var(--book-paper);
+background-color: var(--page-color, var(--book-paper));
 
     background-image:
         radial-gradient(
@@ -47,12 +47,12 @@
             transparent 1px,
             transparent 4px
         ),
-        linear-gradient(
-            145deg,
-            var(--book-paper-light),
-            var(--book-paper),
-            var(--book-paper-dark)
-        );
+linear-gradient(
+    145deg,
+    rgba(255,255,255,.30),
+    rgba(255,255,255,.04) 48%,
+    rgba(0,0,0,.16)
+);
 }
 
 /* WŁÓKNA I NIEREGULARNOŚCI PAPIERU */
