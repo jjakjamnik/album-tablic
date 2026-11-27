@@ -182,6 +182,8 @@ document.addEventListener(
 
         renderCurrentCountry();
 
+        initializeAlbumNavigation();
+
 
         /* =================================================
            ELEMENTY FORMULARZA
@@ -3287,7 +3289,13 @@ function renderCurrentCountry() {
 
         renderCurrentCountry._activeViewKey = viewKey;
     }
+    /* =====================================================
+       DYNAMICZNE NUMERY STRON W SPISIE TREŚCI
+       ===================================================== */
 
+    if (!isSpecialView) {
+        updateAlbumToc(countryOffsets, pocketsPerPage);
+    }
     /* =====================================================
        LICZBA STRON I AKTUALNA POZYCJA
        ===================================================== */
@@ -3482,7 +3490,7 @@ function renderCurrentCountry() {
                 : (currentCountry || "AL");
     }
 
-    /* =====================================================
+      /* =====================================================
        NAWIGACJA
        ===================================================== */
 
@@ -3504,6 +3512,14 @@ function renderCurrentCountry() {
         renderCurrentCountry();
     });
 
+    const pageInfo = document.createElement("span");
+    pageInfo.id = "album-page-info";
+    pageInfo.textContent =
+        "ROZKŁADÓWKA " +
+        currentCountryPage +
+        " / " +
+        totalPages;
+
     const nextButton = document.createElement("button");
     nextButton.textContent = "NASTĘPNA →";
     nextButton.disabled = currentCountryPage === totalPages;
@@ -3513,22 +3529,24 @@ function renderCurrentCountry() {
         renderCurrentCountry();
     });
 
-    const pageInfo = document.createElement("span");
-    pageInfo.textContent =
-        "ROZKŁADÓWKA " +
-        currentCountryPage +
-        " / " +
-        totalPages;
+    const tocButton = document.createElement("button");
+    tocButton.id = "album-toc-return";
+    tocButton.textContent = "☷ SPIS TREŚCI";
+
+    tocButton.addEventListener("click", function () {
+        showAlbumFrontmatter();
+    });
 
     pagination.appendChild(previousButton);
     pagination.appendChild(pageInfo);
     pagination.appendChild(nextButton);
+    pagination.appendChild(tocButton);
 
     const spread = document.getElementById("album-spread");
 
-    spread.parentNode.insertBefore(pagination, spread);
-}
+    pagination.hidden = spread.hidden;
 
+    spread.parentNode.insertBefore(pagination, spread);
 /* =========================================================
    TWORZENIE KARTY
    ========================================================= */
@@ -3837,7 +3855,150 @@ function getStickerColorClass(
 
 }
 
+/* =========================================================
+   NAWIGACJA GŁÓWNEGO ALBUMU
+   ========================================================= */
 
+function initializeAlbumNavigation() {
+
+    if (document.body.dataset.pageType !== "album") {
+        return;
+    }
+
+    document.addEventListener("click", function (event) {
+
+        const link = event.target.closest("[data-country-jump]");
+
+        if (!link) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const spreadIndex = Number(
+            link.dataset.albumSpreadIndex
+        );
+
+        if (!Number.isFinite(spreadIndex)) {
+            return;
+        }
+
+        const frontmatter =
+            document.getElementById("album-frontmatter");
+
+        const spread =
+            document.getElementById("album-spread");
+
+        const pagination =
+            document.getElementById("album-pagination");
+
+        if (frontmatter) {
+            frontmatter.hidden = true;
+        }
+
+        if (spread) {
+            spread.hidden = false;
+        }
+
+        currentCountryPage = spreadIndex + 1;
+
+        renderCurrentCountry();
+
+        if (pagination) {
+            pagination.hidden = false;
+        }
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    });
+
+}
+
+
+/* =========================================================
+   POWRÓT DO SPISU TREŚCI
+   ========================================================= */
+
+function showAlbumFrontmatter() {
+
+    const frontmatter =
+        document.getElementById("album-frontmatter");
+
+    const spread =
+        document.getElementById("album-spread");
+
+    const pagination =
+        document.getElementById("album-pagination");
+
+    if (frontmatter) {
+        frontmatter.hidden = false;
+    }
+
+    if (spread) {
+        spread.hidden = true;
+    }
+
+    if (pagination) {
+        pagination.hidden = true;
+    }
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =========================================================
+   AKTUALIZACJA NUMERÓW STRON SPISU TREŚCI
+   ========================================================= */
+
+function updateAlbumToc(countryOffsets, pocketsPerPage) {
+
+    const links = document.querySelectorAll(
+        "[data-country-jump]"
+    );
+
+    links.forEach(function (link) {
+
+        const countryCode =
+            link.dataset.countryJump;
+
+        const offset =
+            countryOffsets.get(countryCode);
+
+        if (offset === undefined) {
+            return;
+        }
+
+        const spreadIndex =
+            Math.floor(offset / pocketsPerPage);
+
+        link.dataset.albumSpreadIndex =
+            spreadIndex;
+
+        let pageNumber =
+            link.querySelector(".album-toc-page");
+
+        if (!pageNumber) {
+            pageNumber = document.createElement("span");
+            pageNumber.className = "album-toc-page";
+            link.appendChild(pageNumber);
+        }
+
+        const physicalPage =
+            Math.floor(offset / 30) + 3;
+
+        pageNumber.textContent =
+            String(physicalPage).padStart(3, "0");
+
+    });
+
+}
 /* =========================================================
    AKTUALNY KRAJ
    ========================================================= */
