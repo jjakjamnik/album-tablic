@@ -3046,7 +3046,15 @@ function renderCurrentCountry() {
         return;
     }
 
-    const albumView = document.body.dataset.albumView;
+const albumView = document.body.dataset.albumView;
+
+/* AUTOMATYCZNY MOTYW KRAJU */
+const albumShell = document.querySelector(".album");
+const themeCountry = getCurrentCountry();
+
+if (albumShell && themeCountry) {
+    albumShell.dataset.country = themeCountry;
+}
 
     const allStickers = getStickers();
     let stickers = allStickers;
@@ -3145,7 +3153,10 @@ function renderCurrentCountry() {
 
     /* STRONY ALBUMU — 50 KIESZONEK */
 
-    const pocketsPerPage = 50;
+/* PC: 60 miejsc na rozkładówce.
+   TELEFON: dotychczasowe 50 miejsc. */
+const isMobileAlbum = window.matchMedia("(max-width: 700px)").matches;
+const pocketsPerPage = isMobileAlbum ? 50 : 60;
     const totalPages = Math.max(
         1,
         Math.ceil(stickers.length / pocketsPerPage)
