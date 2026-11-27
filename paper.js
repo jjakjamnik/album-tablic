@@ -1,7 +1,7 @@
 
 /* =========================================================
    ALBUM 3.0 — PAPER.JS
-   Przewracanie kartek — nowy mechanizm
+   Przewracanie kartek — wersja 2
    ========================================================= */
 
 (function () {
@@ -12,6 +12,7 @@
 
     let isTurning = false;
     let animationStyle = null;
+
 
     /* =====================================================
        STYLE — NIEZALEŻNY OD paper.css
@@ -51,6 +52,8 @@
                 margin: 0 !important;
                 box-sizing: border-box !important;
                 overflow: hidden !important;
+                background-color: #eee5d2;
+                opacity: 1;
                 backface-visibility: hidden !important;
                 -webkit-backface-visibility: hidden !important;
             }
@@ -156,22 +159,43 @@
         sheet.style.width = rect.width + "px";
         sheet.style.height = rect.height + "px";
 
+        // Przednia strona — kopia oryginalnej kartki
         const front = originalPage.cloneNode(true);
 
         removeCloneIds(front);
 
-        front.classList.add("album-page-turn-face");
-        front.classList.add("album-page-turn-front");
+        front.classList.add(
+            "album-page-turn-face",
+            "album-page-turn-front"
+        );
 
         front.inert = true;
         front.setAttribute("aria-hidden", "true");
 
+        // Zachowanie koloru i tła oryginalnej strony
+        const originalStyle = getComputedStyle(originalPage);
+
+        front.style.backgroundColor =
+            originalStyle.backgroundColor;
+
+        front.style.backgroundImage =
+            originalStyle.backgroundImage;
+
+        front.style.opacity = "1";
+        front.style.backfaceVisibility = "hidden";
+        front.style.webkitBackfaceVisibility = "hidden";
+
+        // Tylna strona — nieprzezroczysty papier
         const back = document.createElement("div");
 
         back.className =
             "album-page-turn-face album-page-turn-back";
 
         back.setAttribute("aria-hidden", "true");
+
+        back.style.opacity = "1";
+        back.style.backfaceVisibility = "hidden";
+        back.style.webkitBackfaceVisibility = "hidden";
 
         sheet.appendChild(front);
         sheet.appendChild(back);
@@ -202,6 +226,7 @@
         const isNext = turningSheet.direction === "next";
 
         const startRotation = "rotateY(0deg)";
+
         const endRotation = isNext
             ? "rotateY(-180deg)"
             : "rotateY(180deg)";
@@ -216,19 +241,23 @@
             [
                 {
                     transform: startRotation,
-                    filter: "drop-shadow(0 2px 3px rgba(0,0,0,.12))"
+                    filter:
+                        "drop-shadow(0 2px 3px rgba(0,0,0,.12))"
                 },
                 {
                     offset: 0.35,
-                    filter: "drop-shadow(0 8px 12px rgba(0,0,0,.22))"
+                    filter:
+                        "drop-shadow(0 8px 12px rgba(0,0,0,.22))"
                 },
                 {
                     offset: 0.65,
-                    filter: "drop-shadow(0 10px 14px rgba(0,0,0,.26))"
+                    filter:
+                        "drop-shadow(0 10px 14px rgba(0,0,0,.26))"
                 },
                 {
                     transform: endRotation,
-                    filter: "drop-shadow(0 3px 5px rgba(0,0,0,.12))"
+                    filter:
+                        "drop-shadow(0 3px 5px rgba(0,0,0,.12))"
                 }
             ],
             {
