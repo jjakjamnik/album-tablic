@@ -3556,8 +3556,6 @@ spread.parentNode.insertBefore(pagination, spread);
 
 function createStickerCard(sticker, cardNumber) {
 
-function createStickerCard(sticker, cardNumber) {
-
     const article = document.createElement("article");
 
     let stickerClass = getStickerColorClass(sticker);
