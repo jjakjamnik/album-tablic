@@ -16,6 +16,23 @@ const NOMINATIM_URL =
 const OSRM_URL =
     "https://router.project-osrm.org/route/v1/driving";
 
+/* Nominatim: cache i limit maks. 1 zapytania na sekundę. */
+const NOMINATIM_CACHE = new Map();
+let lastNominatimRequestAt = 0;
+
+async function waitForNominatimSlot() {
+    const waitMs = Math.max(
+        0,
+        1100 - (Date.now() - lastNominatimRequestAt)
+    );
+
+    if (waitMs > 0) {
+        await new Promise(resolve => setTimeout(resolve, waitMs));
+    }
+
+    lastNominatimRequestAt = Date.now();
+}
+
 
 /* =========================================================
    GEOKODOWANIE MIEJSCOWOŚCI
@@ -55,37 +72,18 @@ async function geocodeLocation(
 
         PL: "Poland",
         DE: "Germany",
-        CZ: "Czech Republic",
-        DK: "Denmark",
-        SE: "Sweden",
-        UA: "Ukraine",
-        BY: "Belarus",
-        NL: "Netherlands",
-        BE: "Belgium",
         AT: "Austria",
+        BY: "Belarus",
+        CZ: "Czech Republic",
         FR: "France",
-        ES: "Spain",
-        IT: "Italy",
-        GB: "United Kingdom",
-        HU: "Hungary",
-        SK: "Slovakia",
-        SI: "Slovenia",
-        HR: "Croatia",
-        RO: "Romania",
-        BG: "Bulgaria",
-        GR: "Greece",
-        PT: "Portugal",
-        NO: "Norway",
-        FI: "Finland",
-        EE: "Estonia",
-        LV: "Latvia",
-        LT: "Lithuania",
         IE: "Ireland",
-        IS: "Iceland",
+        RO: "Romania",
+        SK: "Slovakia",
         CH: "Switzerland",
-       TR: "Turkey",
-        AL: "Albania",
-        XK: "Kosovo"
+        TR: "Turkey",
+        UA: "Ukraine",
+        GB: "United Kingdom",
+        UZ: "Uzbekistan"
 
     };
 
@@ -102,18 +100,41 @@ async function geocodeLocation(
     }
 
 
+    const cacheKey =
+        String(countryCode || "") + ":" +
+        query.toLocaleLowerCase();
+
+    if (NOMINATIM_CACHE.has(cacheKey)) {
+        return NOMINATIM_CACHE.get(cacheKey);
+    }
+
+    const countryFilter =
+        countryCode && countryCode !== "XK"
+            ? "&countrycodes=" + encodeURIComponent(countryCode.toLowerCase())
+            : "";
+
     const url =
         NOMINATIM_URL +
         "?format=jsonv2" +
         "&limit=1" +
+        countryFilter +
         "&q=" +
         encodeURIComponent(query);
 
 
     try {
 
+        await waitForNominatimSlot();
+
         const response =
-            await fetch(url);
+            await fetch(
+                url,
+                {
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
+            );
 
 
         if (!response.ok) {
@@ -142,7 +163,7 @@ async function geocodeLocation(
         }
 
 
-        return {
+        const coordinates = {
 
             latitude:
                 parseFloat(
@@ -158,6 +179,13 @@ async function geocodeLocation(
                 results[0].display_name || ""
 
         };
+
+        NOMINATIM_CACHE.set(
+            cacheKey,
+            coordinates
+        );
+
+        return coordinates;
 
     } catch (error) {
 

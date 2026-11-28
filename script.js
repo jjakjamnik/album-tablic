@@ -691,6 +691,7 @@ document.addEventListener(
                        ================================================= */
 
                     if (
+                        !detectedCity &&
                         fixedStars !== null
                     ) {
 
@@ -776,6 +777,43 @@ document.addEventListener(
 
                         }
 
+                    }
+
+
+                    /* =================================================
+                       AWARYJNE GWIAZDKI, GDY TRASY NIE MA
+                       ================================================= */
+
+                    if (
+                        detectedCity &&
+                        distanceResult &&
+                        fixedStars !== null
+                    ) {
+                        distanceResult.stars = fixedStars;
+                        distanceResult.starsText =
+                            "★".repeat(fixedStars);
+                    }
+
+                    if (
+                        !distanceResult &&
+                        fixedStars !== null
+                    ) {
+                        distanceResult = {
+                            kilometers: null,
+                            distanceText: null,
+                            stars: fixedStars,
+                            starsText: "★".repeat(fixedStars)
+                        };
+                    } else if (
+                        !distanceResult &&
+                        fallbackStars !== null
+                    ) {
+                        distanceResult = {
+                            kilometers: null,
+                            distanceText: null,
+                            stars: fallbackStars,
+                            starsText: "★".repeat(fallbackStars)
+                        };
                     }
 
 
@@ -2111,261 +2149,6 @@ function findCodeInDatabase(
 
 
     return null;
-
-}
-
-
-/* =========================================================
-   ODLEGŁOŚĆ DROGOWA — OSRM
-   ========================================================= */
-
-async function calculateStickerDistance(
-    country,
-    originCity,
-    foundLocation
-) {
-
-    if (
-        !country ||
-        !originCity ||
-        !foundLocation
-    ) {
-
-        return null;
-
-    }
-
-
-    const countryNames = {
-
-        "PL": "Poland",
-        "DE": "Germany",
-        "RO": "Romania",
-        "UA": "Ukraine",
-        "CZ": "Czech Republic",
-        "DK": "Denmark",
-        "SE": "Sweden",
-        "NL": "Netherlands",
-        "FR": "France",
-        "PT": "Portugal",
-        "IT": "Italy",
-        "ES": "Spain",
-        "NO": "Norway",
-        "FI": "Finland",
-        "BE": "Belgium",
-        "AT": "Austria",
-        "CH": "Switzerland",
-        "HU": "Hungary",
-        "SK": "Slovakia",
-        "SI": "Slovenia",
-        "HR": "Croatia",
-        "XK": "Kosovo",
-        "BG": "Bulgaria",
-        "GR": "Greece",
-        "AL": "Albania",
-        "EE": "Estonia",
-        "LV": "Latvia",
-        "LT": "Lithuania",
-        "IS": "Iceland",
-        "IE": "Ireland",
-        "GB": "United Kingdom",
-        "BY": "Belarus",
-        "TR": "Turkey",
-        "UZ": "Uzbekistan"
-
-    };
-
-
-    const countryName =
-        countryNames[country] ||
-        "";
-
-
-    async function geocode(
-        query
-    ) {
-
-        const url =
-            "https://nominatim.openstreetmap.org/search" +
-            "?format=json" +
-            "&limit=1" +
-            "&q=" +
-            encodeURIComponent(query);
-
-
-        const response =
-            await fetch(
-                url,
-                {
-                    headers: {
-                        "Accept":
-                            "application/json"
-                    }
-                }
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Geocoding HTTP " +
-                response.status
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        if (
-            !data ||
-            !data.length
-        ) {
-
-            return null;
-
-        }
-
-
-        return {
-
-            lat:
-                parseFloat(
-                    data[0].lat
-                ),
-
-            lon:
-                parseFloat(
-                    data[0].lon
-                )
-
-        };
-
-    }
-
-
-    const foundCoordinates =
-        await geocode(
-            foundLocation
-        );
-
-
-    if (!foundCoordinates) {
-
-        throw new Error(
-            "Nie znaleziono miejsca: " +
-            foundLocation
-        );
-
-    }
-
-
-    let originQuery =
-        originCity;
-
-
-    if (countryName) {
-
-        originQuery +=
-            ", " +
-            countryName;
-
-    }
-
-
-    const originCoordinates =
-        await geocode(
-            originQuery
-        );
-
-
-    if (!originCoordinates) {
-
-        throw new Error(
-            "Nie znaleziono miasta pochodzenia: " +
-            originCity
-        );
-
-    }
-
-
-    const osrmUrl =
-        "https://router.project-osrm.org/route/v1/driving/" +
-        originCoordinates.lon +
-        "," +
-        originCoordinates.lat +
-        ";" +
-        foundCoordinates.lon +
-        "," +
-        foundCoordinates.lat +
-        "?overview=false";
-
-
-    const osrmResponse =
-        await fetch(
-            osrmUrl
-        );
-
-
-    if (!osrmResponse.ok) {
-
-        throw new Error(
-            "OSRM HTTP " +
-            osrmResponse.status
-        );
-
-    }
-
-
-    const osrmData =
-        await osrmResponse.json();
-
-
-    if (
-        !osrmData.routes ||
-        !osrmData.routes.length
-    ) {
-
-        throw new Error(
-            "OSRM nie znalazł trasy."
-        );
-
-    }
-
-
-    const kilometers =
-        Math.round(
-            osrmData.routes[0].distance /
-            1000
-        );
-
-
-    const stars =
-        calculateStarsFromKilometers(
-            kilometers
-        );
-
-
-    return {
-
-        kilometers:
-            kilometers,
-
-        distanceText:
-            kilometers +
-            " km",
-
-        stars:
-            stars,
-
-        starsText:
-            "★".repeat(
-                stars
-            )
-
-    };
 
 }
 
