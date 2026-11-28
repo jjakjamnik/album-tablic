@@ -176,6 +176,11 @@
             ← OKŁADKA
         </a>
 
+        <div class="album-auth-controls" id="album-auth-controls" hidden>
+            <span id="album-auth-email"></span>
+            <button type="button" id="album-logout-button">WYLOGUJ</button>
+        </div>
+
     </header>
 
 
@@ -871,6 +876,9 @@
 <!-- =============================================
      SKRYPTY KRAJOWE I OBSŁUGA ALBUMU
      ============================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2"></script>
+<script src="./auth.js"></script>
 
 <script src="austria.js"></script>
 <script src="bialorus.js"></script>
