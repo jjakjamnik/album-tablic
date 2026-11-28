@@ -402,6 +402,7 @@ function createStickerCard(sticker) {
     );
 
 
+
     article.appendChild(
         distance
     );
