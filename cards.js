@@ -386,6 +386,12 @@ function createStickerCard(sticker) {
         found
     );
 
+    if (sticker.owner === "guest" && sticker.gift_from) {
+        const giftSource = document.createElement("div");
+        giftSource.className = "sticker-gift-source";
+        giftSource.textContent = "OD: " + sticker.gift_from;
+        article.appendChild(giftSource);
+    }
 
     article.appendChild(
         distance
