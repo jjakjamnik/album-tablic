@@ -204,7 +204,7 @@
 .sticker-header {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 7px;
 
     min-height: 20px;
