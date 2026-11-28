@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta name="theme-color" content="#0b1f3a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" href="./icons/favicon.png">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+
     <title>Album tablic — Europa</title>
 
     <link rel="stylesheet" href="style.css">
@@ -125,7 +133,7 @@
             margin-top: auto;
         }
 
-        @media (max-width: 750px) {
+        @media (max-width: 750px), (pointer: coarse) and (max-height: 750px) {
             .album-frontmatter-spread {
                 grid-template-columns: 1fr;
                 gap: 16px;
@@ -897,6 +905,18 @@
 <script src="uzbekistan.js"></script>
 <script src="script.js"></script>
     <script src="paper.js"></script>
+
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+        navigator.serviceWorker.register("./sw.js", { scope: "./" })
+            .catch(function (error) {
+                console.error("Nie udało się uruchomić trybu aplikacji:", error);
+            });
+    });
+}
+</script>
 
 </body>
 </html>
