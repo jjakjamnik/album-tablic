@@ -1535,3 +1535,102 @@
         font-size: 10px !important;
     }
 }
+
+
+
+/* =========================================================
+   V5.0 — KOREKTA PO PIERWSZYM PODGLĄDZIE
+   Przywrócenie flag narodowych i dopracowanie krojów/koloru.
+   ========================================================= */
+
+/* Zamiast imitacji gwiazd UE wracają flagi narodowe z FlagCDN.
+   Kod kraju pozostaje zwykłym tekstem pod flagą. */
+.sticker .plate.plate-pl .plate-country,
+.sticker .plate.plate-de .plate-country,
+.sticker .plate.plate-fr .plate-country,
+.sticker .plate.plate-nl .plate-country {
+    font-family: "KeepCalm", Arial, sans-serif !important;
+    font-size: 8px !important;
+    font-weight: normal !important;
+    letter-spacing: 0.1px !important;
+    line-height: 1 !important;
+    padding: 2px 0 1px !important;
+}
+
+.sticker .plate.plate-pl .plate-country::before,
+.sticker .plate.plate-de .plate-country::before,
+.sticker .plate.plate-fr .plate-country::before,
+.sticker .plate.plate-nl .plate-country::before {
+    content: "" !important;
+    display: block !important;
+    width: 13px !important;
+    height: 8px !important;
+    flex: 0 0 8px !important;
+    margin: 0 0 3px 0 !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: contain !important;
+    text-shadow: none !important;
+}
+
+.sticker .plate.plate-pl .plate-country::after,
+.sticker .plate.plate-de .plate-country::after,
+.sticker .plate.plate-fr .plate-country::after,
+.sticker .plate.plate-nl .plate-country::after {
+    content: none !important;
+    display: none !important;
+}
+
+.sticker .plate.plate-pl .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/pl.png") !important;
+}
+.sticker .plate.plate-de .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/de.png") !important;
+}
+.sticker .plate.plate-fr .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/fr.png") !important;
+}
+.sticker .plate.plate-nl .plate-country::before {
+    background-image: url("https://flagcdn.com/w20/nl.png") !important;
+}
+
+/* POLSKA — prostszy, węższy krój bez geometrycznego wyglądu DIN1451. */
+.sticker .plate.plate-pl .plate-number {
+    font-family: "Arial Narrow", "Roboto Condensed", Arial, sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.65px !important;
+    color: #101010 !important;
+    text-shadow: none !important;
+}
+
+/* FRANCJA — spokojniejszy, bardziej zwarty zapis SIV. */
+.sticker .plate.plate-fr .plate-number {
+    font-family: Arial, "Helvetica Neue", sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+    color: #101010 !important;
+}
+
+/* HOLANDIA — głębszy żółty, lekko wpadający w pomarańcz. */
+.sticker .plate.plate-nl {
+    background: linear-gradient(180deg, #f6d02a 0%, #efbd16 52%, #e3a90d 100%) !important;
+    border-color: #8a6410 !important;
+    box-shadow:
+        0 2px 5px rgba(15,20,17,0.22),
+        inset 0 1px 0 rgba(255,244,190,0.65) !important;
+}
+
+@media (max-width: 520px) {
+    .sticker .plate.plate-pl .plate-number {
+        font-size: 13px !important;
+        letter-spacing: 0.45px !important;
+    }
+    .sticker .plate.plate-fr .plate-number {
+        font-size: 10px !important;
+        letter-spacing: 0.2px !important;
+    }
+}
