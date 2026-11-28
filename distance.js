@@ -495,10 +495,12 @@ async function calculateStickerDistance(
        MIEJSCE ZNALEZIENIA
        ===================================================== */
 
+    // Miejsce znalezienia może znajdować się w dowolnym kraju.
+    // Nie narzucamy Polski — geokoder rozpoznaje lokalizację globalnie.
     const foundCoordinates =
         await geocodeLocation(
             foundLocation,
-            "PL"
+            null
         );
 
 
