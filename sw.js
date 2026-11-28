@@ -4,7 +4,7 @@
    WERSJA 4.0
    ========================================================= */
 
-const CACHE_NAME = "album-tablic-v4-auth-username-login";
+const CACHE_NAME = "album-tablic-v4-auth-username-login-fix1";
 
 const APP_SHELL_FILES = [
     "./",
