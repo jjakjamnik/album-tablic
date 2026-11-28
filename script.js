@@ -25,15 +25,10 @@
    SUPABASE — KONFIGURACJA
    ========================================================= */
 
-const SUPABASE_URL =
-    "https://ddlwmtbtsaikbkorkwaa.supabase.co/rest/v1";
+const SUPABASE_TABLE = "stickers";
 
-const SUPABASE_KEY =
-    "sb_publishable_i9lPlpSiRH5wLzI8QJ_gcA_-n0IZNL2";
-
-
-const SUPABASE_TABLE =
-    "stickers";
+// Użytkownik pobierany z aktywnej sesji Supabase Auth.
+let albumCurrentUser = null;
 
 
 /* =========================================================
@@ -207,6 +202,15 @@ document.addEventListener(
     "DOMContentLoaded",
     async function () {
 
+        // Album jest dostępny wyłącznie po zalogowaniu.
+        if (!window.albumAuth) {
+            alert("Nie udało się uruchomić modułu logowania. Odśwież stronę.");
+            return;
+        }
+
+        albumCurrentUser = await window.albumAuth.requireSession();
+        if (!albumCurrentUser) return;
+
         initializeAlbum();
 
         // Nawigacja działa niezależnie od połączenia z Supabase.
@@ -244,7 +248,8 @@ document.addEventListener(
            MIGRACJA STAREGO LOCALSTORAGE
            ================================================= */
 
-        await migrateOldStickers();
+        // Dotychczasowa kolekcja została już przeniesiona do Supabase.
+        // Nie importujemy globalnego localStorage do nowych kont.
 
 
         /* =================================================
@@ -1218,333 +1223,96 @@ document.addEventListener(
    SUPABASE — NAGŁÓWKI
    ========================================================= */
 
-function supabaseHeaders(
-    extraHeaders = {}
-) {
-
-    return {
-
-        "apikey":
-            SUPABASE_KEY,
-
-        "Content-Type":
-            "application/json",
-
-        ...extraHeaders
-
-    };
-
-}
-
-
 /* =========================================================
-   SUPABASE — POBIERANIE WSZYSTKICH NAKLEJEK
+   SUPABASE — POBIERANIE NAKLEJEK ZALOGOWANEGO UŻYTKOWNIKA
    ========================================================= */
 
 async function loadStickersFromSupabase() {
+    if (!albumCurrentUser) throw new Error("Brak zalogowanego użytkownika.");
 
-    const url =
-        SUPABASE_URL +
-        "/" +
-        SUPABASE_TABLE +
-        "?select=*";
+    const { data, error } = await window.albumAuth.client
+        .from(SUPABASE_TABLE)
+        .select("*")
+        .eq("user_id", albumCurrentUser.id);
 
+    if (error) throw new Error("Nie udało się pobrać kolekcji: " + error.message);
+    if (!Array.isArray(data)) throw new Error("Supabase zwrócił nieprawidłowe dane.");
 
-    const response =
-        await fetch(
-            url,
-            {
-                method:
-                    "GET",
-
-                headers:
-                    supabaseHeaders()
-            }
-        );
-
-
-    if (!response.ok) {
-
-        const errorText =
-            await response.text();
-
-
-        throw new Error(
-            "Supabase HTTP " +
-            response.status +
-            ": " +
-            errorText
-        );
-
-    }
-
-
-    const data =
-        await response.json();
-
-
-    if (
-        !Array.isArray(data)
-    ) {
-
-        throw new Error(
-            "Supabase zwrócił nieprawidłowe dane."
-        );
-
-    }
-
-
-    stickersCache =
-        data;
-
-
-    stickersLoaded =
-        true;
-
-
-    console.log(
-        "Supabase: wczytano",
-        stickersCache.length,
-        "naklejek."
-    );
-
+    stickersCache = data;
+    stickersLoaded = true;
+    console.log("Supabase: wczytano", stickersCache.length, "naklejek użytkownika.");
 }
-
 
 /* =========================================================
    SUPABASE — DODAWANIE
    ========================================================= */
 
-async function saveSticker(
-    sticker
-) {
+async function saveSticker(sticker) {
+    if (!albumCurrentUser) throw new Error("Brak zalogowanego użytkownika.");
 
-    const url =
-        SUPABASE_URL +
-        "/" +
-        SUPABASE_TABLE;
+    const { data, error } = await window.albumAuth.client
+        .from(SUPABASE_TABLE)
+        .insert({ ...sticker, user_id: albumCurrentUser.id })
+        .select("*")
+        .single();
 
-
-    const response =
-        await fetch(
-            url,
-            {
-                method:
-                    "POST",
-
-                headers:
-                    supabaseHeaders(
-                        {
-                            "Prefer":
-                                "return=representation"
-                        }
-                    ),
-
-                body:
-                    JSON.stringify(
-                        sticker
-                    )
-            }
-        );
-
-
-    if (!response.ok) {
-
-        const errorText =
-            await response.text();
-
-
-        throw new Error(
-            "Supabase HTTP " +
-            response.status +
-            ": " +
-            errorText
-        );
-
-    }
-
-
-    const data =
-        await response.json();
-
-
-    if (
-        Array.isArray(data) &&
-        data.length
-    ) {
-
-        stickersCache.push(
-            data[0]
-        );
-
-    }
-
-    else {
-
-        stickersCache.push(
-            sticker
-        );
-
-    }
-
-
-    console.log(
-        "Supabase: dodano",
-        sticker.country,
-        sticker.plate
-    );
-
+    if (error) throw new Error("Nie udało się zapisać tablicy: " + error.message);
+    stickersCache.push(data);
+    console.log("Supabase: dodano", data.country, data.plate);
 }
-
 
 /* =========================================================
    SUPABASE — EDYCJA
    ========================================================= */
 
-async function updateStickerInSupabase(
-    sticker
-) {
+async function updateStickerInSupabase(sticker) {
+    if (!albumCurrentUser) throw new Error("Brak zalogowanego użytkownika.");
 
-    const url =
-        SUPABASE_URL +
-        "/" +
-        SUPABASE_TABLE +
-        "?id=eq." +
-        encodeURIComponent(
-            sticker.id
-        );
+    const { data, error } = await window.albumAuth.client
+        .from(SUPABASE_TABLE)
+        .update({
+            country: sticker.country,
+            plate: sticker.plate,
+            location: sticker.location,
+            origin: sticker.origin,
+            department: sticker.department,
+            owner: sticker.owner,
+            date: sticker.date,
+            kilometers: sticker.kilometers,
+            stars: sticker.stars
+        })
+        .eq("id", sticker.id)
+        .eq("user_id", albumCurrentUser.id)
+        .select("*")
+        .maybeSingle();
 
+    if (error) throw new Error("Nie udało się zaktualizować tablicy: " + error.message);
+    if (!data) throw new Error("Nie znaleziono tej tablicy w Twojej kolekcji.");
 
-    const response =
-        await fetch(
-            url,
-            {
-                method:
-                    "PATCH",
-
-                headers:
-                    supabaseHeaders(
-                        {
-                            "Prefer":
-                                "return=representation"
-                        }
-                    ),
-
-                body:
-                    JSON.stringify(
-                        {
-                            country:
-                                sticker.country,
-
-                            plate:
-                                sticker.plate,
-
-                            location:
-                                sticker.location,
-
-                            origin:
-                                sticker.origin,
-
-                            department:
-                                sticker.department,
-
-                            owner:
-                                sticker.owner,
-
-                            date:
-                                sticker.date,
-
-                            kilometers:
-                                sticker.kilometers,
-
-                            stars:
-                                sticker.stars
-                        }
-                    )
-            }
-        );
-
-
-    if (!response.ok) {
-
-        const errorText =
-            await response.text();
-
-
-        throw new Error(
-            "Supabase HTTP " +
-            response.status +
-            ": " +
-            errorText
-        );
-
-    }
-
-
-    console.log(
-        "Supabase: zaktualizowano",
-        sticker.country,
-        sticker.plate
-    );
-
+    const index = stickersCache.findIndex(item => item.id === sticker.id);
+    if (index >= 0) stickersCache[index] = data;
+    console.log("Supabase: zaktualizowano", data.country, data.plate);
 }
-
 
 /* =========================================================
    SUPABASE — USUWANIE
    ========================================================= */
 
-async function deleteStickerFromSupabase(
-    sticker
-) {
+async function deleteStickerFromSupabase(sticker) {
+    if (!albumCurrentUser) throw new Error("Brak zalogowanego użytkownika.");
 
-    const url =
-        SUPABASE_URL +
-        "/" +
-        SUPABASE_TABLE +
-        "?id=eq." +
-        encodeURIComponent(
-            sticker.id
-        );
+    const { data, error } = await window.albumAuth.client
+        .from(SUPABASE_TABLE)
+        .delete()
+        .eq("id", sticker.id)
+        .eq("user_id", albumCurrentUser.id)
+        .select("id")
+        .maybeSingle();
 
-
-    const response =
-        await fetch(
-            url,
-            {
-                method:
-                    "DELETE",
-
-                headers:
-                    supabaseHeaders()
-            }
-        );
-
-
-    if (!response.ok) {
-
-        const errorText =
-            await response.text();
-
-
-        throw new Error(
-            "Supabase HTTP " +
-            response.status +
-            ": " +
-            errorText
-        );
-
-    }
-
-
-    console.log(
-        "Supabase: usunięto",
-        sticker.country,
-        sticker.plate
-    );
-
+    if (error) throw new Error("Nie udało się usunąć tablicy: " + error.message);
+    if (!data) throw new Error("Nie znaleziono tej tablicy w Twojej kolekcji.");
+    console.log("Supabase: usunięto", sticker.country, sticker.plate);
 }
-
 
 /* =========================================================
    FRANCJA — WYBÓR DEPARTAMENTU
@@ -2879,270 +2647,11 @@ function resetEditMode() {
    MIGRACJA LOCALSTORAGE → SUPABASE
    ========================================================= */
 
-async function migrateOldStickers() {
-
-    if (
-        localStorage.getItem(
-            MIGRATION_KEY
-        ) === "done"
-    ) {
-
-        return;
-
-    }
-
-
-    /*
-       WAŻNE:
-
-       Migrację wykonujemy tylko wtedy,
-       kiedy Supabase jest puste.
-
-       Dzięki temu wejście na telefonie,
-       który nie ma starego localStorage,
-       NIE nadpisze ani nie zmieni kolekcji.
-    */
-
-    if (
-        stickersCache.length > 0
-    ) {
-
-        localStorage.setItem(
-            MIGRATION_KEY,
-            "done"
-        );
-
-        return;
-
-    }
-
-
-    const oldData =
-        localStorage.getItem(
-            STORAGE_KEY
-        );
-
-
-    if (!oldData) {
-
-        localStorage.setItem(
-            MIGRATION_KEY,
-            "done"
-        );
-
-        return;
-
-    }
-
-
-    let oldStickers;
-
-
-    try {
-
-        oldStickers =
-            JSON.parse(
-                oldData
-            );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Błąd odczytu starego localStorage:",
-            error
-        );
-
-        localStorage.setItem(
-            MIGRATION_KEY,
-            "done"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !Array.isArray(oldStickers) ||
-        !oldStickers.length
-    ) {
-
-        localStorage.setItem(
-            MIGRATION_KEY,
-            "done"
-        );
-
-        return;
-
-    }
-
-
-    console.log(
-        "Rozpoczynam migrację",
-        oldStickers.length,
-        "starych naklejek do Supabase..."
-    );
-
-
-    let migrated =
-        0;
-
-
-    for (
-        const sticker of oldStickers
-    ) {
-
-        try {
-
-            await saveStickerToSupabaseOnly(
-                sticker
-            );
-
-            migrated++;
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Nie udało się przenieść naklejki:",
-                sticker,
-                error
-            );
-
-        }
-
-    }
-
-
-    /*
-       Po migracji ponownie pobieramy bazę,
-       żeby cache był dokładnie taki sam
-       jak dane w Supabase.
-    */
-
-    await loadStickersFromSupabase();
-
-
-    localStorage.setItem(
-        MIGRATION_KEY,
-        "done"
-    );
-
-
-    console.log(
-        "Migracja zakończona.",
-        migrated,
-        "naklejek przeniesiono."
-    );
-
-
-    if (
-        migrated > 0
-    ) {
-
-        alert(
-            "Kolekcja została przeniesiona do wspólnej bazy.\n\n" +
-            "Przeniesiono: " +
-            migrated +
-            " naklejek.\n\n" +
-            "Od teraz komputer i telefon będą korzystać z tej samej kolekcji."
-        );
-
-    }
-
-}
-
-
 /* =========================================================
-   MIGRACJA — ZAPIS BEZ CACHE
+   LEGACY MIGRATION DISABLED
+   Dane kolekcji są już przypisane do kont użytkowników w Supabase.
+   Nie kopiujemy globalnego localStorage pomiędzy kontami.
    ========================================================= */
-
-async function saveStickerToSupabaseOnly(
-    sticker
-) {
-
-    const url =
-        SUPABASE_URL +
-        "/" +
-        SUPABASE_TABLE;
-
-
-    const response =
-        await fetch(
-            url,
-            {
-                method:
-                    "POST",
-
-                headers:
-                    supabaseHeaders(),
-
-                body:
-                    JSON.stringify(
-                        {
-                            id:
-                                sticker.id,
-
-                            country:
-                                sticker.country,
-
-                            plate:
-                                sticker.plate,
-
-                            location:
-                                sticker.location,
-
-                            origin:
-                                sticker.origin || "",
-
-                            department:
-                                sticker.department || "",
-
-                            owner:
-                                sticker.owner || "green",
-
-                            date:
-                                sticker.date ||
-                                new Date().toISOString(),
-
-                            kilometers:
-                                typeof sticker.kilometers ===
-                                    "number"
-                                    ? sticker.kilometers
-                                    : null,
-
-                            stars:
-                                typeof sticker.stars ===
-                                    "number"
-                                    ? sticker.stars
-                                    : 0
-                        }
-                    )
-            }
-        );
-
-
-    if (!response.ok) {
-
-        const errorText =
-            await response.text();
-
-
-        throw new Error(
-            "Supabase HTTP " +
-            response.status +
-            ": " +
-            errorText
-        );
-
-    }
-
-}
-
-
 
 /* =========================================================
    RENDEROWANIE STRONY PAŃSTWA
