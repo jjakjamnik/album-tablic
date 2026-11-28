@@ -232,7 +232,7 @@ function createStickerCard(sticker) {
 
     const foundCountryName =
         foundCountryOption
-            ? foundCountryOption.textContent.replace(/^\\S+\\s*/, "").trim()
+            ? foundCountryOption.textContent.replace(/^\S+\s*/, "").trim()
             : foundCountryCode;
 
     found.textContent =
