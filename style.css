@@ -3483,3 +3483,24 @@ border: 1px solid rgba(255,255,255,.35);
     }
 
 }
+
+
+/* =========================================================
+   JEDNOLITY WYGLĄD WSZYSTKICH STOPEK ALBUMU
+   ========================================================= */
+
+.album-v3 .album-page-footer,
+.album-v3 > .album-footer {
+    box-sizing: border-box;
+    color: #ffffff !important;
+    background: #171717 !important;
+    border-top: 1px solid #444444 !important;
+}
+
+.album-v3 .album-page-footer span {
+    color: #ffffff !important;
+}
+
+.album-v3 > .album-footer span {
+    color: #ffffff !important;
+}
