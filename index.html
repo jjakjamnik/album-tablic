@@ -35,7 +35,7 @@
             font-family: Arial, sans-serif;
         }
 
-        .index-v3 {
+        .index-v4 {
             width: min(1180px, calc(100% - 32px));
             margin: 35px auto;
         }
@@ -322,7 +322,7 @@
         /* TELEFONY */
 
         @media (max-width: 520px) {
-            .index-v3 {
+            .index-v4 {
                 width: calc(100% - 20px);
                 margin: 10px auto;
             }
@@ -361,12 +361,12 @@
 
 <body class="album-index">
 
-    <main class="album index-v3">
+    <main class="album index-v4">
 
         <header class="index-cover">
 
             <div class="cover-edition">
-                EUROPEAN REGISTRATION PLATES COLLECTION
+                EUROPEAN REGISTRATION PLATES COLLECTION · EDITION 4.0
             </div>
 
             <h1 class="cover-title">
@@ -402,7 +402,9 @@
                         <button class="cover-auth-link" id="forgot-password" type="button">NIE PAMIĘTASZ HASŁA?</button>
                     </div>
                     <div id="signup-fields" hidden>
-                        <p class="cover-auth-note">Utwórz konto i wybierz własne hasło.</p>
+                        <p class="cover-auth-note">Wybierz unikalny login, podaj e-mail i ustaw hasło.</p>
+                        <label for="signup-username">LOGIN</label>
+                        <input id="signup-username" name="username" type="text" placeholder="3–24 znaki: litery, cyfry, _" autocomplete="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}">
                         <label for="signup-password">NOWE HASŁO</label>
                         <input id="signup-password" name="new-password" type="password" placeholder="Minimum 8 znaków" autocomplete="new-password" minlength="8">
                         <label for="signup-password-confirm">POWTÓRZ HASŁO</label>
