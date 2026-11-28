@@ -402,15 +402,24 @@
 /* INFORMACJA O DARCZYŃCY KARTY GOŚCINNEJ */
 
 .sticker-gift-source {
-    margin-top: 6px;
-    padding: 5px 4px;
-    color: var(--card-metal);
-    border-top: 1px solid rgba(255,255,255,0.25);
-    font-family: "Keep Calm", sans-serif;
-    font-size: 9px;
-    font-weight: 600;
+    display: block;
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 30;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 7px 0;
+    padding: 7px 5px;
+    border: 1px solid rgba(255,224,160,.8);
+    border-radius: 4px;
+    background: rgba(0,0,0,.24);
+    color: #fff0c8;
+    font-family: Georgia, serif;
+    font-size: 11px;
+    font-weight: 700;
     line-height: 1.25;
     text-align: center;
+    letter-spacing: .35px;
     overflow-wrap: anywhere;
 }
 
