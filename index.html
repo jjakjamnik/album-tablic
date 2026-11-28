@@ -390,17 +390,28 @@
                 <p class="cover-auth-note">Zaloguj się do swojej kolekcji lub załóż nowe konto.</p>
 
                 <form id="cover-auth-form" autocomplete="on">
-                    <label for="login-email">ADRES E-MAIL</label>
-                    <input id="login-email" name="email" type="email" placeholder="twoj@email.com" autocomplete="email" required>
-
-                    <label for="login-password">HASŁO</label>
-                    <input id="login-password" name="password" type="password" placeholder="Wpisz hasło" autocomplete="current-password" required>
-
-                    <div class="cover-auth-actions">
-                        <button class="cover-auth-button" id="login-submit" type="button">ZALOGUJ SIĘ</button>
-                        <button class="cover-auth-button secondary" id="signup-submit" type="button">ZAŁÓŻ KONTO</button>
+                    <div id="login-fields">
+                        <label for="login-email">ADRES E-MAIL</label>
+                        <input id="login-email" name="email" type="email" placeholder="twoj@email.com" autocomplete="email" required>
+                        <label for="login-password">HASŁO</label>
+                        <input id="login-password" name="password" type="password" placeholder="Wpisz hasło" autocomplete="current-password" required>
+                        <div class="cover-auth-actions">
+                            <button class="cover-auth-button" id="login-submit" type="button">ZALOGUJ SIĘ</button>
+                            <button class="cover-auth-button secondary" id="signup-submit" type="button">ZAŁÓŻ KONTO</button>
+                        </div>
+                        <button class="cover-auth-link" id="forgot-password" type="button">NIE PAMIĘTASZ HASŁA?</button>
                     </div>
-                    <button class="cover-auth-link" id="forgot-password" type="button">NIE PAMIĘTASZ HASŁA?</button>
+                    <div id="signup-fields" hidden>
+                        <p class="cover-auth-note">Utwórz konto i wybierz własne hasło.</p>
+                        <label for="signup-password">NOWE HASŁO</label>
+                        <input id="signup-password" name="new-password" type="password" placeholder="Minimum 8 znaków" autocomplete="new-password" minlength="8">
+                        <label for="signup-password-confirm">POWTÓRZ HASŁO</label>
+                        <input id="signup-password-confirm" name="new-password-confirm" type="password" placeholder="Wpisz hasło ponownie" autocomplete="new-password" minlength="8">
+                        <div class="cover-auth-actions">
+                            <button class="cover-auth-button" id="signup-create" type="button">UTWÓRZ KONTO</button>
+                            <button class="cover-auth-button secondary" id="signup-cancel" type="button">WRÓĆ</button>
+                        </div>
+                    </div>
                 </form>
 
                 <div class="cover-auth-logged-in" id="cover-auth-logged-in" hidden>
