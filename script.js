@@ -298,6 +298,28 @@ document.addEventListener(
                 "sticker-owner"
             );
 
+        const giftFromField =
+            document.getElementById("guest-source-field");
+
+        const giftFromInput =
+            document.getElementById("sticker-gift-from");
+
+        function updateGuestSourceVisibility() {
+            if (giftFromField) {
+                giftFromField.hidden =
+                    !ownerSelect || ownerSelect.value !== "guest";
+            }
+        }
+
+        if (ownerSelect) {
+            ownerSelect.addEventListener(
+                "change",
+                updateGuestSourceVisibility
+            );
+        }
+
+        updateGuestSourceVisibility();
+
 
         /* =================================================
            OTWIERANIE FORMULARZA
@@ -487,6 +509,11 @@ document.addEventListener(
                             : ownerSelect
                                 ? ownerSelect.value
                                 : "green";
+
+                    const giftFrom =
+                        owner === "guest" && giftFromInput
+                            ? giftFromInput.value.trim()
+                            : "";
 
 
                     /* -------------------------------------
@@ -905,6 +932,9 @@ document.addEventListener(
                                 owner:
                                     owner,
 
+                                gift_from:
+                                    giftFrom || null,
+
                                 kilometers:
                                     distanceResult
                                         ? distanceResult.kilometers
@@ -1061,6 +1091,9 @@ document.addEventListener(
 
                             owner:
                                 owner,
+
+                            gift_from:
+                                giftFrom || null,
 
                             date:
                                 new Date()
@@ -1309,9 +1342,9 @@ async function recalculateLegacyRoadDistanceCards() {
         return;
     }
 
-    // Ponowna migracja: Grecja i Czarnogóra przechodzą ze stałej
-    // liczby gwiazdek na standardową rzadkość zależną od kilometrów.
-    const migrationVersion = "v5.0-road-countries-3-worldwide-found-location";
+    // Jednorazowe, krajowo świadome przeliczenie starszych kart:
+    // wszystkie znaleziska poza Polską oraz karty bez dystansu.
+    const migrationVersion = "v5.0-found-country-backfill-1";
     const migrationKey =
         "album-road-distance:" +
         albumCurrentUser.id +
@@ -1322,13 +1355,22 @@ async function recalculateLegacyRoadDistanceCards() {
         return;
     }
 
-    const supportedCountries = new Set([
-        "BG", "HR", "RS", "SI", "ME", "GR"
-    ]);
+    const candidates = stickersCache.filter(sticker => {
+        const country = String(sticker.country || "").toUpperCase();
+        const hasFoundCountry = Boolean(sticker.location_country);
+        const missingDistance =
+            sticker.kilometers === null ||
+            sticker.kilometers === undefined ||
+            !Number.isFinite(Number(sticker.kilometers));
 
-    const candidates = stickersCache.filter(sticker =>
-        supportedCountries.has(String(sticker.country || "").toUpperCase())
-    );
+        const hasVariableRarity =
+            getFixedCountryStars(country) === null &&
+            getFallbackCountryStars(country) === null;
+
+        return hasFoundCountry &&
+            hasVariableRarity &&
+            (sticker.location_country !== "PL" || missingDistance);
+    });
 
     let updated = 0;
     let failed = 0;
@@ -1353,12 +1395,11 @@ async function recalculateLegacyRoadDistanceCards() {
 
         try {
 
-            // Przelicz trasę od nowa: wcześniejsza wersja mogła
-            // błędnie ograniczać miejsce znalezienia do Polski.
             const result = await calculateStickerDistance(
                 country,
                 origin,
-                sticker.location
+                sticker.location,
+                sticker.location_country
             );
 
             if (
@@ -1378,6 +1419,7 @@ async function recalculateLegacyRoadDistanceCards() {
             };
 
             await updateStickerInSupabase(updatedSticker);
+            Object.assign(sticker, updatedSticker);
             updated++;
 
         } catch (error) {
@@ -1385,17 +1427,16 @@ async function recalculateLegacyRoadDistanceCards() {
             failed++;
 
             console.warn(
-                "Nie udało się automatycznie przeliczyć karty:",
+                "Nie udało się przeliczyć starszej karty:",
                 country,
                 sticker.plate,
                 error
             );
 
         }
-
     }
 
-    // Przy błędach zapisu lub sieci kolejna sesja ponowi próbę.
+    // Błędy sieciowe zostawiają migrację do ponowienia przy kolejnej sesji.
     if (failed === 0) {
         localStorage.setItem(migrationKey, "done");
     }
@@ -1407,10 +1448,9 @@ async function recalculateLegacyRoadDistanceCards() {
     }
 
     console.log(
-        "Aktualizacja odległości i gwiazdek:",
+        "Krajowo świadoma aktualizacja odległości:",
         { updated, failed, unrecognized, checked: candidates.length }
     );
-
 }
 
 
@@ -1449,6 +1489,7 @@ async function updateStickerInSupabase(sticker) {
             origin: sticker.origin,
             department: sticker.department,
             owner: sticker.owner,
+            gift_from: sticker.gift_from || null,
             date: sticker.date,
             kilometers: sticker.kilometers,
             stars: sticker.stars
@@ -2443,6 +2484,12 @@ function editSticker(
             "sticker-owner"
         );
 
+    const giftFromField =
+        document.getElementById("guest-source-field");
+
+    const giftFromInput =
+        document.getElementById("sticker-gift-from");
+
 
     if (countrySelect) {
 
@@ -2499,6 +2546,14 @@ function editSticker(
         ownerSelect.value =
             sticker.owner;
 
+    }
+
+    if (giftFromInput) {
+        giftFromInput.value = sticker.gift_from || "";
+    }
+
+    if (giftFromField) {
+        giftFromField.hidden = sticker.owner !== "guest";
     }
 
 
@@ -2596,6 +2651,15 @@ function resetEditMode() {
             "DODAJ TABLICĘ";
 
     }
+
+    const giftFromInput =
+        document.getElementById("sticker-gift-from");
+
+    const giftFromField =
+        document.getElementById("guest-source-field");
+
+    if (giftFromInput) giftFromInput.value = "";
+    if (giftFromField) giftFromField.hidden = true;
 
 }
 
