@@ -376,6 +376,21 @@ function createStickerCard(sticker) {
         plate
     );
 
+    if (sticker.owner === "guest" && sticker.gift_from) {
+        const giftSource = document.createElement("div");
+        giftSource.className = "sticker-gift-source";
+        giftSource.textContent = "PREZENT OD: " + sticker.gift_from;
+        giftSource.setAttribute("role", "note");
+        giftSource.style.cssText =
+            "display:block;flex:0 0 auto;position:relative;z-index:30;" +
+            "box-sizing:border-box;width:100%;margin:7px 0;padding:7px 5px;" +
+            "border:1px solid rgba(255,224,160,.8);border-radius:4px;" +
+            "background:rgba(0,0,0,.24);color:#fff0c8;" +
+            "font-family:Georgia,serif;font-size:11px;font-weight:700;" +
+            "line-height:1.25;text-align:center;letter-spacing:.35px;" +
+            "overflow-wrap:anywhere;";
+        article.appendChild(giftSource);
+    }
 
     article.appendChild(
         origin
@@ -385,13 +400,6 @@ function createStickerCard(sticker) {
     article.appendChild(
         found
     );
-    if (sticker.owner === "guest" && sticker.gift_from) {
-        const giftSource = document.createElement("div");
-        giftSource.className = "sticker-gift-source";
-        giftSource.textContent = "OD: " + sticker.gift_from;
-        article.appendChild(giftSource);
-    }
-
 
 
     article.appendChild(
