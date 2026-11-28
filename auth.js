@@ -118,8 +118,14 @@
 
         const emailInput = document.getElementById("login-email");
         const passwordInput = document.getElementById("login-password");
+        const signupPasswordInput = document.getElementById("signup-password");
+        const signupPasswordConfirmInput = document.getElementById("signup-password-confirm");
+        const loginFields = document.getElementById("login-fields");
+        const signupFields = document.getElementById("signup-fields");
         const loginButton = document.getElementById("login-submit");
         const signupButton = document.getElementById("signup-submit");
+        const signupCreateButton = document.getElementById("signup-create");
+        const signupCancelButton = document.getElementById("signup-cancel");
         const forgotButton = document.getElementById("forgot-password");
         const logoutButton = document.getElementById("logout-submit");
         const recoveryBox = document.getElementById("cover-auth-recovery");
@@ -166,21 +172,52 @@
             window.location.href = "./album.html";
         });
 
-        signupButton.addEventListener("click", async function () {
+        signupButton.addEventListener("click", function () {
             const email = emailInput.value.trim();
-            const password = passwordInput.value;
-
-            if (!email || !password) {
-                setStatus("Wpisz adres e-mail i hasło, aby założyć konto.", "error");
+            if (!email) {
+                setStatus("Najpierw wpisz adres e-mail.", "error");
+                emailInput.focus();
                 return;
             }
+            loginFields.hidden = true;
+            signupFields.hidden = false;
+            passwordInput.value = "";
+            signupPasswordInput.value = "";
+            signupPasswordConfirmInput.value = "";
+            signupPasswordInput.focus();
+            setStatus("Wybierz własne hasło do nowego konta.", "success");
+        });
 
+        signupCancelButton.addEventListener("click", function () {
+            signupFields.hidden = true;
+            loginFields.hidden = false;
+            signupPasswordInput.value = "";
+            signupPasswordConfirmInput.value = "";
+            setStatus("Możesz się zalogować lub rozpocząć rejestrację.", "");
+        });
+
+        signupCreateButton.addEventListener("click", async function () {
+            const email = emailInput.value.trim();
+            const password = signupPasswordInput.value;
+            const passwordConfirm = signupPasswordConfirmInput.value;
+
+            if (!email) {
+                setStatus("Wpisz adres e-mail.", "error");
+                emailInput.focus();
+                return;
+            }
             if (password.length < 8) {
                 setStatus("Hasło musi mieć co najmniej 8 znaków.", "error");
+                signupPasswordInput.focus();
+                return;
+            }
+            if (password !== passwordConfirm) {
+                setStatus("Podane hasła nie są identyczne.", "error");
+                signupPasswordConfirmInput.focus();
                 return;
             }
 
-            setBusy([loginButton, signupButton, forgotButton], true, "TWORZENIE KONTA...");
+            setBusy([signupCreateButton, signupCancelButton], true, "TWORZENIE KONTA...");
             const result = await client.auth.signUp({
                 email: email,
                 password: password,
@@ -188,7 +225,7 @@
                     emailRedirectTo: new URL("./index.html", window.location.href).toString()
                 }
             });
-            setBusy([loginButton, signupButton, forgotButton], false);
+            setBusy([signupCreateButton, signupCancelButton], false);
 
             if (result.error) {
                 setStatus("Nie udało się założyć konta: " + result.error.message, "error");
@@ -201,7 +238,11 @@
                 return;
             }
 
-            setStatus("Konto zostało zgłoszone. Sprawdź pocztę i potwierdź adres e-mail, a potem zaloguj się.", "success");
+            signupFields.hidden = true;
+            loginFields.hidden = false;
+            signupPasswordInput.value = "";
+            signupPasswordConfirmInput.value = "";
+            setStatus("Konto zostało utworzone. Sprawdź pocztę, potwierdź adres e-mail, a następnie zaloguj się.", "success");
         });
 
         forgotButton.addEventListener("click", async function () {
