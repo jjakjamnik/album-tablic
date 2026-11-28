@@ -348,6 +348,7 @@ document.addEventListener(
                             "− ZAMKNIJ";
 
                         createFrenchDepartmentSelect();
+                        updateGuestSourceVisibility();
 
                     }
 
@@ -1241,6 +1242,16 @@ document.addEventListener(
                     if (locationCountrySelect) {
                         locationCountrySelect.value = "";
                     }
+
+                    if (giftFromInput) {
+                        giftFromInput.value = "";
+                    }
+
+                    if (ownerSelect) {
+                        ownerSelect.value = "green";
+                    }
+
+                    updateGuestSourceVisibility();
 
 
                     if (form) {
