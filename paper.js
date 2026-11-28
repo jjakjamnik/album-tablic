@@ -14,6 +14,10 @@
     let isTurning = false;
     let animationStyle = null;
 
+    function isMobileLayout() {
+        return window.matchMedia("(max-width: 750px), (pointer: coarse) and (max-height: 750px)").matches;
+    }
+
 
     /* =====================================================
        STYLE
@@ -356,7 +360,7 @@
     function turnPage(direction, prepareDestination, onComplete) {
 
         if (
-            window.matchMedia("(max-width: 750px)").matches
+            isMobileLayout()
         ) {
             if (onComplete) onComplete();
             return;
@@ -539,7 +543,7 @@
 
         // Telefon: zwykła, natychmiastowa nawigacja.
         if (
-            window.matchMedia("(max-width: 750px)").matches
+            isMobileLayout()
         ) {
             return;
         }
