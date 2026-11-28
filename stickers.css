@@ -867,6 +867,11 @@ inset: 2px;
         padding-top: 6px;
     }
 
+    .sticker-bottom-row .sticker-stars {
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
+
     .sticker-bottom-row .sticker-edit,
     .sticker-bottom-row .sticker-delete {
         min-width: 43px;
