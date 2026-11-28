@@ -218,9 +218,27 @@ function createStickerCard(sticker) {
         "sticker-location";
 
 
+    const foundCountryCode =
+        sticker.location_country || "";
+
+    const foundCountryOption =
+        foundCountryCode
+            ? document.querySelector(
+                '#sticker-location-country option[value="' +
+                foundCountryCode +
+                '"]'
+            )
+            : null;
+
+    const foundCountryName =
+        foundCountryOption
+            ? foundCountryOption.textContent.replace(/^\\S+\\s*/, "").trim()
+            : foundCountryCode;
+
     found.textContent =
         "ZNALEZIONA: " +
-        sticker.location;
+        sticker.location +
+        (foundCountryName ? ", " + foundCountryName : "");
 
 
     /* =====================================================
