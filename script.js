@@ -3518,7 +3518,6 @@ function renderCurrentCountry() {
             );
 
             pocket.appendChild(article);
-            pocket.appendChild(createStickerActions(sticker));
         } else {
             pocket.classList.add("album-pocket-empty");
 
@@ -3859,6 +3858,7 @@ function createStickerCard(sticker, cardNumber) {
     /* SKŁADANIE KARTY */
 
     article.appendChild(header);
+    article.appendChild(createStickerActions(sticker));
     article.appendChild(edition);
     article.appendChild(plate);
     article.appendChild(originSection);
