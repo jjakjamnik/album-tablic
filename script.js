@@ -67,6 +67,13 @@ let currentCountryPage = 1;
 // Mobilna pozycja na pierwszej rozkładówce.
 let currentFrontmatterPage = "form";
 
+// Wspólne rozpoznawanie telefonu także po obróceniu poziomo.
+function isMobileAlbumLayout() {
+    return window.matchMedia(
+        "(max-width: 750px), (pointer: coarse) and (max-height: 750px)"
+    ).matches;
+}
+
 function setFrontmatterMobilePage(pageName) {
 
     const frontmatter =
@@ -75,7 +82,7 @@ function setFrontmatterMobilePage(pageName) {
     if (!frontmatter) return;
 
     const isMobile =
-        window.matchMedia("(max-width: 750px)").matches;
+        isMobileAlbumLayout();
 
     const leftPage =
         frontmatter.querySelector('[data-page-side="left"]');
@@ -3122,7 +3129,7 @@ function renderCurrentCountry() {
     const leftPage = document.querySelector(".album-page-left");
     const rightPage = document.querySelector(".album-page-right");
 
-    const isMobileAlbum = window.matchMedia("(max-width: 750px)").matches;
+    const isMobileAlbum = isMobileAlbumLayout();
     const pocketsPerPage = isMobileAlbum ? 30 : 60;
 
     const isSpecialView =
@@ -4036,7 +4043,7 @@ function initializeAlbumNavigation() {
 
         frontmatterPreviousButton.addEventListener("click", function () {
 
-            if (window.matchMedia("(max-width: 750px)").matches) {
+            if (isMobileAlbumLayout()) {
                 setFrontmatterMobilePage("form");
 
                 window.scrollTo({
@@ -4060,7 +4067,7 @@ function initializeAlbumNavigation() {
         frontmatterNextButton.addEventListener("click", function () {
 
             const isMobile =
-                window.matchMedia("(max-width: 750px)").matches;
+                isMobileAlbumLayout();
 
             if (
                 isMobile &&
