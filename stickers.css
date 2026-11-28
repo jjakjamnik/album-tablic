@@ -399,6 +399,21 @@
     line-height: 1.2;
 }
 
+/* INFORMACJA O DARCZYŃCY KARTY GOŚCINNEJ */
+
+.sticker-gift-source {
+    margin-top: 6px;
+    padding: 5px 4px;
+    color: var(--card-metal);
+    border-top: 1px solid rgba(255,255,255,0.25);
+    font-family: "Keep Calm", sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
 /* GWIAZDKI I SERCA */
 
 .sticker-stars {
