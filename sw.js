@@ -1,10 +1,10 @@
 /* =========================================================
    ALBUM TABLIC REJESTRACYJNYCH
    SERVICE WORKER — PWA
-   WERSJA 2.0
+   WERSJA 4.0
    ========================================================= */
 
-const CACHE_NAME = "album-tablic-v4-auth-signup-username";
+const CACHE_NAME = "album-tablic-v4-auth-username-login";
 
 const APP_SHELL_FILES = [
     "./",
