@@ -239,8 +239,8 @@
             const password = signupPasswordInput.value;
             const passwordConfirm = signupPasswordConfirmInput.value;
 
-            if (!email) {
-                setStatus("Wpisz adres e-mail.", "error");
+            if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+                setStatus("Wpisz poprawny adres e-mail w poprzednim kroku.", "error");
                 emailInput.focus();
                 return;
             }
@@ -292,8 +292,8 @@
         forgotButton.addEventListener("click", async function () {
             const email = emailInput.value.trim();
 
-            if (!email) {
-                setStatus("Najpierw wpisz adres e-mail.", "error");
+            if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+                setStatus("Wpisz poprawny adres e-mail, aby odzyskać hasło.", "error");
                 emailInput.focus();
                 return;
             }
