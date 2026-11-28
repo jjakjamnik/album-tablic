@@ -1890,7 +1890,7 @@ main {
    DESKTOPOWA OPRAWA FIZYCZNEGO ALBUMU
    ========================================================= */
 
-@media (min-width: 751px) {
+@media (min-width: 751px) and (pointer: fine) {
 
     /* TŁO WOKÓŁ KSIĘGI */
 
@@ -2090,7 +2090,8 @@ main {
     /* DEKORACYJNA LINIA POD NAGŁÓWKIEM */
 
     .album[data-country] > main::before {
-        content: "EUROPEAN REGISTRATION PLATES  •  COLLECTOR'S ARCHIVE";
+        content: none !important;
+        display: none !important;
         display: block;
         margin: 0 0 22px;
         padding: 0 0 12px;
@@ -3084,7 +3085,7 @@ border: 1px solid rgba(255,255,255,.35);
    TELEFONY — JEDNA STRONA NA EKRANIE
    ========================================================= */
 
-@media (max-width: 750px) {
+@media (max-width: 750px), (pointer: coarse) and (max-height: 750px) {
 
     .album-v3 {
         margin: 8px;
@@ -3138,18 +3139,20 @@ border: 1px solid rgba(255,255,255,.35);
     }
 
     .album-page-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         gap: 7px !important;
         padding: 3px 0 12px !important;
     }
 
     .album-page-grid > .album-pocket {
-        min-height: 180px;
+        min-height: 0;
+        aspect-ratio: 0.68;
         padding: 2px;
     }
 
     .album-page-grid > .album-pocket-filled > .sticker {
-        min-height: 174px;
+        min-height: 0;
+        height: 100%;
     }
 
     .album-page-footer {
@@ -3243,7 +3246,7 @@ border: 1px solid rgba(255,255,255,.35);
 
 /* TELEFONY */
 
-@media (max-width: 750px) {
+@media (max-width: 750px), (pointer: coarse) and (max-height: 750px) {
     .album-v3 .album-pagination {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -3472,7 +3475,7 @@ border: 1px solid rgba(255,255,255,.35);
 }
 /* TELEFON — UKRYCIE ŚRODKOWEGO GRZBIETU */
 
-@media (max-width: 750px) {
+@media (max-width: 750px), (pointer: coarse) and (max-height: 750px) {
 
     .album-v3 .album-v3-main::before {
         display: none !important;
