@@ -454,7 +454,8 @@ function formatDistanceStars(
 async function calculateStickerDistance(
     countryCode,
     origin,
-    foundLocation
+    foundLocation,
+    foundCountryCode = null
 ) {
 
     if (
@@ -500,7 +501,7 @@ async function calculateStickerDistance(
     const foundCoordinates =
         await geocodeLocation(
             foundLocation,
-            null
+            foundCountryCode
         );
 
 
