@@ -185,6 +185,97 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
         }
 
+        /* PANEL LOGOWANIA — PRZYGOTOWANIE WERSJI 4.0 */
+
+        .cover-auth {
+            position: relative;
+            z-index: 1;
+            width: min(390px, 100%);
+            box-sizing: border-box;
+            margin: 0 auto 25px;
+            padding: 22px;
+            background: rgba(18, 13, 9, 0.48);
+            border: 1px solid rgba(214, 189, 137, 0.45);
+            border-radius: 8px;
+            box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        .cover-auth-title {
+            margin: 0 0 6px;
+            color: #f1dfb8;
+            font-size: 17px;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .cover-auth-note {
+            margin: 0 0 18px;
+            color: #c9b895;
+            font-size: 11px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .cover-auth label {
+            display: block;
+            margin: 12px 0 6px;
+            color: #d8c49d;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .cover-auth input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 12px;
+            color: #eadfc8;
+            background: rgba(0, 0, 0, 0.28);
+            border: 1px solid rgba(214, 189, 137, 0.35);
+            border-radius: 4px;
+            font: inherit;
+            font-size: 13px;
+        }
+
+        .cover-auth input::placeholder {
+            color: #9e8d70;
+        }
+
+        .cover-auth-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+            margin-top: 17px;
+        }
+
+        .cover-auth-button {
+            min-height: 40px;
+            padding: 9px 8px;
+            color: #261b11;
+            background: linear-gradient(180deg, #d6bd89, #a98a55);
+            border: 1px solid #e6d3a9;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .cover-auth-button.secondary {
+            color: #e4d1aa;
+            background: transparent;
+            border-color: rgba(214, 189, 137, 0.5);
+        }
+
+        .cover-auth-status {
+            margin: 13px 0 0;
+            color: #bda77d;
+            font-size: 10px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
         /* STOPKA */
 
         .index-footer {
@@ -261,6 +352,26 @@
                 Każda znaleziona tablica to kolejna historia,
                 kolejne miejsce i kolejna strona albumu.
             </p>
+
+            <section class="cover-auth" aria-labelledby="cover-auth-title">
+                <h2 class="cover-auth-title" id="cover-auth-title">TWOJE KONTO</h2>
+                <p class="cover-auth-note">Zaloguj się lub dołącz do kolekcjonerów.</p>
+
+                <form aria-label="Podgląd formularza logowania">
+                    <label for="login-email">ADRES E-MAIL</label>
+                    <input id="login-email" type="email" placeholder="twoj@email.com" disabled>
+
+                    <label for="login-password">HASŁO</label>
+                    <input id="login-password" type="password" placeholder="••••••••" disabled>
+
+                    <div class="cover-auth-actions">
+                        <button class="cover-auth-button" type="button" disabled>ZALOGUJ SIĘ</button>
+                        <button class="cover-auth-button secondary" type="button" disabled>ZAŁÓŻ KONTO</button>
+                    </div>
+                </form>
+
+                <p class="cover-auth-status">Panel wizualny — logowanie i rejestracja zostaną uruchomione w wersji 4.0.</p>
+            </section>
 
             <a href="album.html" class="open-album-button">
                 OTWÓRZ ALBUM →
