@@ -2777,12 +2777,43 @@ function editSticker(
     }
 
 
+    // Formularz edycji znajduje się na pierwszej rozkładówce.
+    // Najpierw pokaż ją ponownie, bo podczas przeglądania krajów
+    // cały frontmatter jest ukryty.
+    const frontmatter =
+        document.getElementById("album-frontmatter");
+
+    const spread =
+        document.getElementById("album-spread");
+
+    const pagination =
+        document.getElementById("album-pagination");
+
+    const frontmatterNavigation =
+        document.querySelector(".album-frontmatter-navigation");
+
+    if (frontmatter) {
+        frontmatter.hidden = false;
+    }
+
+    if (frontmatterNavigation) {
+        frontmatterNavigation.hidden = false;
+    }
+
+    if (spread) {
+        spread.hidden = true;
+    }
+
+    if (pagination) {
+        pagination.hidden = true;
+    }
+
+    // Na telefonie pokaż lewą stronę z formularzem,
+    // a na komputerze pozostaw obie strony rozkładówki.
+    setFrontmatterMobilePage("form");
+
     if (form) {
-
-        form.removeAttribute(
-            "hidden"
-        );
-
+        form.removeAttribute("hidden");
     }
 
 
