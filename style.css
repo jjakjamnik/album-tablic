@@ -2787,7 +2787,7 @@ border: 1px solid rgba(255,255,255,.35);
 }
 
 .album-page-grid .album-pocket-number {
-    color: rgba(77,55,32,.65);
+    color: #000000 !important;
 }
 
 .album-page-grid .album-pocket-label {
