@@ -3797,8 +3797,6 @@ function createStickerCard(sticker, cardNumber) {
 
     found.appendChild(foundLabel);
     found.appendChild(foundValue);
-    const cardActions = createStickerActions(sticker);
-    found.appendChild(cardActions.editButton);
 
     /* ODLEGŁOŚĆ */
 
@@ -3823,7 +3821,6 @@ function createStickerCard(sticker, cardNumber) {
 
     distance.appendChild(distanceLabel);
     distance.appendChild(distanceValue);
-    distance.appendChild(cardActions.deleteButton);
 
     meta.appendChild(found);
     meta.appendChild(distance);
@@ -3853,6 +3850,16 @@ function createStickerCard(sticker, cardNumber) {
         stars.textContent = "—";
     }
 
+    /* DOLNY RZĄD — EDYCJA, GWIAZDKI, USUWANIE */
+
+    const bottomRow = document.createElement("div");
+    bottomRow.className = "sticker-bottom-row";
+
+    const cardActions = createStickerActions(sticker);
+    bottomRow.appendChild(cardActions.editButton);
+    bottomRow.appendChild(stars);
+    bottomRow.appendChild(cardActions.deleteButton);
+
     /* PRZEZROCZYSTA KOSZULKA */
 
     const sleeve = document.createElement("div");
@@ -3865,7 +3872,7 @@ function createStickerCard(sticker, cardNumber) {
     article.appendChild(plate);
     article.appendChild(originSection);
     article.appendChild(meta);
-    article.appendChild(stars);
+    article.appendChild(bottomRow);
     article.appendChild(sleeve);
 
     return article;
@@ -3881,7 +3888,7 @@ function createStickerActions(sticker) {
     const editButton = document.createElement("button");
     editButton.type = "button";
     editButton.className = "sticker-edit";
-    editButton.textContent = "✎";
+    editButton.textContent = "EDYTUJ";
     editButton.title = "Edytuj tablicę";
     editButton.setAttribute(
         "aria-label",
@@ -3895,7 +3902,7 @@ function createStickerActions(sticker) {
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
     deleteButton.className = "sticker-delete";
-    deleteButton.textContent = "×";
+    deleteButton.textContent = "USUŃ";
     deleteButton.title = "Usuń tablicę";
     deleteButton.setAttribute(
         "aria-label",
