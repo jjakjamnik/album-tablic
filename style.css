@@ -3535,3 +3535,9 @@ border: 1px solid rgba(255,255,255,.35);
         justify-content: space-between;
     }
 }
+
+
+/* Atrybut hidden ma pierwszeństwo także nad komponentami z display:flex/block. */
+[hidden] {
+    display: none !important;
+}
