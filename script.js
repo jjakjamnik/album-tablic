@@ -5,7 +5,7 @@
 
    - SUPABASE JAKO GŁÓWNA BAZA DANYCH
    - KOMPUTER + TELEFON = TA SAMA KOLEKCJA
-   - AUTOMATYCZNA MIGRACJA STAREGO LOCALSTORAGE
+   - KOLEKCJE ODDZIELONE DLA ZALOGOWANYCH UŻYTKOWNIKÓW
    - ODLEGŁOŚĆ DROGOWA OSRM
    - STAŁA RZADKOŚĆ DLA KRAJÓW
    - FRANCJA — WYBÓR DEPARTAMENTU
@@ -32,21 +32,14 @@ let albumCurrentUser = null;
 
 
 /* =========================================================
-   STARE LOCALSTORAGE
-   UŻYWANE TYLKO DO JEDNORAZOWEJ MIGRACJI
+   LOKALNA WERSJA APLIKACJI
    ========================================================= */
-
-const STORAGE_KEY =
-    "albumStickers";
 
 const STORAGE_VERSION_KEY =
     "albumStorageVersion";
 
 const STORAGE_VERSION =
     "8";
-
-const MIGRATION_KEY =
-    "albumMigrationV8";
 
 
 /* =========================================================
@@ -244,12 +237,8 @@ document.addEventListener(
         }
 
 
-        /* =================================================
-           MIGRACJA STAREGO LOCALSTORAGE
-           ================================================= */
-
-        // Dotychczasowa kolekcja została już przeniesiona do Supabase.
-        // Nie importujemy globalnego localStorage do nowych kont.
+        // Kolekcje są pobierane wyłącznie z konta aktualnie zalogowanego użytkownika.
+        // Nie importujemy globalnego localStorage pomiędzy kontami.
 
 
         /* =================================================
@@ -2644,11 +2633,7 @@ function resetEditMode() {
 
 
 /* =========================================================
-   MIGRACJA LOCALSTORAGE → SUPABASE
-   ========================================================= */
-
-/* =========================================================
-   LEGACY MIGRATION DISABLED
+   LEGACY LOCALSTORAGE MIGRATION DISABLED
    Dane kolekcji są już przypisane do kont użytkowników w Supabase.
    Nie kopiujemy globalnego localStorage pomiędzy kontami.
    ========================================================= */
