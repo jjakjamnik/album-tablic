@@ -4,7 +4,7 @@
    WERSJA 2.0
    ========================================================= */
 
-const CACHE_NAME = "album-tablic-v3";
+const CACHE_NAME = "album-tablic-v4-auth";
 
 const APP_SHELL_FILES = [
     "./",
@@ -18,6 +18,7 @@ const APP_SHELL_FILES = [
     "./plates.css",
 
     "./script.js",
+    "./auth.js",
     "./paper.js",
     "./cards.js",
     "./distance.js",
