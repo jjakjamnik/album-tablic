@@ -83,7 +83,13 @@ async function geocodeLocation(
         TR: "Turkey",
         UA: "Ukraine",
         GB: "United Kingdom",
-        UZ: "Uzbekistan"
+        UZ: "Uzbekistan",
+        BG: "Bulgaria",
+        HR: "Croatia",
+        RS: "Serbia",
+        SI: "Slovenia",
+        ME: "Montenegro",
+        GR: "Greece"
 
     };
 

@@ -4,7 +4,7 @@
    WERSJA 4.0
    ========================================================= */
 
-const CACHE_NAME = "album-tablic-v5-road-distance-1";
+const CACHE_NAME = "album-tablic-v5-road-countries-1";
 
 const APP_SHELL_FILES = [
     "./",
@@ -37,6 +37,12 @@ const APP_SHELL_FILES = [
     "./ukraina.js",
     "./uzbekistan.js",
     "./wielkabrytania.js",
+    "./bulgaria.js",
+    "./chorwacja.js",
+    "./serbia.js",
+    "./slowenia.js",
+    "./czarnogora.js",
+    "./grecja.js",
 
     "./icons/favicon.png",
     "./icons/icon-192.png",
