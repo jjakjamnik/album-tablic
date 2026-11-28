@@ -1,0 +1,32 @@
+/* CZARNOGÓRA — aktualne kody gmin (system od 2008 r.).
+   Dodatkowe warianty bez znaków diakrytycznych dla PŽ, ŠN i ŽB. */
+const CZARNOGORA_KODY = {
+    "AN": "Andrijevica",
+    "BA": "Berane",
+    "BD": "Budva",
+    "BP": "Bijelo Polje",
+    "BR": "Bar",
+    "CT": "Cetinje",
+    "DG": "Danilovgrad",
+    "GS": "Gusinje",
+    "HN": "Herceg Novi",
+    "KL": "Kolašin",
+    "KO": "Kotor",
+    "MK": "Mojkovac",
+    "NK": "Nikšić",
+    "PG": "Podgorica",
+    "PL": "Plav",
+    "PT": "Petnjica",
+    "PŽ": "Plužine",
+    "PZ": "Plužine",
+    "PV": "Pljevlja",
+    "RO": "Rožaje",
+    "ŠN": "Šavnik",
+    "SN": "Šavnik",
+    "TV": "Tivat",
+    "TZ": "Tuzi",
+    "UL": "Ulcinj",
+    "ZT": "Zeta",
+    "ŽB": "Žabljak",
+    "ZB": "Žabljak"
+};
