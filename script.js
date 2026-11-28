@@ -1284,7 +1284,7 @@ async function recalculateLegacyRoadDistanceCards() {
 
     // Ponowna migracja: Grecja i Czarnogóra przechodzą ze stałej
     // liczby gwiazdek na standardową rzadkość zależną od kilometrów.
-    const migrationVersion = "v5.0-road-countries-2";
+    const migrationVersion = "v5.0-road-countries-3-worldwide-found-location";
     const migrationKey =
         "album-road-distance:" +
         albumCurrentUser.id +
@@ -1310,13 +1310,6 @@ async function recalculateLegacyRoadDistanceCards() {
     for (const sticker of candidates) {
 
         const country = String(sticker.country || "").toUpperCase();
-        const existingKm = Number(sticker.kilometers);
-        const hasDistance =
-            sticker.kilometers !== null &&
-            sticker.kilometers !== undefined &&
-            sticker.kilometers !== "" &&
-            Number.isFinite(existingKm);
-
         const origin =
             findCity(
                 country,
@@ -1333,18 +1326,13 @@ async function recalculateLegacyRoadDistanceCards() {
 
         try {
 
-            // Zachowaj istniejące kilometry; przelicz tylko gwiazdki.
-            // Brakujące kilometry nadal wyznaczamy przez OSRM.
-            const result = hasDistance
-                ? {
-                    kilometers: existingKm,
-                    stars: getDistanceStars(existingKm)
-                }
-                : await calculateStickerDistance(
-                    country,
-                    origin,
-                    sticker.location
-                );
+            // Przelicz trasę od nowa: wcześniejsza wersja mogła
+            // błędnie ograniczać miejsce znalezienia do Polski.
+            const result = await calculateStickerDistance(
+                country,
+                origin,
+                sticker.location
+            );
 
             if (
                 !result ||
