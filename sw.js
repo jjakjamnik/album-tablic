@@ -1,24 +1,30 @@
 /* =========================================================
    ALBUM TABLIC REJESTRACYJNYCH
-   SERVICE WORKER
-   PWA — WERSJA 1.0
+   SERVICE WORKER — PWA
+   WERSJA 2.0
    ========================================================= */
 
-const CACHE_NAME = "album-tablic-v2";
+const CACHE_NAME = "album-tablic-v3";
 
-const FILES_TO_CACHE = [
+const APP_SHELL_FILES = [
     "./",
     "./index.html",
+    "./album.html",
+    "./manifest.json",
+
     "./style.css",
+    "./paper.css",
     "./stickers.css",
     "./plates.css",
 
     "./script.js",
+    "./paper.js",
     "./cards.js",
     "./distance.js",
 
     "./austria.js",
     "./bialorus.js",
+    "./czechy.js",
     "./francja.js",
     "./irlandia.js",
     "./polska.js",
@@ -26,11 +32,10 @@ const FILES_TO_CACHE = [
     "./slowacja.js",
     "./rumunia.js",
     "./szwajcaria.js",
-       "./turcja.js",
+    "./turcja.js?v=20261126",
     "./ukraina.js",
+    "./uzbekistan.js",
     "./wielkabrytania.js",
-
-    "./manifest.json",
 
     "./icons/favicon.png",
     "./icons/icon-192.png",
@@ -39,121 +44,95 @@ const FILES_TO_CACHE = [
 
 
 /* =========================================================
-   INSTALACJA
+   INSTALACJA — ZAPIS PODSTAWOWYCH PLIKÓW
    ========================================================= */
 
 self.addEventListener("install", event => {
-
     event.waitUntil(
-
-        caches.open(CACHE_NAME)
-            .then(cache => {
-
-                console.log("PWA: zapisywanie plików aplikacji.");
-
-                return cache.addAll(FILES_TO_CACHE);
-
-            })
-
+        caches.open(CACHE_NAME).then(cache => {
+            return cache.addAll(APP_SHELL_FILES);
+        })
     );
 
     self.skipWaiting();
-
 });
 
 
 /* =========================================================
-   AKTYWACJA
+   AKTYWACJA — USUNIĘCIE STARYCH WERSJI CACHE
    ========================================================= */
 
 self.addEventListener("activate", event => {
-
     event.waitUntil(
-
         caches.keys().then(cacheNames => {
-
             return Promise.all(
-
                 cacheNames
-                    .filter(name => name !== CACHE_NAME)
+                    .filter(name =>
+                        name.startsWith("album-tablic-") &&
+                        name !== CACHE_NAME
+                    )
                     .map(name => caches.delete(name))
-
             );
-
-        })
-
+        }).then(() => self.clients.claim())
     );
-
-    self.clients.claim();
-
 });
 
 
 /* =========================================================
-   OBSŁUGA PLIKÓW
+   SIEĆ I TRYB OFFLINE
    ========================================================= */
 
 self.addEventListener("fetch", event => {
+    const request = event.request;
 
-    /*
-       Supabase zostawiamy poza cache.
-
-       Dane naklejek muszą być pobierane
-       bezpośrednio z bazy.
-    */
-
-    if (
-        event.request.url.includes("supabase.co") ||
-        event.request.method !== "GET"
-    ) {
+    if (request.method !== "GET") {
         return;
     }
 
+    const requestUrl = new URL(request.url);
 
-    event.respondWith(
+    // Supabase, OSRM i pozostałe usługi zewnętrzne
+    // zawsze obsługujemy bezpośrednio przez sieć.
+    if (requestUrl.origin !== self.location.origin) {
+        return;
+    }
 
-        caches.match(event.request)
-            .then(cachedResponse => {
+    event.respondWith((async () => {
+        try {
+            // Najpierw próbujemy pobrać aktualny plik.
+            const networkResponse = await fetch(request);
 
-                if (cachedResponse) {
-                    return cachedResponse;
+            if (networkResponse && networkResponse.ok) {
+                const cache = await caches.open(CACHE_NAME);
+                await cache.put(request, networkResponse.clone());
+            }
+
+            return networkResponse;
+        } catch (error) {
+            // Brak sieci: korzystamy z zapisanej kopii.
+            const cachedResponse = await caches.match(request);
+
+            if (cachedResponse) {
+                return cachedResponse;
+            }
+
+            // Awaryjnie strona startowa dla nawigacji.
+            if (request.mode === "navigate") {
+                const startPage = await caches.match("./index.html");
+
+                if (startPage) {
+                    return startPage;
                 }
+            }
 
-
-                return fetch(event.request)
-                    .then(networkResponse => {
-
-                        /*
-                           Zapisujemy lokalnie pliki aplikacji.
-                        */
-
-                        if (
-                            networkResponse &&
-                            networkResponse.status === 200 &&
-                            networkResponse.type === "basic"
-                        ) {
-
-                            const responseClone =
-                                networkResponse.clone();
-
-                            caches.open(CACHE_NAME)
-                                .then(cache => {
-
-                                    cache.put(
-                                        event.request,
-                                        responseClone
-                                    );
-
-                                });
-
-                        }
-
-                        return networkResponse;
-
-                    });
-
-            })
-
-    );
-
+            return new Response(
+                "Brak połączenia z internetem. Otwórz album ponownie, gdy sieć będzie dostępna.",
+                {
+                    status: 503,
+                    statusText: "Offline",
+                    headers: { "Content-Type": "text/plain; charset=utf-8" }
+                }
+            );
+        }
+    })());
 });
