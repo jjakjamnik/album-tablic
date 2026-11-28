@@ -118,6 +118,7 @@
 
         const emailInput = document.getElementById("login-email");
         const passwordInput = document.getElementById("login-password");
+        const signupUsernameInput = document.getElementById("signup-username");
         const signupPasswordInput = document.getElementById("signup-password");
         const signupPasswordConfirmInput = document.getElementById("signup-password-confirm");
         const loginFields = document.getElementById("login-fields");
@@ -182,15 +183,17 @@
             loginFields.hidden = true;
             signupFields.hidden = false;
             passwordInput.value = "";
+            signupUsernameInput.value = "";
             signupPasswordInput.value = "";
             signupPasswordConfirmInput.value = "";
-            signupPasswordInput.focus();
+            signupUsernameInput.focus();
             setStatus("Wybierz własne hasło do nowego konta.", "success");
         });
 
         signupCancelButton.addEventListener("click", function () {
             signupFields.hidden = true;
             loginFields.hidden = false;
+            signupUsernameInput.value = "";
             signupPasswordInput.value = "";
             signupPasswordConfirmInput.value = "";
             setStatus("Możesz się zalogować lub rozpocząć rejestrację.", "");
@@ -198,12 +201,18 @@
 
         signupCreateButton.addEventListener("click", async function () {
             const email = emailInput.value.trim();
+            const username = signupUsernameInput.value.trim();
             const password = signupPasswordInput.value;
             const passwordConfirm = signupPasswordConfirmInput.value;
 
             if (!email) {
                 setStatus("Wpisz adres e-mail.", "error");
                 emailInput.focus();
+                return;
+            }
+            if (!/^[A-Za-z0-9_]{3,24}$/.test(username)) {
+                setStatus("Login musi mieć 3–24 znaki: litery bez polskich znaków, cyfry lub podkreślenie.", "error");
+                signupUsernameInput.focus();
                 return;
             }
             if (password.length < 8) {
@@ -222,7 +231,8 @@
                 email: email,
                 password: password,
                 options: {
-                    emailRedirectTo: new URL("./index.html", window.location.href).toString()
+                    emailRedirectTo: new URL("./index.html", window.location.href).toString(),
+                    data: { username: username }
                 }
             });
             setBusy([signupCreateButton, signupCancelButton], false);
