@@ -4,7 +4,7 @@
    WERSJA 4.0
    ========================================================= */
 
-const CACHE_NAME = "album-tablic-v5-plates-1";
+const CACHE_NAME = "album-tablic-v5-plates-2";
 
 const APP_SHELL_FILES = [
     "./",
