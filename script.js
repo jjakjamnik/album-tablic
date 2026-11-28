@@ -3797,6 +3797,8 @@ function createStickerCard(sticker, cardNumber) {
 
     found.appendChild(foundLabel);
     found.appendChild(foundValue);
+    const cardActions = createStickerActions(sticker);
+    found.appendChild(cardActions.editButton);
 
     /* ODLEGŁOŚĆ */
 
@@ -3821,6 +3823,7 @@ function createStickerCard(sticker, cardNumber) {
 
     distance.appendChild(distanceLabel);
     distance.appendChild(distanceValue);
+    distance.appendChild(cardActions.deleteButton);
 
     meta.appendChild(found);
     meta.appendChild(distance);
@@ -3858,7 +3861,6 @@ function createStickerCard(sticker, cardNumber) {
     /* SKŁADANIE KARTY */
 
     article.appendChild(header);
-    article.appendChild(createStickerActions(sticker));
     article.appendChild(edition);
     article.appendChild(plate);
     article.appendChild(originSection);
@@ -3875,9 +3877,6 @@ function createStickerCard(sticker, cardNumber) {
    ========================================================= */
 
 function createStickerActions(sticker) {
-
-    const actions = document.createElement("div");
-    actions.className = "sticker-actions";
 
     const editButton = document.createElement("button");
     editButton.type = "button";
@@ -3938,10 +3937,7 @@ function createStickerActions(sticker) {
         }
     });
 
-    actions.appendChild(editButton);
-    actions.appendChild(deleteButton);
-
-    return actions;
+    return { editButton, deleteButton };
 }
 
 /* =========================================================
