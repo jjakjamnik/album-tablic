@@ -154,7 +154,7 @@
         loginButton.addEventListener("click", async function () {
             const identifier = emailInput.value.trim();
             const password = passwordInput.value;
-            const looksLikeEmail = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(identifier);
+            const looksLikeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
 
             if (!identifier || !password) {
                 setStatus("Wpisz e-mail lub login oraz hasło.", "error");
@@ -239,7 +239,7 @@
             const password = signupPasswordInput.value;
             const passwordConfirm = signupPasswordConfirmInput.value;
 
-            if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                 setStatus("Wpisz poprawny adres e-mail w poprzednim kroku.", "error");
                 emailInput.focus();
                 return;
@@ -292,7 +292,7 @@
         forgotButton.addEventListener("click", async function () {
             const email = emailInput.value.trim();
 
-            if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                 setStatus("Wpisz poprawny adres e-mail, aby odzyskać hasło.", "error");
                 emailInput.focus();
                 return;
