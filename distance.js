@@ -496,11 +496,16 @@ async function calculateStickerDistance(
        MIEJSCE ZNALEZIENIA
        ===================================================== */
 
-    // Miejsce znalezienia może znajdować się w dowolnym kraju.
-    // Nie narzucamy Polski — geokoder rozpoznaje lokalizację globalnie.
+    // Emoji flagi są oznaczeniem wizualnym, nie częścią nazwy miasta.
+    const normalizedFoundLocation =
+        String(foundLocation)
+            .replace(/[\u{1F1E6}-\u{1F1FF}]/gu, "")
+            .trim();
+
+    // Kraj znalezienia ogranicza geokoder do właściwego państwa.
     const foundCoordinates =
         await geocodeLocation(
-            foundLocation,
+            normalizedFoundLocation,
             foundCountryCode
         );
 
