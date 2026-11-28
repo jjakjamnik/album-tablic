@@ -2802,15 +2802,18 @@ function editSticker(
     }
 
 
-    window.scrollTo({
+    if (form) {
+        form.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
 
-        top:
-            0,
-
-        behavior:
-            "smooth"
-
-    });
+    if (plateInput) {
+        window.setTimeout(function () {
+            plateInput.focus({ preventScroll: true });
+        }, 250);
+    }
 
 }
 
@@ -3515,6 +3518,7 @@ function renderCurrentCountry() {
             );
 
             pocket.appendChild(article);
+            pocket.appendChild(createStickerActions(sticker));
         } else {
             pocket.classList.add("album-pocket-empty");
 
@@ -3847,7 +3851,30 @@ function createStickerCard(sticker, cardNumber) {
         stars.textContent = "—";
     }
 
-    /* PRZYCISKI EDYCJI I USUWANIA */
+    /* PRZEZROCZYSTA KOSZULKA */
+
+    const sleeve = document.createElement("div");
+    sleeve.className = "sticker-sleeve";
+
+    /* SKŁADANIE KARTY */
+
+    article.appendChild(header);
+    article.appendChild(edition);
+    article.appendChild(plate);
+    article.appendChild(originSection);
+    article.appendChild(meta);
+    article.appendChild(stars);
+    article.appendChild(sleeve);
+
+    return article;
+}
+
+
+/* =========================================================
+   PRZYCISKI KARTY — ODDZIELNA WARSTWA NAD KIESZONKĄ
+   ========================================================= */
+
+function createStickerActions(sticker) {
 
     const actions = document.createElement("div");
     actions.className = "sticker-actions";
@@ -3855,7 +3882,12 @@ function createStickerCard(sticker, cardNumber) {
     const editButton = document.createElement("button");
     editButton.type = "button";
     editButton.className = "sticker-edit";
-    editButton.textContent = "EDYTUJ";
+    editButton.textContent = "✎";
+    editButton.title = "Edytuj tablicę";
+    editButton.setAttribute(
+        "aria-label",
+        "Edytuj tablicę " + sticker.country + " " + sticker.plate
+    );
 
     editButton.addEventListener("click", function () {
         editSticker(sticker);
@@ -3864,7 +3896,12 @@ function createStickerCard(sticker, cardNumber) {
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
     deleteButton.className = "sticker-delete";
-    deleteButton.textContent = "USUŃ";
+    deleteButton.textContent = "×";
+    deleteButton.title = "Usuń tablicę";
+    deleteButton.setAttribute(
+        "aria-label",
+        "Usuń tablicę " + sticker.country + " " + sticker.plate
+    );
 
     deleteButton.addEventListener("click", async function () {
 
@@ -3876,9 +3913,7 @@ function createStickerCard(sticker, cardNumber) {
             " z kolekcji?"
         );
 
-        if (!confirmed) {
-            return;
-        }
+        if (!confirmed) return;
 
         deleteButton.disabled = true;
 
@@ -3906,25 +3941,8 @@ function createStickerCard(sticker, cardNumber) {
     actions.appendChild(editButton);
     actions.appendChild(deleteButton);
 
-    /* PRZEZROCZYSTA KOSZULKA */
-
-    const sleeve = document.createElement("div");
-    sleeve.className = "sticker-sleeve";
-
-    /* SKŁADANIE KARTY */
-
-    article.appendChild(header);
-    article.appendChild(edition);
-    article.appendChild(plate);
-    article.appendChild(originSection);
-    article.appendChild(meta);
-    article.appendChild(stars);
-    article.appendChild(actions);
-    article.appendChild(sleeve);
-
-    return article;
+    return actions;
 }
-
 
 /* =========================================================
    KOLOR KARTY
