@@ -1,589 +1,330 @@
 /* =========================================================
-   ALBUM TABLIC REJESTRACYJNYCH
-   auth.js
-
-   AUTORYZACJA UŻYTKOWNIKÓW — SUPABASE
+   ALBUM TABLIC — SUPABASE AUTH 4.0
+   Logowanie, rejestracja, reset hasła i ochrona albumu
    ========================================================= */
+(function () {
+    "use strict";
 
+    const PROJECT_URL = "https://ddlwmtbtsaikbkorkwaa.supabase.co";
+    const PUBLISHABLE_KEY = "sb_publishable_i9lPlpSiRH5wLzI8QJ_gcA_-n0IZNL2";
 
-/* =========================================================
-   KONFIGURACJA SUPABASE
-   ========================================================= */
-
-const SUPABASE_URL = "TU_WKLEJ_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "TU_WKLEJ_SUPABASE_ANON_KEY";
-
-
-/* =========================================================
-   INICJALIZACJA
-   ========================================================= */
-
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-);
-
-
-/* =========================================================
-   POMOCNICZE
-   ========================================================= */
-
-function showMessage(message, type = "error") {
-
-    const box = document.getElementById("auth-message");
-
-    if (!box) {
-        alert(message);
+    if (!window.supabase || typeof window.supabase.createClient !== "function") {
+        console.error("Nie załadował się klient Supabase.");
         return;
     }
 
-    box.textContent = message;
-    box.className = "auth-message " + type;
-    box.hidden = false;
-}
+    const client = window.supabase.createClient(PROJECT_URL, PUBLISHABLE_KEY, {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            flowType: "pkce"
+        }
+    });
 
+    let cachedUser = null;
+    let sessionPromise = null;
+    let passwordRecoveryMode = false;
 
-function hideMessage() {
+    async function requireSession() {
+        if (cachedUser) return cachedUser;
+        if (sessionPromise) return sessionPromise;
 
-    const box = document.getElementById("auth-message");
+        sessionPromise = (async function () {
+            const { data, error } = await client.auth.getSession();
 
-    if (!box) return;
+            if (error || !data.session) {
+                window.location.replace("./index.html?auth=required");
+                return null;
+            }
 
-    box.hidden = true;
-    box.textContent = "";
-}
+            const { data: userData, error: userError } = await client.auth.getUser();
 
+            if (userError || !userData.user) {
+                await client.auth.signOut({ scope: "local" });
+                window.location.replace("./index.html?auth=required");
+                return null;
+            }
 
-function setLoading(button, loading, normalText) {
+            cachedUser = userData.user;
+            return cachedUser;
+        })();
 
-    if (!button) return;
-
-    button.disabled = loading;
-
-    if (loading) {
-        button.dataset.originalText = button.textContent;
-        button.textContent = "PROSZĘ CZEKAĆ...";
-    } else {
-        button.textContent =
-            button.dataset.originalText || normalText;
-    }
-}
-
-
-/* =========================================================
-   REJESTRACJA
-   ========================================================= */
-
-async function registerUser(email, password) {
-
-    hideMessage();
-
-    if (!email || !password) {
-
-        showMessage(
-            "Podaj adres e-mail i hasło."
-        );
-
-        return false;
+        try {
+            return await sessionPromise;
+        } finally {
+            sessionPromise = null;
+        }
     }
 
+    window.albumAuth = {
+        client: client,
+        requireSession: requireSession,
+        get currentUser() {
+            return cachedUser;
+        }
+    };
 
-    if (password.length < 6) {
-
-        showMessage(
-            "Hasło musi mieć co najmniej 6 znaków."
-        );
-
-        return false;
+    function setStatus(message, state) {
+        const status = document.getElementById("cover-auth-status");
+        if (!status) return;
+        status.textContent = message;
+        status.dataset.state = state || "";
     }
 
+    function setBusy(buttons, busy, busyText) {
+        buttons.forEach(function (button) {
+            if (!button) return;
+            if (busy) {
+                if (!button.disabled) button.dataset.originalText = button.textContent;
+                button.textContent = busyText || "CHWILA...";
+                button.disabled = true;
+            } else {
+                button.textContent = button.dataset.originalText || button.textContent;
+                button.disabled = false;
+            }
+        });
+    }
 
-    try {
+    function showLoggedIn(user) {
+        const form = document.getElementById("cover-auth-form");
+        const loggedIn = document.getElementById("cover-auth-logged-in");
+        const userLabel = document.getElementById("cover-auth-user");
+        const openAlbum = document.getElementById("open-album-button");
+        const recovery = document.getElementById("cover-auth-recovery");
 
-        const { data, error } =
-            await supabaseClient.auth.signUp({
+        if (form) form.hidden = true;
+        if (recovery) recovery.hidden = true;
+        if (loggedIn) loggedIn.hidden = false;
+        if (userLabel) userLabel.textContent = "ZALOGOWANO: " + (user.email || "konto kolekcjonera");
+        if (openAlbum) openAlbum.hidden = false;
+        setStatus("Twoja kolekcja jest gotowa.", "success");
+    }
 
-                email: email.trim(),
-                password: password
+    function showLoggedOut() {
+        const form = document.getElementById("cover-auth-form");
+        const loggedIn = document.getElementById("cover-auth-logged-in");
+        const openAlbum = document.getElementById("open-album-button");
+        const recovery = document.getElementById("cover-auth-recovery");
 
-            });
+        if (form) form.hidden = false;
+        if (loggedIn) loggedIn.hidden = true;
+        if (openAlbum) openAlbum.hidden = true;
+        if (recovery) recovery.hidden = true;
+    }
 
+    async function initializeIndexAuth() {
+        const form = document.getElementById("cover-auth-form");
+        if (!form) return;
 
-        if (error) {
+        const emailInput = document.getElementById("login-email");
+        const passwordInput = document.getElementById("login-password");
+        const loginButton = document.getElementById("login-submit");
+        const signupButton = document.getElementById("signup-submit");
+        const forgotButton = document.getElementById("forgot-password");
+        const logoutButton = document.getElementById("logout-submit");
+        const recoveryBox = document.getElementById("cover-auth-recovery");
+        const newPasswordInput = document.getElementById("new-password");
+        const savePasswordButton = document.getElementById("save-new-password");
 
-            console.error(
-                "Błąd rejestracji:",
-                error
-            );
+        const { data, error } = await client.auth.getSession();
 
-            showMessage(
-                getAuthErrorMessage(error)
-            );
-
-            return false;
+        if (passwordRecoveryMode) {
+            form.hidden = true;
+            if (recoveryBox) recoveryBox.hidden = false;
+            setStatus("Ustaw nowe hasło do swojego konta.", "success");
+        } else if (!error && data.session && data.session.user) {
+            cachedUser = data.session.user;
+            showLoggedIn(cachedUser);
+        } else {
+            showLoggedOut();
         }
 
-
-        /*
-         * Jeżeli Supabase wymaga potwierdzenia
-         * adresu e-mail, użytkownik nie będzie
-         * jeszcze zalogowany.
-         */
-
-        if (data.user && !data.session) {
-
-            showMessage(
-                "Konto zostało utworzone. Sprawdź swoją skrzynkę e-mail i potwierdź adres.",
-                "success"
-            );
-
-            return true;
-        }
-
-
-        /*
-         * Jeżeli potwierdzenie e-mail jest wyłączone,
-         * użytkownik zostanie zalogowany od razu.
-         */
-
-        if (data.session) {
-
-            window.location.href = "home.html";
-
-            return true;
-        }
-
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Nieoczekiwany błąd rejestracji:",
-            error
-        );
-
-        showMessage(
-            "Wystąpił nieoczekiwany błąd."
-        );
-
-        return false;
-    }
-}
-
-
-/* =========================================================
-   LOGOWANIE
-   ========================================================= */
-
-async function loginUser(email, password) {
-
-    hideMessage();
-
-    if (!email || !password) {
-
-        showMessage(
-            "Podaj adres e-mail i hasło."
-        );
-
-        return false;
-    }
-
-
-    try {
-
-        const { data, error } =
-            await supabaseClient.auth.signInWithPassword({
-
-                email: email.trim(),
-                password: password
-
-            });
-
-
-        if (error) {
-
-            console.error(
-                "Błąd logowania:",
-                error
-            );
-
-            showMessage(
-                getAuthErrorMessage(error)
-            );
-
-            return false;
-        }
-
-
-        if (data.session) {
-
-            window.location.href = "home.html";
-
-            return true;
-        }
-
-
-        return false;
-
-    } catch (error) {
-
-        console.error(
-            "Nieoczekiwany błąd logowania:",
-            error
-        );
-
-        showMessage(
-            "Wystąpił nieoczekiwany błąd."
-        );
-
-        return false;
-    }
-}
-
-
-/* =========================================================
-   WYLOGOWANIE
-   ========================================================= */
-
-async function logoutUser() {
-
-    try {
-
-        const { error } =
-            await supabaseClient.auth.signOut();
-
-
-        if (error) {
-
-            console.error(
-                "Błąd wylogowania:",
-                error
-            );
-
-            return false;
-        }
-
-
-        window.location.href = "login.html";
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Nieoczekiwany błąd wylogowania:",
-            error
-        );
-
-        return false;
-    }
-}
-
-
-/* =========================================================
-   SPRAWDZENIE ZALOGOWANIA
-   ========================================================= */
-
-async function getCurrentUser() {
-
-    const {
-        data,
-        error
-    } = await supabaseClient.auth.getUser();
-
-
-    if (error) {
-
-        console.error(
-            "Błąd pobierania użytkownika:",
-            error
-        );
-
-        return null;
-    }
-
-
-    return data.user || null;
-}
-
-
-/* =========================================================
-   OCHRONA STRONY
-   =========================================================
-
-   Używamy na stronach wymagających logowania,
-   np. home.html.
-
-   Jeżeli użytkownik nie jest zalogowany,
-   zostanie przeniesiony do login.html.
-   ========================================================= */
-
-async function requireAuth() {
-
-    const user = await getCurrentUser();
-
-    if (!user) {
-
-        window.location.href = "login.html";
-
-        return null;
-    }
-
-    return user;
-}
-
-
-/* =========================================================
-   PRZEKIEROWANIE Z LOGIN / REJESTRACJA
-   =========================================================
-
-   Jeżeli użytkownik jest już zalogowany,
-   nie ma sensu pokazywać mu formularza logowania.
-   ========================================================= */
-
-async function redirectIfLoggedIn() {
-
-    const user = await getCurrentUser();
-
-    if (user) {
-
-        window.location.href = "home.html";
-
-        return true;
-    }
-
-    return false;
-}
-
-
-/* =========================================================
-   OBSŁUGA FORMULARZA LOGOWANIA
-   ========================================================= */
-
-function initLoginForm() {
-
-    const form =
-        document.getElementById("login-form");
-
-    if (!form) return;
-
-
-    const emailInput =
-        document.getElementById("login-email");
-
-    const passwordInput =
-        document.getElementById("login-password");
-
-    const button =
-        document.getElementById("login-btn");
-
-
-    form.addEventListener(
-        "submit",
-        async function(event) {
-
+        form.addEventListener("submit", function (event) {
             event.preventDefault();
+            loginButton.click();
+        });
 
-            const email =
-                emailInput
-                    ? emailInput.value
-                    : "";
+        loginButton.addEventListener("click", async function () {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
 
-            const password =
-                passwordInput
-                    ? passwordInput.value
-                    : "";
-
-
-            setLoading(
-                button,
-                true,
-                "ZALOGUJ SIĘ"
-            );
-
-
-            await loginUser(
-                email,
-                password
-            );
-
-
-            setLoading(
-                button,
-                false,
-                "ZALOGUJ SIĘ"
-            );
-
-        }
-    );
-}
-
-
-/* =========================================================
-   OBSŁUGA FORMULARZA REJESTRACJI
-   ========================================================= */
-
-function initRegisterForm() {
-
-    const form =
-        document.getElementById("register-form");
-
-    if (!form) return;
-
-
-    const emailInput =
-        document.getElementById("register-email");
-
-    const passwordInput =
-        document.getElementById("register-password");
-
-    const passwordRepeatInput =
-        document.getElementById("register-password-repeat");
-
-    const button =
-        document.getElementById("register-btn");
-
-
-    form.addEventListener(
-        "submit",
-        async function(event) {
-
-            event.preventDefault();
-
-            hideMessage();
-
-
-            const email =
-                emailInput
-                    ? emailInput.value
-                    : "";
-
-            const password =
-                passwordInput
-                    ? passwordInput.value
-                    : "";
-
-            const passwordRepeat =
-                passwordRepeatInput
-                    ? passwordRepeatInput.value
-                    : "";
-
-
-            if (password !== passwordRepeat) {
-
-                showMessage(
-                    "Hasła nie są takie same."
-                );
-
+            if (!email || !password) {
+                setStatus("Wpisz adres e-mail i hasło.", "error");
                 return;
             }
 
+            setBusy([loginButton, signupButton, forgotButton], true, "LOGOWANIE...");
+            const result = await client.auth.signInWithPassword({ email: email, password: password });
+            setBusy([loginButton, signupButton, forgotButton], false);
 
-            setLoading(
-                button,
-                true,
-                "ZAREJESTRUJ SIĘ"
-            );
+            if (result.error) {
+                setStatus("Nie udało się zalogować: " + result.error.message, "error");
+                return;
+            }
 
+            cachedUser = result.data.user;
+            window.location.href = "./album.html";
+        });
 
-            await registerUser(
-                email,
-                password
-            );
+        signupButton.addEventListener("click", async function () {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
 
+            if (!email || !password) {
+                setStatus("Wpisz adres e-mail i hasło, aby założyć konto.", "error");
+                return;
+            }
 
-            setLoading(
-                button,
-                false,
-                "ZAREJESTRUJ SIĘ"
-            );
+            if (password.length < 8) {
+                setStatus("Hasło musi mieć co najmniej 8 znaków.", "error");
+                return;
+            }
 
+            setBusy([loginButton, signupButton, forgotButton], true, "TWORZENIE KONTA...");
+            const result = await client.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    emailRedirectTo: new URL("./index.html", window.location.href).toString()
+                }
+            });
+            setBusy([loginButton, signupButton, forgotButton], false);
+
+            if (result.error) {
+                setStatus("Nie udało się założyć konta: " + result.error.message, "error");
+                return;
+            }
+
+            if (result.data.session && result.data.user) {
+                cachedUser = result.data.user;
+                window.location.href = "./album.html";
+                return;
+            }
+
+            setStatus("Konto zostało zgłoszone. Sprawdź pocztę i potwierdź adres e-mail, a potem zaloguj się.", "success");
+        });
+
+        forgotButton.addEventListener("click", async function () {
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                setStatus("Najpierw wpisz adres e-mail.", "error");
+                emailInput.focus();
+                return;
+            }
+
+            setBusy([loginButton, signupButton, forgotButton], true, "WYSYŁANIE...");
+            const result = await client.auth.resetPasswordForEmail(email, {
+                redirectTo: new URL("./index.html", window.location.href).toString()
+            });
+            setBusy([loginButton, signupButton, forgotButton], false);
+
+            if (result.error) {
+                setStatus("Nie udało się wysłać wiadomości: " + result.error.message, "error");
+                return;
+            }
+
+            setStatus("Jeśli konto istnieje, wysłaliśmy wiadomość z linkiem do zmiany hasła.", "success");
+        });
+
+        logoutButton.addEventListener("click", async function () {
+            const { error: signOutError } = await client.auth.signOut();
+
+            if (signOutError) {
+                setStatus("Nie udało się wylogować: " + signOutError.message, "error");
+                return;
+            }
+
+            cachedUser = null;
+            showLoggedOut();
+            setStatus("Wylogowano z konta.", "success");
+        });
+
+        if (savePasswordButton) {
+            savePasswordButton.addEventListener("click", async function () {
+                const newPassword = newPasswordInput.value;
+
+                if (newPassword.length < 8) {
+                    setStatus("Nowe hasło musi mieć co najmniej 8 znaków.", "error");
+                    return;
+                }
+
+                setBusy([savePasswordButton], true, "ZAPISYWANIE...");
+                const result = await client.auth.updateUser({ password: newPassword });
+                setBusy([savePasswordButton], false);
+
+                if (result.error) {
+                    setStatus("Nie udało się zmienić hasła: " + result.error.message, "error");
+                    return;
+                }
+
+                passwordRecoveryMode = false;
+                newPasswordInput.value = "";
+                showLoggedIn(result.data.user);
+                setStatus("Hasło zostało zmienione. Możesz już korzystać z konta.", "success");
+            });
         }
-    );
-}
 
-
-/* =========================================================
-   KOMUNIKATY BŁĘDÓW SUPABASE
-   ========================================================= */
-
-function getAuthErrorMessage(error) {
-
-    if (!error) {
-        return "Wystąpił nieznany błąd.";
+        if (window.location.search.includes("auth=required")) {
+            setStatus("Zaloguj się, aby otworzyć swoją kolekcję.", "error");
+        }
     }
 
+    async function initializeAlbumAuth() {
+        const controls = document.getElementById("album-auth-controls");
+        if (!controls) return;
 
-    const message =
-        String(error.message || "")
-            .toLowerCase();
+        const user = await requireSession();
+        if (!user) return;
 
+        const email = document.getElementById("album-auth-email");
+        const logout = document.getElementById("album-logout-button");
 
-    if (
-        message.includes("invalid login credentials")
-    ) {
+        if (email) email.textContent = user.email || "ZALOGOWANO";
+        controls.hidden = false;
 
-        return "Nieprawidłowy e-mail lub hasło.";
+        if (logout) {
+            logout.addEventListener("click", async function () {
+                logout.disabled = true;
+                const { error } = await client.auth.signOut();
+
+                if (error) {
+                    logout.disabled = false;
+                    alert("Nie udało się wylogować: " + error.message);
+                    return;
+                }
+
+                cachedUser = null;
+                window.location.replace("./index.html");
+            });
+        }
     }
 
+    client.auth.onAuthStateChange(function (event, session) {
+        cachedUser = session && session.user ? session.user : null;
 
-    if (
-        message.includes("email not confirmed")
-    ) {
+        if (event === "SIGNED_IN" && session && session.user &&
+            document.getElementById("cover-auth-form") && !passwordRecoveryMode) {
+            showLoggedIn(session.user);
+        }
 
-        return "Najpierw potwierdź swój adres e-mail.";
-    }
+        if (event === "SIGNED_OUT" && document.getElementById("cover-auth-form")) {
+            showLoggedOut();
+        }
 
+        if (event === "PASSWORD_RECOVERY") {
+            passwordRecoveryMode = true;
+            const recovery = document.getElementById("cover-auth-recovery");
+            const form = document.getElementById("cover-auth-form");
+            if (recovery) recovery.hidden = false;
+            if (form) form.hidden = true;
+            setStatus("Ustaw nowe hasło do swojego konta.", "success");
+        }
+    });
 
-    if (
-        message.includes("user already registered")
-    ) {
-
-        return "Konto z tym adresem e-mail już istnieje.";
-    }
-
-
-    if (
-        message.includes("password should be at least")
-    ) {
-
-        return "Hasło jest za krótkie.";
-    }
-
-
-    if (
-        message.includes("invalid email")
-    ) {
-
-        return "Podany adres e-mail jest nieprawidłowy.";
-    }
-
-
-    if (
-        message.includes("rate limit")
-    ) {
-
-        return "Zbyt wiele prób. Spróbuj ponownie za chwilę.";
-    }
-
-
-    return error.message ||
-        "Wystąpił błąd autoryzacji.";
-}
-
-
-/* =========================================================
-   AUTOMATYCZNA INICJALIZACJA
-   ========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        initLoginForm();
-
-        initRegisterForm();
-
-    }
-);
+    document.addEventListener("DOMContentLoaded", function () {
+        initializeIndexAuth();
+        initializeAlbumAuth();
+    });
+})();
