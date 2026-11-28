@@ -4,7 +4,7 @@
    WERSJA 4.0
    ========================================================= */
 
-const CACHE_NAME = "album-tablic-v5-mobile-stars-1";
+const CACHE_NAME = "album-tablic-v5-stats-spine-1";
 
 const APP_SHELL_FILES = [
     "./",

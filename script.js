@@ -2611,6 +2611,85 @@ function resetEditMode() {
    ========================================================= */
 
 
+function renderStatsDashboard(container, stickers) {
+    if (!container) return;
+
+    const countryNames = {
+        AL: "Albania", AD: "Andora", AM: "Armenia", AT: "Austria",
+        AZ: "Azerbejdżan", BE: "Belgia", BY: "Białoruś", BA: "Bośnia i Hercegowina",
+        BG: "Bułgaria", HR: "Chorwacja", ME: "Czarnogóra", CY: "Cypr",
+        CZ: "Czechy", DK: "Dania", EE: "Estonia", FI: "Finlandia",
+        FR: "Francja", GR: "Grecja", GE: "Gruzja", ES: "Hiszpania",
+        NL: "Holandia", IE: "Irlandia", IS: "Islandia", KZ: "Kazachstan",
+        XK: "Kosowo", LI: "Liechtenstein", LT: "Litwa", LU: "Luksemburg",
+        LV: "Łotwa", MK: "Macedonia Północna", MT: "Malta", MD: "Mołdawia",
+        MC: "Monako", DE: "Niemcy", NO: "Norwegia", PL: "Polska",
+        PT: "Portugalia", RU: "Rosja", RO: "Rumunia", SM: "San Marino",
+        RS: "Serbia", SK: "Słowacja", SI: "Słowenia", CH: "Szwajcaria",
+        SE: "Szwecja", TR: "Turcja", UA: "Ukraina", VA: "Watykan",
+        HU: "Węgry", GB: "Wielka Brytania", IT: "Włochy"
+    };
+
+    const standard = stickers.filter(item =>
+        item.owner !== "guest" && item.owner !== "special"
+    );
+    const total = stickers.length;
+    const countries = new Set(standard.map(item => item.country).filter(Boolean));
+    const counts = new Map();
+    standard.forEach(item => {
+        if (item.country) counts.set(item.country, (counts.get(item.country) || 0) + 1);
+    });
+    const leader = Array.from(counts.entries()).sort((a, b) => b[1] - a[1])[0];
+    const outsidePoland = stickers.filter(item =>
+        item.location_country && item.location_country !== "PL"
+    ).length;
+    const farthest = stickers.reduce((best, item) => {
+        const km = Number(item.kilometers);
+        return Number.isFinite(km) && km > (best ? best.km : 0)
+            ? { km, plate: (item.country || "") + " " + (item.plate || "") }
+            : best;
+    }, null);
+    const vip = stickers.filter(item => item.owner === "special").length;
+
+    const stats = [
+        { label: "WSZYSTKIE TABLICE", value: total, note: "egzemplarzy w albumie", icon: "▣" },
+        { label: "KRAJE W KOLEKCJI", value: countries.size, note: "państw z tablicami", icon: "🌍" },
+        { label: "NAJWIĘCEJ TABLIC", value: leader ? (countryNames[leader[0]] || leader[0]) : "—", note: leader ? leader[1] + " egzemplarzy" : "brak danych", icon: "🏆" },
+        { label: "POZA POLSKĄ", value: outsidePoland, note: "tablic znalezionych za granicą", icon: "📍" },
+        { label: "NAJDALSZE ZNALEZISKO", value: farthest ? Math.round(farthest.km).toLocaleString("pl-PL") + " km" : "—", note: farthest ? farthest.plate : "brak obliczonej trasy", icon: "🧭" },
+        { label: "KOLEKCJA VIP", value: vip, note: "kart specjalnych", icon: "⭐" }
+    ];
+
+    container.classList.add("album-stats-grid");
+    stats.forEach(stat => {
+        const card = document.createElement("article");
+        card.className = "album-stat-card";
+
+        const icon = document.createElement("span");
+        icon.className = "album-stat-icon";
+        icon.textContent = stat.icon;
+
+        const label = document.createElement("span");
+        label.className = "album-stat-label";
+        label.textContent = stat.label;
+
+        const value = document.createElement("strong");
+        value.className = "album-stat-value";
+        value.textContent = String(stat.value);
+
+        const note = document.createElement("small");
+        note.className = "album-stat-note";
+        note.textContent = stat.note;
+
+        card.append(icon, label, value, note);
+        container.appendChild(card);
+    });
+}
+
+/* =========================================================
+   RENDEROWANIE STRONY PAŃSTWA
+   ========================================================= */
+
 function renderCurrentCountry() {
     const legacyGrid = document.getElementById("sticker-grid");
     const leftGrid = document.getElementById("left-sticker-grid");
@@ -2688,7 +2767,8 @@ function renderCurrentCountry() {
         GB: ["WIELKA BRYTANIA", "🇬🇧"],
         IT: ["WŁOCHY", "🇮🇹"],
         GUEST: ["GUEST", "👥"],
-        VIP: ["VIP", "⭐"]
+        VIP: ["VIP", "⭐"],
+        STATS: ["STATYSTYKI", "📊"]
     };
 
     const allStickers = getStickers();
@@ -2847,6 +2927,12 @@ function renderCurrentCountry() {
             }
         });
 
+        // Ostatnia strona albumu: statystyki, bez dodatkowych pustych kieszonek.
+        countryOffsets.set("STATS", albumSlots.length);
+        for (let i = 0; i < 30; i++) {
+            albumSlots.push({ sticker: null, country: "STATS" });
+        }
+
         if (renderCurrentCountry._activeViewKey !== viewKey) {
             const countryStart =
                 countryOffsets.get(currentCountry) || 0;
@@ -2947,6 +3033,8 @@ function renderCurrentCountry() {
             pageColor = "#9870D8";
         } else if (countryCode === "VIP") {
             pageColor = "#D5AE38";
+        } else if (countryCode === "STATS") {
+            pageColor = "#4D746B";
         } else {
             const countryIndex =
                 Array.from(countryOffsets.keys()).indexOf(countryCode);
@@ -2969,6 +3057,13 @@ function renderCurrentCountry() {
         code.textContent = displayCode;
         footerCountry.textContent = name;
 
+        const subtitle = page.querySelector(".album-page-subtitle");
+        if (subtitle) {
+            subtitle.textContent = countryCode === "STATS"
+                ? "PODSUMOWANIE TWOJEJ KOLEKCJI"
+                : "EUROPEAN REGISTRATION PLATES";
+        }
+
         const physicalPageNumber =
             Math.floor(pageStart / 30) + 3;
 
@@ -2984,6 +3079,8 @@ function renderCurrentCountry() {
 
     leftGrid.innerHTML = "";
     rightGrid.innerHTML = "";
+    leftGrid.classList.remove("album-stats-grid");
+    rightGrid.classList.remove("album-stats-grid");
     legacyGrid.innerHTML = "";
 
     leftPage.hidden = false;
@@ -3042,10 +3139,14 @@ function renderCurrentCountry() {
         startIndex
     );
 
-    for (let i = 0; i < 30; i++) {
-        leftGrid.appendChild(
-            createPocket(startIndex + i)
-        );
+    if (leftCountrySlot && leftCountrySlot.country === "STATS") {
+        renderStatsDashboard(leftGrid, allStickers);
+    } else {
+        for (let i = 0; i < 30; i++) {
+            leftGrid.appendChild(
+                createPocket(startIndex + i)
+            );
+        }
     }
 
     /* =====================================================
@@ -3063,10 +3164,14 @@ function renderCurrentCountry() {
                 rightStart
             );
 
-            for (let i = 0; i < 30; i++) {
-                rightGrid.appendChild(
-                    createPocket(rightStart + i)
-                );
+            if (rightCountrySlot.country === "STATS") {
+                renderStatsDashboard(rightGrid, allStickers);
+            } else {
+                for (let i = 0; i < 30; i++) {
+                    rightGrid.appendChild(
+                        createPocket(rightStart + i)
+                    );
+                }
             }
 
             rightPage.hidden = false;
