@@ -3079,6 +3079,8 @@ function renderCurrentCountry() {
 
     leftGrid.innerHTML = "";
     rightGrid.innerHTML = "";
+    leftGrid.classList.remove("album-stats-grid");
+    rightGrid.classList.remove("album-stats-grid");
     legacyGrid.innerHTML = "";
 
     leftPage.hidden = false;
