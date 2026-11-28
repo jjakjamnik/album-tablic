@@ -288,6 +288,11 @@ document.addEventListener(
                 "sticker-location"
             );
 
+        const locationCountrySelect =
+            document.getElementById(
+                "sticker-location-country"
+            );
+
         const ownerSelect =
             document.getElementById(
                 "sticker-owner"
@@ -470,6 +475,11 @@ document.addEventListener(
                             ? locationInput.value.trim()
                             : "";
 
+                    const locationCountry =
+                        locationCountrySelect
+                            ? locationCountrySelect.value
+                            : "";
+
 
                     const owner =
                         country === "UZ"
@@ -546,6 +556,12 @@ document.addEventListener(
 
                         return;
 
+                    }
+
+                    if (!locationCountry) {
+                        alert("Wybierz kraj, w którym znalazłeś tablicę.");
+                        if (locationCountrySelect) locationCountrySelect.focus();
+                        return;
                     }
 
 
@@ -762,7 +778,8 @@ document.addEventListener(
                                 await calculateStickerDistance(
                                     country,
                                     detectedCity,
-                                    location
+                                    location,
+                                    locationCountry
                                 );
 
                         }
@@ -872,6 +889,9 @@ document.addEventListener(
 
                                 location:
                                     location,
+
+                                location_country:
+                                    locationCountry,
 
                                 origin:
                                     detectedCity ||
@@ -1027,6 +1047,9 @@ document.addEventListener(
                             location:
                                 location,
 
+                            location_country:
+                                locationCountry,
+
                             origin:
                                 detectedCity ||
                                 "",
@@ -1180,6 +1203,10 @@ document.addEventListener(
                         locationInput.value =
                             "";
 
+                    }
+
+                    if (locationCountrySelect) {
+                        locationCountrySelect.value = "";
                     }
 
 
@@ -1418,6 +1445,7 @@ async function updateStickerInSupabase(sticker) {
             country: sticker.country,
             plate: sticker.plate,
             location: sticker.location,
+            location_country: sticker.location_country || null,
             origin: sticker.origin,
             department: sticker.department,
             owner: sticker.owner,
@@ -2404,6 +2432,11 @@ function editSticker(
             "sticker-location"
         );
 
+    const locationCountrySelect =
+        document.getElementById(
+            "sticker-location-country"
+        );
+
 
     const ownerSelect =
         document.getElementById(
@@ -2453,6 +2486,11 @@ function editSticker(
         locationInput.value =
             sticker.location;
 
+    }
+
+    if (locationCountrySelect) {
+        locationCountrySelect.value =
+            sticker.location_country || "";
     }
 
 
