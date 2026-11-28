@@ -448,7 +448,10 @@
 
 .sticker-purple .sticker-stars {
     color: #ffe1ff;
-    letter-spacing: 1px;
+    font-size: 10px;
+    letter-spacing: 0;
+    min-height: 18px;
+    padding-top: 6px;
 }
 
 .sticker-gold .sticker-stars {
