@@ -3504,3 +3504,34 @@ border: 1px solid rgba(255,255,255,.35);
 .album-v3 > .album-footer span {
     color: #ffffff !important;
 }
+
+
+/* =========================================================
+   WERSJA 4.0 — PANEL KONTA W ALBUMIE
+   ========================================================= */
+.album-auth-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 9px;
+    max-width: 100%;
+    color: #eaf4ff;
+    font-size: 11px;
+}
+.album-auth-controls button {
+    padding: 7px 10px;
+    border: 1px solid rgba(197, 227, 251, .65);
+    border-radius: 4px;
+    background: #102b49;
+    color: #eaf4ff;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+}
+@media (max-width: 750px) {
+    .album-auth-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
