@@ -1875,6 +1875,11 @@ function findCity(
         return findUzbekistanCity(cleanPlate);
     }
 
+    // Norweska seria KH pochodzi ze stacji rejestracji w Drammen.
+    if (country === "NO" && cleanPlate.startsWith("KH")) {
+        return "Drammen";
+    }
+
 
     const databases = {
 
