@@ -158,10 +158,8 @@ const FIXED_COUNTRY_STARS = {
 
     // 4 GWIAZDKI
     "PT": 4,
-    "GR": 4,
     "BA": 4,
     "MT": 4,
-    "ME": 4,
 
     // 5 GWIAZDEK
     "AL": 5,
@@ -1284,7 +1282,9 @@ async function recalculateLegacyRoadDistanceCards() {
         return;
     }
 
-    const migrationVersion = "v5.0-road-countries-1";
+    // Ponowna migracja: Grecja i Czarnogóra przechodzą ze stałej
+    // liczby gwiazdek na standardową rzadkość zależną od kilometrów.
+    const migrationVersion = "v5.0-road-countries-2";
     const migrationKey =
         "album-road-distance:" +
         albumCurrentUser.id +
@@ -1299,20 +1299,9 @@ async function recalculateLegacyRoadDistanceCards() {
         "BG", "HR", "RS", "SI", "ME", "GR"
     ]);
 
-    const candidates = stickersCache.filter(sticker => {
-        if (!supportedCountries.has(String(sticker.country || "").toUpperCase())) {
-            return false;
-        }
-
-        const km = sticker.kilometers;
-        const alreadyHasDistance =
-            km !== null &&
-            km !== undefined &&
-            km !== "" &&
-            Number.isFinite(Number(km));
-
-        return !alreadyHasDistance;
-    });
+    const candidates = stickersCache.filter(sticker =>
+        supportedCountries.has(String(sticker.country || "").toUpperCase())
+    );
 
     let updated = 0;
     let failed = 0;
@@ -1321,6 +1310,13 @@ async function recalculateLegacyRoadDistanceCards() {
     for (const sticker of candidates) {
 
         const country = String(sticker.country || "").toUpperCase();
+        const existingKm = Number(sticker.kilometers);
+        const hasDistance =
+            sticker.kilometers !== null &&
+            sticker.kilometers !== undefined &&
+            sticker.kilometers !== "" &&
+            Number.isFinite(existingKm);
+
         const origin =
             findCity(
                 country,
@@ -1337,8 +1333,14 @@ async function recalculateLegacyRoadDistanceCards() {
 
         try {
 
-            const result =
-                await calculateStickerDistance(
+            // Zachowaj istniejące kilometry; przelicz tylko gwiazdki.
+            // Brakujące kilometry nadal wyznaczamy przez OSRM.
+            const result = hasDistance
+                ? {
+                    kilometers: existingKm,
+                    stars: getDistanceStars(existingKm)
+                }
+                : await calculateStickerDistance(
                     country,
                     origin,
                     sticker.location
@@ -1353,17 +1355,11 @@ async function recalculateLegacyRoadDistanceCards() {
                 continue;
             }
 
-            // Zachowujemy dotychczasowe zasady stałej rzadkości
-            // dla Grecji i Czarnogóry; pozostałe kraje biorą gwiazdki z km.
-            const fixedStars = getFixedCountryStars(country);
-
             const updatedSticker = {
                 ...sticker,
                 origin,
                 kilometers: result.kilometers,
-                stars: fixedStars !== null
-                    ? fixedStars
-                    : result.stars
+                stars: result.stars
             };
 
             await updateStickerInSupabase(updatedSticker);
@@ -1374,7 +1370,7 @@ async function recalculateLegacyRoadDistanceCards() {
             failed++;
 
             console.warn(
-                "Nie udało się automatycznie uzupełnić odległości:",
+                "Nie udało się automatycznie przeliczyć karty:",
                 country,
                 sticker.plate,
                 error
@@ -1384,7 +1380,7 @@ async function recalculateLegacyRoadDistanceCards() {
 
     }
 
-    // Gdy sieć chwilowo zawiedzie, następne otwarcie albumu spróbuje ponownie.
+    // Przy błędach zapisu lub sieci kolejna sesja ponowi próbę.
     if (failed === 0) {
         localStorage.setItem(migrationKey, "done");
     }
@@ -1396,7 +1392,7 @@ async function recalculateLegacyRoadDistanceCards() {
     }
 
     console.log(
-        "Aktualizacja starych kart:",
+        "Aktualizacja odległości i gwiazdek:",
         { updated, failed, unrecognized, checked: candidates.length }
     );
 
