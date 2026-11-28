@@ -152,20 +152,54 @@
         });
 
         loginButton.addEventListener("click", async function () {
-            const email = emailInput.value.trim();
+            const identifier = emailInput.value.trim();
             const password = passwordInput.value;
+            const looksLikeEmail = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(identifier);
 
-            if (!email || !password) {
-                setStatus("Wpisz adres e-mail i hasło.", "error");
+            if (!identifier || !password) {
+                setStatus("Wpisz e-mail lub login oraz hasło.", "error");
                 return;
             }
 
             setBusy([loginButton, signupButton, forgotButton], true, "LOGOWANIE...");
-            const result = await client.auth.signInWithPassword({ email: email, password: password });
+            let result;
+
+            try {
+                if (looksLikeEmail) {
+                    result = await client.auth.signInWithPassword({
+                        email: identifier,
+                        password: password
+                    });
+                } else {
+                    const response = await fetch(PROJECT_URL + "/functions/v1/login-with-username", {
+                        method: "POST",
+                        headers: {
+                            "apikey": PUBLISHABLE_KEY,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ username: identifier, password: password })
+                    });
+                    const payload = await response.json().catch(function () { return {}; });
+
+                    if (!response.ok || !payload.access_token || !payload.refresh_token) {
+                        throw new Error("Nieprawidłowy login lub hasło.");
+                    }
+
+                    result = await client.auth.setSession({
+                        access_token: payload.access_token,
+                        refresh_token: payload.refresh_token
+                    });
+                }
+            } catch (error) {
+                setBusy([loginButton, signupButton, forgotButton], false);
+                setStatus("Nie udało się zalogować: " + (error.message || "spróbuj ponownie."), "error");
+                return;
+            }
+
             setBusy([loginButton, signupButton, forgotButton], false);
 
-            if (result.error) {
-                setStatus("Nie udało się zalogować: " + result.error.message, "error");
+            if (result.error || !result.data || !result.data.user) {
+                setStatus("Nie udało się zalogować: " + (result.error?.message || "Nieprawidłowy login lub hasło."), "error");
                 return;
             }
 
