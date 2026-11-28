@@ -4,7 +4,7 @@
    WERSJA 4.0
    ========================================================= */
 
-const CACHE_NAME = "album-tablic-v5-road-countries-1";
+const CACHE_NAME = "album-tablic-v5-worldwide-distance-1";
 
 const APP_SHELL_FILES = [
     "./",
