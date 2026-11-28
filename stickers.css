@@ -824,3 +824,54 @@ inset: 2px;
         transparent
     );
 }
+
+
+/* DOLNY RZĄD KARTY — PRZYCISKI W ROGACH, GWIAZDKI POŚRODKU */
+.sticker-bottom-row {
+    position: relative;
+    z-index: 25;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    width: 100%;
+    min-width: 0;
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+.sticker-bottom-row .sticker-stars {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.sticker-bottom-row .sticker-edit,
+.sticker-bottom-row .sticker-delete {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 48px;
+    min-height: 23px;
+    margin: 0;
+    padding: 4px 6px;
+    font-size: 8px;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+    .sticker-bottom-row {
+        gap: 3px;
+        padding-top: 6px;
+    }
+
+    .sticker-bottom-row .sticker-edit,
+    .sticker-bottom-row .sticker-delete {
+        min-width: 43px;
+        min-height: 22px;
+        padding: 3px 4px;
+        font-size: 7px;
+    }
+}
