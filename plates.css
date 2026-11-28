@@ -1634,3 +1634,62 @@
         letter-spacing: 0.2px !important;
     }
 }
+
+
+/* =========================================================
+   LUKSEMBURG — TEN SAM WZÓR TABLICY CO HOLANDIA
+   ========================================================= */
+
+.sticker .plate.plate-lu {
+    background: linear-gradient(180deg, #f6d02a 0%, #efbd16 52%, #e3a90d 100%) !important;
+    border: 1px solid #8a6410 !important;
+    border-color: #8a6410 !important;
+    box-shadow:
+        0 2px 5px rgba(15,20,17,0.22),
+        inset 0 1px 0 rgba(255,244,190,0.65) !important;
+}
+
+.sticker .plate.plate-lu .plate-number {
+    font-family: "Kenteken", Arial, sans-serif !important;
+    color: #101010 !important;
+    font-size: 15px !important;
+    font-weight: normal !important;
+    letter-spacing: 0.75px !important;
+}
+
+.sticker .plate.plate-lu .plate-country {
+    background: linear-gradient(180deg, #06408f 0%, #002b70 100%) !important;
+    border-right: 1px solid rgba(0, 0, 0, 0.32) !important;
+    color: #ffffff !important;
+    font-family: "KeepCalm", Arial, sans-serif !important;
+    font-size: 8px !important;
+    font-weight: normal !important;
+    letter-spacing: 0.1px !important;
+    line-height: 1 !important;
+    padding: 2px 0 1px !important;
+}
+
+.sticker .plate.plate-lu .plate-country::before {
+    content: "" !important;
+    display: block !important;
+    width: 13px !important;
+    height: 8px !important;
+    flex: 0 0 8px !important;
+    margin: 0 0 3px 0 !important;
+    background-image: url("https://flagcdn.com/w20/lu.png") !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: contain !important;
+}
+
+.sticker .plate.plate-lu .plate-country::after {
+    content: none !important;
+    display: none !important;
+}
+
+@media (max-width: 520px) {
+    .sticker .plate.plate-lu .plate-number {
+        font-size: 13px !important;
+        letter-spacing: 0.55px !important;
+    }
+}
