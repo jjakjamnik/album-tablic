@@ -251,6 +251,10 @@ document.addEventListener(
 
         renderCurrentCountry();
 
+        // Uzupełnij kilometry na starych kartach nowych krajów w tle.
+        // Album pozostaje dostępny podczas przeliczania.
+        void recalculateLegacyRoadDistanceCards();
+
 
         /* =================================================
            ELEMENTY FORMULARZA
@@ -1271,6 +1275,135 @@ async function loadStickersFromSupabase() {
 }
 
 /* =========================================================
+   AUTOMATYCZNE UZUPEŁNIANIE ODLEGŁOŚCI NA STARYCH KARTACH
+   ========================================================= */
+
+async function recalculateLegacyRoadDistanceCards() {
+
+    if (!albumCurrentUser || !Array.isArray(stickersCache)) {
+        return;
+    }
+
+    const migrationVersion = "v5.0-road-countries-1";
+    const migrationKey =
+        "album-road-distance:" +
+        albumCurrentUser.id +
+        ":" +
+        migrationVersion;
+
+    if (localStorage.getItem(migrationKey) === "done") {
+        return;
+    }
+
+    const supportedCountries = new Set([
+        "BG", "HR", "RS", "SI", "ME", "GR"
+    ]);
+
+    const candidates = stickersCache.filter(sticker => {
+        if (!supportedCountries.has(String(sticker.country || "").toUpperCase())) {
+            return false;
+        }
+
+        const km = sticker.kilometers;
+        const alreadyHasDistance =
+            km !== null &&
+            km !== undefined &&
+            km !== "" &&
+            Number.isFinite(Number(km));
+
+        return !alreadyHasDistance;
+    });
+
+    let updated = 0;
+    let failed = 0;
+    let unrecognized = 0;
+
+    for (const sticker of candidates) {
+
+        const country = String(sticker.country || "").toUpperCase();
+        const origin =
+            findCity(
+                country,
+                sticker.plate,
+                sticker.department || ""
+            ) ||
+            sticker.origin ||
+            "";
+
+        if (!origin) {
+            unrecognized++;
+            continue;
+        }
+
+        try {
+
+            const result =
+                await calculateStickerDistance(
+                    country,
+                    origin,
+                    sticker.location
+                );
+
+            if (
+                !result ||
+                typeof result.kilometers !== "number" ||
+                !Number.isFinite(result.kilometers)
+            ) {
+                failed++;
+                continue;
+            }
+
+            // Zachowujemy dotychczasowe zasady stałej rzadkości
+            // dla Grecji i Czarnogóry; pozostałe kraje biorą gwiazdki z km.
+            const fixedStars = getFixedCountryStars(country);
+
+            const updatedSticker = {
+                ...sticker,
+                origin,
+                kilometers: result.kilometers,
+                stars: fixedStars !== null
+                    ? fixedStars
+                    : result.stars
+            };
+
+            await updateStickerInSupabase(updatedSticker);
+            updated++;
+
+        } catch (error) {
+
+            failed++;
+
+            console.warn(
+                "Nie udało się automatycznie uzupełnić odległości:",
+                country,
+                sticker.plate,
+                error
+            );
+
+        }
+
+    }
+
+    // Gdy sieć chwilowo zawiedzie, następne otwarcie albumu spróbuje ponownie.
+    if (failed === 0) {
+        localStorage.setItem(migrationKey, "done");
+    }
+
+    if (updated > 0) {
+        updateCountryCounters();
+        updateCountryCardStates();
+        renderCurrentCountry();
+    }
+
+    console.log(
+        "Aktualizacja starych kart:",
+        { updated, failed, unrecognized, checked: candidates.length }
+    );
+
+}
+
+
+/* =========================================================
    SUPABASE — DODAWANIE
    ========================================================= */
 
@@ -1844,6 +1977,36 @@ function findCity(
         "TR":
             typeof TURCJA_KODY !== "undefined"
                 ? TURCJA_KODY
+                : null,
+
+        "BG":
+            typeof BULGARIA_KODY !== "undefined"
+                ? BULGARIA_KODY
+                : null,
+
+        "HR":
+            typeof CHORWACJA_KODY !== "undefined"
+                ? CHORWACJA_KODY
+                : null,
+
+        "RS":
+            typeof SERBIA_KODY !== "undefined"
+                ? SERBIA_KODY
+                : null,
+
+        "SI":
+            typeof SLOWENIA_KODY !== "undefined"
+                ? SLOWENIA_KODY
+                : null,
+
+        "ME":
+            typeof CZARNOGORA_KODY !== "undefined"
+                ? CZARNOGORA_KODY
+                : null,
+
+        "GR":
+            typeof GRECJA_KODY !== "undefined"
+                ? GRECJA_KODY
                 : null,
 
     };
