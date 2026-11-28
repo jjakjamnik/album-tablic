@@ -157,7 +157,20 @@ function createStickerCard(sticker) {
     );
 
 
-    /* =====================================================
+    
+
+    /* FRANCJA — prawy panel z numerem departamentu */
+    if (
+        String(sticker.country).toUpperCase() === "FR" &&
+        sticker.department
+    ) {
+        const department = document.createElement("div");
+        department.className = "plate-department";
+        department.textContent = String(sticker.department).trim();
+        plate.appendChild(department);
+    }
+
+/* =====================================================
        POCHODZENIE TABLICY
     ===================================================== */
 
