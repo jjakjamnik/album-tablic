@@ -3396,7 +3396,14 @@ function createStickerCard(sticker, cardNumber) {
     if (sticker.owner === "special") {
         edition.textContent = "VIP EDITION";
     } else if (sticker.owner === "guest") {
-        edition.textContent = "GUEST EDITION";
+        edition.textContent = sticker.gift_from
+            ? "PREZENT OD: " + sticker.gift_from
+            : "KARTA GOŚCINNA";
+        edition.style.fontSize = "8px";
+        edition.style.letterSpacing = "0.35px";
+        edition.style.lineHeight = "1.35";
+        edition.style.padding = "0 4px";
+        edition.style.overflowWrap = "anywhere";
     } else {
         edition.textContent = "COLLECTOR EDITION";
     }
