@@ -258,8 +258,8 @@
             font-size: 10px;
             font-weight: bold;
             letter-spacing: 1px;
-            opacity: 0.65;
-            cursor: not-allowed;
+            opacity: 1;
+            cursor: pointer;
         }
 
         .cover-auth-button.secondary {
@@ -267,6 +267,35 @@
             background: transparent;
             border-color: rgba(127, 180, 223, 0.55);
         }
+
+        .cover-auth-button:hover { filter: brightness(1.08); }
+
+        .cover-auth-link {
+            display: block;
+            margin: 12px auto 0;
+            padding: 7px 10px;
+            border: 0;
+            background: transparent;
+            color: #a9d5f7;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        .cover-auth-logged-in,
+        .cover-auth-recovery { margin-top: 12px; text-align: center; }
+
+        .cover-auth-open {
+            display: block;
+            box-sizing: border-box;
+            padding: 13px 8px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .cover-auth-status[data-state="error"] { color: #ffb6b6; }
+        .cover-auth-status[data-state="success"] { color: #b8efc5; }
 
         .cover-auth-status {
             margin: 13px 0 0;
@@ -358,25 +387,38 @@
 
             <section class="cover-auth" aria-labelledby="cover-auth-title">
                 <h2 class="cover-auth-title" id="cover-auth-title">TWOJE KONTO</h2>
-                <p class="cover-auth-note">Zaloguj się lub dołącz do kolekcjonerów.</p>
+                <p class="cover-auth-note">Zaloguj się do swojej kolekcji lub załóż nowe konto.</p>
 
-                <form aria-label="Podgląd formularza logowania">
+                <form id="cover-auth-form" autocomplete="on">
                     <label for="login-email">ADRES E-MAIL</label>
-                    <input id="login-email" type="email" placeholder="twoj@email.com" disabled>
+                    <input id="login-email" name="email" type="email" placeholder="twoj@email.com" autocomplete="email" required>
 
                     <label for="login-password">HASŁO</label>
-                    <input id="login-password" type="password" placeholder="••••••••" disabled>
+                    <input id="login-password" name="password" type="password" placeholder="Wpisz hasło" autocomplete="current-password" required>
 
                     <div class="cover-auth-actions">
-                        <button class="cover-auth-button" type="button" disabled>ZALOGUJ SIĘ</button>
-                        <button class="cover-auth-button secondary" type="button" disabled>ZAŁÓŻ KONTO</button>
+                        <button class="cover-auth-button" id="login-submit" type="button">ZALOGUJ SIĘ</button>
+                        <button class="cover-auth-button secondary" id="signup-submit" type="button">ZAŁÓŻ KONTO</button>
                     </div>
+                    <button class="cover-auth-link" id="forgot-password" type="button">NIE PAMIĘTASZ HASŁA?</button>
                 </form>
 
-                <p class="cover-auth-status">Panel wizualny — logowanie i rejestracja zostaną uruchomione w wersji 4.0.</p>
+                <div class="cover-auth-logged-in" id="cover-auth-logged-in" hidden>
+                    <p id="cover-auth-user"></p>
+                    <a href="album.html" class="cover-auth-button cover-auth-open">OTWÓRZ SWÓJ ALBUM →</a>
+                    <button class="cover-auth-link" id="logout-submit" type="button">WYLOGUJ SIĘ</button>
+                </div>
+
+                <div class="cover-auth-recovery" id="cover-auth-recovery" hidden>
+                    <label for="new-password">NOWE HASŁO</label>
+                    <input id="new-password" type="password" autocomplete="new-password" minlength="8" placeholder="Minimum 8 znaków">
+                    <button class="cover-auth-button" id="save-new-password" type="button">ZAPISZ NOWE HASŁO</button>
+                </div>
+
+                <p class="cover-auth-status" id="cover-auth-status" role="status" aria-live="polite">Po zalogowaniu otworzysz swoją prywatną kolekcję.</p>
             </section>
 
-            <a href="album.html" class="open-album-button">
+            <a href="album.html" class="open-album-button" id="open-album-button" hidden>
                 OTWÓRZ ALBUM →
             </a>
 
@@ -388,6 +430,9 @@
 
     </main>
 
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2"></script>
+<script src="./auth.js"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
